@@ -1,0 +1,584 @@
+
+> vrc-quality-connect-backend@0.1.0 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m14:34:10[0m] Starting compilation in watch mode...
+
+[[90m14:34:12[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +16ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +27ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 38632  - [39m09.04.2026, 14:34:13 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +24ms[39m
+[2J[3J[H[[90m14:37:20[0m] File change detected. Starting incremental compilation...
+
+[[90m14:37:21[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +16ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +26ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +4ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43640  - [39m09.04.2026, 14:37:22 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +25ms[39m
+[2J[3J[H[[90m14:38:50[0m] File change detected. Starting incremental compilation...
+
+[[90m14:38:50[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +16ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +27ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44284  - [39m09.04.2026, 14:38:51 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +22ms[39m
+[2J[3J[H[[90m14:39:03[0m] File change detected. Starting incremental compilation...
+
+[[90m14:39:03[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +17ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +27ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 44780  - [39m09.04.2026, 14:39:04 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +25ms[39m
+[2J[3J[H[[90m14:44:52[0m] File change detected. Starting incremental compilation...
+
+[[90m14:44:52[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +17ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +27ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 23768  - [39m09.04.2026, 14:44:53 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +24ms[39m
+[2J[3J[H[[90m14:45:45[0m] File change detected. Starting incremental compilation...
+
+[[90m14:45:45[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +15ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +26ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43568  - [39m09.04.2026, 14:45:46 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +23ms[39m
+[2J[3J[H[[90m14:47:30[0m] File change detected. Starting incremental compilation...
+
+[[90m14:47:31[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +16ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +27ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 31252  - [39m09.04.2026, 14:47:32 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +23ms[39m
+[2J[3J[H[[90m15:11:23[0m] File change detected. Starting incremental compilation...
+
+[[90m15:11:23[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +21ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +8ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +170ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/licenses, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 15860  - [39m09.04.2026, 15:11:31 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +27ms[39m
+[2J[3J[H[[90m15:15:34[0m] File change detected. Starting incremental compilation...
+
+[96msrc/modules/licenses/services/refresh-license-registry.service.ts[0m:[93m149[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'Date' is not assignable to parameter of type 'string'.
+
+[7m149[0m       dateFrom,
+[7m   [0m [91m      ~~~~~~~~[0m
+
+[96msrc/modules/licenses/services/refresh-license-registry.service.ts[0m:[93m195[0m:[93m7[0m - [91merror[0m[90m TS2345: [0mArgument of type 'Date' is not assignable to parameter of type 'string'.
+
+[7m195[0m       dateFrom,
+[7m   [0m [91m      ~~~~~~~~[0m
+
+[[90m15:15:35[0m] Found 2 errors. Watching for file changes.
+
+[2J[3J[H[[90m15:15:43[0m] File change detected. Starting incremental compilation...
+
+[[90m15:15:44[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +18ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +30ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/licenses, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 9400  - [39m09.04.2026, 15:15:45 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +28ms[39m
+[2J[3J[H[[90m15:16:08[0m] File change detected. Starting incremental compilation...
+
+[96msrc/modules/reports/services/reports.service.ts[0m:[93m17[0m:[93m53[0m - [91merror[0m[90m TS2345: [0mArgument of type 'Date' is not assignable to parameter of type 'string'.
+
+[7m17[0m       this.reportsRepository.aggregateLicenseTotals(dateFrom, dateTo),
+[7m  [0m [91m                                                    ~~~~~~~~[0m
+
+[96msrc/modules/reports/services/reports.service.ts[0m:[93m18[0m:[93m57[0m - [91merror[0m[90m TS2345: [0mArgument of type 'Date' is not assignable to parameter of type 'string'.
+
+[7m18[0m       this.reportsRepository.groupLicenseQuantityByType(dateFrom, dateTo),
+[7m  [0m [91m                                                        ~~~~~~~~[0m
+
+[96msrc/modules/reports/services/reports.service.ts[0m:[93m19[0m:[93m57[0m - [91merror[0m[90m TS2345: [0mArgument of type 'Date' is not assignable to parameter of type 'string'.
+
+[7m19[0m       this.reportsRepository.groupLicenseQuantityByDate(dateFrom, dateTo),
+[7m  [0m [91m                                                        ~~~~~~~~[0m
+
+[96msrc/modules/reports/services/reports.service.ts[0m:[93m38[0m:[93m36[0m - [91merror[0m[90m TS2551: [0mProperty 'toISOString' does not exist on type 'string'. Did you mean 'toString'?
+
+[7m38[0m         issueDate: point.issueDate.toISOString().slice(0, 10),
+[7m  [0m [91m                                   ~~~~~~~~~~~[0m
+
+  [96mnode_modules/typescript/lib/lib.es5.d.ts[0m:[93m412[0m:[93m5[0m
+    [7m412[0m     toString(): string;
+    [7m   [0m [96m    ~~~~~~~~~~~~~~~~~~~[0m
+    'toString' is declared here.
+
+[[90m15:16:08[0m] Found 4 errors. Watching for file changes.
+
+[2J[3J[H[[90m15:16:16[0m] File change detected. Starting incremental compilation...
+
+[[90m15:16:16[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +18ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +29ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/licenses, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42076  - [39m09.04.2026, 15:16:17 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +24ms[39m
+[2J[3J[H[[90m15:17:09[0m] File change detected. Starting incremental compilation...
+
+[[90m15:17:09[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +18ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +32ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/licenses, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +23ms[39m

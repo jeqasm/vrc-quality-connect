@@ -1,9 +1,16 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import {
   ActivityRecordZoneKey,
   getActivityRecordZone,
 } from '../../../modules/activity-records/model/activity-record-zone';
+import {
+  getLicenseRegistrySnapshot,
+  refreshLicenseRegistry,
+} from '../../../modules/licenses/api/licenses-api';
+import { RefreshLicenseRegistryResponse } from '../../../modules/licenses/model/license-registry';
 import { DateRangePicker } from '../../../shared/ui/date-range/date-range-picker';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { getCurrentWeekDateRange } from '../../../shared/lib/date-range';
@@ -20,6 +27,13 @@ const initialDateRangeState: DateRangeState = {
   dateFrom: currentWeekDateRange.dateFrom,
   dateTo: currentWeekDateRange.dateTo,
 };
+
+const activityZoneTabs: ActivityRecordZoneKey[] = ['qa', 'licenses', 'support', 'management'];
+const activityRecordsPageStateStorageKey = 'activity-records-page-state';
+
+function isActivityRecordZoneKey(value: string | null): value is ActivityRecordZoneKey {
+  return value !== null && activityZoneTabs.includes(value as ActivityRecordZoneKey);
+}
 
 type QaBugFormState = {
   id: string;
@@ -42,6 +56,26 @@ type QaOtherTaskRowState = {
   taskName: string;
   shortDescription: string;
   hours: string;
+};
+
+type ActivityRecordsPageState = {
+  dateRange: DateRangeState;
+  sections: {
+    retestOpen: boolean;
+    newBugsOpen: boolean;
+    testedTasksOpen: boolean;
+    newTasksOpen: boolean;
+    otherTasksOpen: boolean;
+    licensesOpen: boolean;
+  };
+  rows: {
+    qaRetestRows: QaBugFormState[];
+    qaNewBugRows: QaBugFormState[];
+    qaTestedTaskRows: QaBugFormState[];
+    qaNewTaskRows: QaBugFormState[];
+    qaOtherTaskRows: QaOtherTaskRowState[];
+    qaLicenseRows: QaLicenseRowState[];
+  };
 };
 
 function createQaBugRow(): QaBugFormState {
@@ -73,6 +107,90 @@ function createQaOtherTaskRow(): QaOtherTaskRowState {
   };
 }
 
+function buildDefaultActivityRecordsPageState(): ActivityRecordsPageState {
+  return {
+    dateRange: initialDateRangeState,
+    sections: {
+      retestOpen: true,
+      newBugsOpen: true,
+      testedTasksOpen: true,
+      newTasksOpen: true,
+      otherTasksOpen: true,
+      licensesOpen: true,
+    },
+    rows: {
+      qaRetestRows: [createQaBugRow()],
+      qaNewBugRows: [createQaBugRow()],
+      qaTestedTaskRows: [createQaBugRow()],
+      qaNewTaskRows: [createQaBugRow()],
+      qaOtherTaskRows: [createQaOtherTaskRow()],
+      qaLicenseRows: [createQaLicenseRow()],
+    },
+  };
+}
+
+function readStoredActivityRecordsPageState(): ActivityRecordsPageState {
+  const defaultState = buildDefaultActivityRecordsPageState();
+
+  if (typeof window === 'undefined') {
+    return defaultState;
+  }
+
+  try {
+    const rawState = window.localStorage.getItem(activityRecordsPageStateStorageKey);
+
+    if (!rawState) {
+      return defaultState;
+    }
+
+    const parsedState = JSON.parse(rawState) as Partial<ActivityRecordsPageState>;
+
+    return {
+      dateRange: parsedState.dateRange ?? defaultState.dateRange,
+      sections: {
+        ...defaultState.sections,
+        ...parsedState.sections,
+      },
+      rows: {
+        qaRetestRows: parsedState.rows?.qaRetestRows?.length
+          ? parsedState.rows.qaRetestRows
+          : defaultState.rows.qaRetestRows,
+        qaNewBugRows: parsedState.rows?.qaNewBugRows?.length
+          ? parsedState.rows.qaNewBugRows
+          : defaultState.rows.qaNewBugRows,
+        qaTestedTaskRows: parsedState.rows?.qaTestedTaskRows?.length
+          ? parsedState.rows.qaTestedTaskRows
+          : defaultState.rows.qaTestedTaskRows,
+        qaNewTaskRows: parsedState.rows?.qaNewTaskRows?.length
+          ? parsedState.rows.qaNewTaskRows
+          : defaultState.rows.qaNewTaskRows,
+        qaOtherTaskRows: parsedState.rows?.qaOtherTaskRows?.length
+          ? parsedState.rows.qaOtherTaskRows
+          : defaultState.rows.qaOtherTaskRows,
+        qaLicenseRows: parsedState.rows?.qaLicenseRows?.length
+          ? parsedState.rows.qaLicenseRows
+          : defaultState.rows.qaLicenseRows,
+      },
+    };
+  } catch {
+    return defaultState;
+  }
+}
+
+function hasLicenseDraft(rows: QaLicenseRowState[]): boolean {
+  return rows.some((row) => row.licenseType || row.quantity || row.issuedTo);
+}
+
+function formatRegistryImportedAt(value: string): string {
+  return new Date(value).toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 const bugTypeOptions = [
   { value: 'low', label: 'Low' },
   { value: 'normal', label: 'Normal' },
@@ -86,33 +204,154 @@ const bugStatusOptions = [
   { value: 'blocked', label: 'Заблокирован' },
 ];
 
-const licenseTypeOptions = [
-  { value: 'demo', label: 'Demo' },
-  { value: 'student', label: 'Student' },
-  { value: 'academic', label: 'Academic' },
-  { value: 'commercial', label: 'Commercial' },
-  { value: 'temporary', label: 'Temporary' },
-];
-
 export function ActivityRecordsPage() {
-  const [zoneKey, setZoneKey] = useState<ActivityRecordZoneKey>('qa');
-  const [dateRange, setDateRange] = useState<DateRangeState>(initialDateRangeState);
-  const [isRetestSectionOpen, setIsRetestSectionOpen] = useState(true);
-  const [isNewBugsSectionOpen, setIsNewBugsSectionOpen] = useState(true);
-  const [isTestedTasksSectionOpen, setIsTestedTasksSectionOpen] = useState(true);
-  const [isNewTasksSectionOpen, setIsNewTasksSectionOpen] = useState(true);
-  const [isOtherTasksSectionOpen, setIsOtherTasksSectionOpen] = useState(true);
-  const [isLicensesSectionOpen, setIsLicensesSectionOpen] = useState(true);
-  const [qaRetestRows, setQaRetestRows] = useState<QaBugFormState[]>([createQaBugRow()]);
-  const [qaNewBugRows, setQaNewBugRows] = useState<QaBugFormState[]>([createQaBugRow()]);
-  const [qaTestedTaskRows, setQaTestedTaskRows] = useState<QaBugFormState[]>([createQaBugRow()]);
-  const [qaNewTaskRows, setQaNewTaskRows] = useState<QaBugFormState[]>([createQaBugRow()]);
-  const [qaOtherTaskRows, setQaOtherTaskRows] = useState<QaOtherTaskRowState[]>([
-    createQaOtherTaskRow(),
-  ]);
-  const [qaLicenseRows, setQaLicenseRows] = useState<QaLicenseRowState[]>([createQaLicenseRow()]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const zoneFromSearch = searchParams.get('tab');
+  const zoneKey: ActivityRecordZoneKey = isActivityRecordZoneKey(zoneFromSearch)
+    ? zoneFromSearch
+    : 'qa';
+  const [restoredPageState] = useState<ActivityRecordsPageState>(() =>
+    readStoredActivityRecordsPageState(),
+  );
+  const [dateRange, setDateRange] = useState<DateRangeState>(restoredPageState.dateRange);
+  const [isRetestSectionOpen, setIsRetestSectionOpen] = useState(
+    restoredPageState.sections.retestOpen,
+  );
+  const [isNewBugsSectionOpen, setIsNewBugsSectionOpen] = useState(
+    restoredPageState.sections.newBugsOpen,
+  );
+  const [isTestedTasksSectionOpen, setIsTestedTasksSectionOpen] = useState(
+    restoredPageState.sections.testedTasksOpen,
+  );
+  const [isNewTasksSectionOpen, setIsNewTasksSectionOpen] = useState(
+    restoredPageState.sections.newTasksOpen,
+  );
+  const [isOtherTasksSectionOpen, setIsOtherTasksSectionOpen] = useState(
+    restoredPageState.sections.otherTasksOpen,
+  );
+  const [isLicensesSectionOpen, setIsLicensesSectionOpen] = useState(
+    restoredPageState.sections.licensesOpen,
+  );
+  const [qaRetestRows, setQaRetestRows] = useState<QaBugFormState[]>(
+    restoredPageState.rows.qaRetestRows,
+  );
+  const [qaNewBugRows, setQaNewBugRows] = useState<QaBugFormState[]>(
+    restoredPageState.rows.qaNewBugRows,
+  );
+  const [qaTestedTaskRows, setQaTestedTaskRows] = useState<QaBugFormState[]>(
+    restoredPageState.rows.qaTestedTaskRows,
+  );
+  const [qaNewTaskRows, setQaNewTaskRows] = useState<QaBugFormState[]>(
+    restoredPageState.rows.qaNewTaskRows,
+  );
+  const [qaOtherTaskRows, setQaOtherTaskRows] = useState<QaOtherTaskRowState[]>(
+    restoredPageState.rows.qaOtherTaskRows,
+  );
+  const [qaLicenseRows, setQaLicenseRows] = useState<QaLicenseRowState[]>(
+    restoredPageState.rows.qaLicenseRows,
+  );
+  const [licenseImportResult, setLicenseImportResult] = useState<RefreshLicenseRegistryResponse | null>(
+    null,
+  );
+  const [hasStoredLicenseRows] = useState(() => hasLicenseDraft(restoredPageState.rows.qaLicenseRows));
+
+  const licenseSnapshotQuery = useQuery({
+    queryKey: ['license-registry-snapshot', dateRange.dateFrom, dateRange.dateTo],
+    queryFn: () => getLicenseRegistrySnapshot(dateRange),
+    enabled: zoneKey === 'licenses',
+  });
+
+  const licenseRefreshMutation = useMutation({
+    mutationFn: refreshLicenseRegistry,
+    onSuccess: (result) => {
+      setLicenseImportResult(result);
+      setQaLicenseRows(
+        result.rows.length > 0
+          ? result.rows.map((row) => ({
+              id: Math.random().toString(36).slice(2, 10),
+              licenseType: row.licenseType,
+              quantity: `${row.quantity}`,
+              issuedTo: row.issuedTo,
+            }))
+          : [createQaLicenseRow()],
+      );
+    },
+  });
+
+  useEffect(() => {
+    if (!licenseSnapshotQuery.data) {
+      return;
+    }
+
+    setLicenseImportResult(licenseSnapshotQuery.data.importedAt ? licenseSnapshotQuery.data : null);
+    if (hasStoredLicenseRows) {
+      return;
+    }
+
+    setQaLicenseRows(
+      licenseSnapshotQuery.data.rows.length > 0
+        ? licenseSnapshotQuery.data.rows.map((row) => ({
+            id: Math.random().toString(36).slice(2, 10),
+            licenseType: row.licenseType,
+            quantity: `${row.quantity}`,
+            issuedTo: row.issuedTo,
+          }))
+        : [createQaLicenseRow()],
+    );
+  }, [hasStoredLicenseRows, licenseSnapshotQuery.data]);
 
   const zone = getActivityRecordZone(zoneKey);
+
+  function handleZoneChange(nextZoneKey: ActivityRecordZoneKey) {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.set('tab', nextZoneKey);
+    setSearchParams(nextSearchParams, { replace: true });
+  }
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const nextPageState: ActivityRecordsPageState = {
+      dateRange,
+      sections: {
+        retestOpen: isRetestSectionOpen,
+        newBugsOpen: isNewBugsSectionOpen,
+        testedTasksOpen: isTestedTasksSectionOpen,
+        newTasksOpen: isNewTasksSectionOpen,
+        otherTasksOpen: isOtherTasksSectionOpen,
+        licensesOpen: isLicensesSectionOpen,
+      },
+      rows: {
+        qaRetestRows,
+        qaNewBugRows,
+        qaTestedTaskRows,
+        qaNewTaskRows,
+        qaOtherTaskRows,
+        qaLicenseRows,
+      },
+    };
+
+    window.localStorage.setItem(
+      activityRecordsPageStateStorageKey,
+      JSON.stringify(nextPageState),
+    );
+  }, [
+    dateRange,
+    isRetestSectionOpen,
+    isNewBugsSectionOpen,
+    isTestedTasksSectionOpen,
+    isNewTasksSectionOpen,
+    isOtherTasksSectionOpen,
+    isLicensesSectionOpen,
+    qaRetestRows,
+    qaNewBugRows,
+    qaTestedTaskRows,
+    qaNewTaskRows,
+    qaOtherTaskRows,
+    qaLicenseRows,
+  ]);
 
   function updateQaBugField(
     rowsSetter: Dispatch<SetStateAction<QaBugFormState[]>>,
@@ -191,7 +430,7 @@ export function ActivityRecordsPage() {
   }
 
   return (
-    <div className="page-grid">
+    <div className="page-grid activity-records-page">
       <TopBar
         title="Activity records workspace"
         subtitle={zone.subtitle}
@@ -199,7 +438,7 @@ export function ActivityRecordsPage() {
 
       <section className="zone-tabs-shell" aria-label="Activity zones">
         <div className="zone-tabs">
-          {(['qa', 'licenses', 'support', 'management'] as ActivityRecordZoneKey[]).map((item) => {
+          {activityZoneTabs.map((item) => {
             const itemZone = getActivityRecordZone(item);
             const isActive = zoneKey === item;
 
@@ -208,7 +447,7 @@ export function ActivityRecordsPage() {
                 key={item}
                 type="button"
                 className={`zone-tab${isActive ? ' zone-tab-active' : ''}`}
-                onClick={() => setZoneKey(item)}
+                onClick={() => handleZoneChange(item)}
               >
                 <span className="zone-tab-title">{itemZone.title}</span>
                 <span className="zone-tab-subtitle">{itemZone.subtitle}</span>
@@ -318,6 +557,8 @@ export function ActivityRecordsPage() {
                       onChangeField={(rowId, name, value) =>
                         updateQaBugField(setQaTestedTaskRows, rowId, name, value)
                       }
+                      showImpact={false}
+                      titleLabel="Название задачи"
                       onAddRow={() => addQaBugRow(setQaTestedTaskRows)}
                       onRemoveRow={(rowId) => removeQaBugRow(setQaTestedTaskRows, rowId)}
                     />
@@ -349,6 +590,8 @@ export function ActivityRecordsPage() {
                       onChangeField={(rowId, name, value) =>
                         updateQaBugField(setQaNewTaskRows, rowId, name, value)
                       }
+                      showImpact={false}
+                      titleLabel="Название задачи"
                       onAddRow={() => addQaBugRow(setQaNewTaskRows)}
                       onRemoveRow={(rowId) => removeQaBugRow(setQaNewTaskRows, rowId)}
                     />
@@ -406,6 +649,48 @@ export function ActivityRecordsPage() {
 
                 {isLicensesSectionOpen ? (
                   <div className="collapsible-content">
+                    <div className="qa-license-import-toolbar">
+                      <button
+                        type="button"
+                        className="primary-button"
+                        onClick={() => licenseRefreshMutation.mutate(dateRange)}
+                        disabled={licenseRefreshMutation.isPending}
+                      >
+                        {licenseRefreshMutation.isPending ? 'Обновление...' : 'Обновить из реестра'}
+                      </button>
+
+                      {licenseImportResult ? (
+                        <div className="qa-license-import-meta">
+                          За период найдено {licenseImportResult.matchedSourceRows} строк, сведено в{' '}
+                          {licenseImportResult.aggregatedRows} типов лицензий. Последнее обновление из
+                          реестра: {formatRegistryImportedAt(licenseImportResult.importedAt)}.
+                        </div>
+                      ) : (
+                        <div className="qa-license-import-meta">
+                          Нажмите кнопку, чтобы автоматически заполнить таблицу по выбранному периоду.
+                        </div>
+                      )}
+                    </div>
+
+                    {licenseRefreshMutation.isError ? (
+                      <div className="form-inline-notice">
+                        Не удалось загрузить данные из реестра: {licenseRefreshMutation.error.message}
+                      </div>
+                    ) : null}
+
+                    {licenseSnapshotQuery.isError ? (
+                      <div className="form-inline-notice">
+                        Не удалось загрузить сохраненные данные: {licenseSnapshotQuery.error.message}
+                      </div>
+                    ) : null}
+
+                    {licenseImportResult && licenseImportResult.warnings.length > 0 ? (
+                      <div className="qa-license-import-warnings">
+                        В реестре пропущено строк: {licenseImportResult.skippedRows}. Проверьте источник,
+                        если ожидаете больше данных.
+                      </div>
+                    ) : null}
+
                     <QaLicensesTable
                       rows={qaLicenseRows}
                       onChangeField={updateQaLicenseField}
@@ -433,23 +718,35 @@ type QaBugRowsTableProps = {
   onChangeField: (rowId: string, name: keyof Omit<QaBugFormState, 'id'>, value: string) => void;
   onAddRow: () => void;
   onRemoveRow: (rowId: string) => void;
+  showImpact?: boolean;
+  titleLabel?: string;
 };
 
 function QaBugRowsTable(props: QaBugRowsTableProps) {
+  const showImpact = props.showImpact ?? true;
+  const titleLabel = props.titleLabel ?? 'Название бага';
+
+  function handleTitleInput(event: FormEvent<HTMLTextAreaElement>, rowId: string) {
+    const element = event.currentTarget;
+    element.style.height = 'auto';
+    element.style.height = `${element.scrollHeight}px`;
+    props.onChangeField(rowId, 'bugTitle', element.value);
+  }
+
   return (
     <>
       <div className="qa-bugs-grid">
-        <div className="qa-bugs-head qa-bugs-row">
+        <div className={`qa-bugs-head ${showImpact ? 'qa-bugs-row' : 'qa-bugs-row qa-bugs-row-compact'}`}>
           <div>Проект</div>
-          <div>Название бага</div>
+          <div>{titleLabel}</div>
           <div>Ссылка на баг</div>
-          <div>Влияние</div>
+          {showImpact ? <div>Влияние</div> : null}
           <div>Текущий статус</div>
           <div className="qa-bugs-actions-head">Действия</div>
         </div>
 
         {props.rows.map((row, index) => (
-          <div className="qa-bugs-row" key={row.id}>
+          <div className={showImpact ? 'qa-bugs-row' : 'qa-bugs-row qa-bugs-row-compact'} key={row.id}>
             <input
               className="field-input"
               value={row.projectName}
@@ -457,11 +754,12 @@ function QaBugRowsTable(props: QaBugRowsTableProps) {
               placeholder={index === 0 ? 'Например: VRC Portal' : 'Проект'}
             />
 
-            <input
-              className="field-input"
+            <textarea
+              className="field-textarea qa-inline-textarea"
+              rows={1}
               value={row.bugTitle}
-              onChange={(event) => props.onChangeField(row.id, 'bugTitle', event.target.value)}
-              placeholder={index === 0 ? 'Краткое название бага' : 'Название бага'}
+              onInput={(event) => handleTitleInput(event, row.id)}
+              placeholder={index === 0 ? `Краткое ${titleLabel.toLowerCase()}` : titleLabel}
             />
 
             <input
@@ -472,18 +770,20 @@ function QaBugRowsTable(props: QaBugRowsTableProps) {
               placeholder="https://..."
             />
 
-            <select
-              className="field-select"
-              value={row.bugType}
-              onChange={(event) => props.onChangeField(row.id, 'bugType', event.target.value)}
-            >
-              <option value="">Влияние</option>
-              {bugTypeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            {showImpact ? (
+              <select
+                className="field-select"
+                value={row.bugType}
+                onChange={(event) => props.onChangeField(row.id, 'bugType', event.target.value)}
+              >
+                <option value="">Влияние</option>
+                {bugTypeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            ) : null}
 
             <select
               className="field-select"
@@ -548,18 +848,12 @@ function QaLicensesTable(props: QaLicensesTableProps) {
 
         {props.rows.map((row) => (
           <div className="qa-licenses-row" key={row.id}>
-            <select
-              className="field-select"
+            <input
+              className="field-input"
               value={row.licenseType}
               onChange={(event) => props.onChangeField(row.id, 'licenseType', event.target.value)}
-            >
-              <option value="">Тип лицензии</option>
-              {licenseTypeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              placeholder="Тип лицензии"
+            />
 
             <input
               className="field-input"
@@ -615,6 +909,16 @@ type QaOtherTasksTableProps = {
 };
 
 function QaOtherTasksTable(props: QaOtherTasksTableProps) {
+  function handleDescriptionInput(
+    event: FormEvent<HTMLTextAreaElement>,
+    rowId: string,
+  ) {
+    const element = event.currentTarget;
+    element.style.height = 'auto';
+    element.style.height = `${element.scrollHeight}px`;
+    props.onChangeField(rowId, 'shortDescription', element.value);
+  }
+
   return (
     <>
       <div className="qa-bugs-grid">
@@ -634,12 +938,11 @@ function QaOtherTasksTable(props: QaOtherTasksTableProps) {
               placeholder={index === 0 ? 'Название задачи' : 'Задача'}
             />
 
-            <input
-              className="field-input"
+            <textarea
+              className="field-textarea qa-inline-textarea"
+              rows={1}
               value={row.shortDescription}
-              onChange={(event) =>
-                props.onChangeField(row.id, 'shortDescription', event.target.value)
-              }
+              onInput={(event) => handleDescriptionInput(event, row.id)}
               placeholder="Краткое описание"
             />
 

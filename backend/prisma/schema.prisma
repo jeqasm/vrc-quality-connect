@@ -127,6 +127,42 @@ model LicenseOperation {
   @@map("license_operations")
 }
 
+model LicenseRegistryImportBatch {
+  id                String                 @id @default(uuid())
+  sourceDocumentUrl String                 @map("source_document_url")
+  sourceSheetName   String                 @map("source_sheet_name")
+  totalSourceRows   Int                    @map("total_source_rows")
+  importedRows      Int                    @map("imported_rows")
+  skippedRows       Int                    @map("skipped_rows")
+  isActive          Boolean                @default(true) @map("is_active")
+  importedAt        DateTime               @default(now()) @map("imported_at")
+  createdAt         DateTime               @default(now()) @map("created_at")
+
+  entries LicenseRegistryEntry[]
+
+  @@index([isActive, importedAt])
+  @@map("license_registry_import_batches")
+}
+
+model LicenseRegistryEntry {
+  id               String   @id @default(uuid())
+  importBatchId    String   @map("import_batch_id")
+  sourceRowNumber  Int      @map("source_row_number")
+  issueDate        DateTime @db.Date @map("issue_date")
+  quantity         Int
+  licenseType      String   @map("license_type")
+  organizationName String?  @map("organization_name")
+  recipientEmail   String?  @map("recipient_email")
+  issuedTo         String   @map("issued_to")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  importBatch LicenseRegistryImportBatch @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
+
+  @@index([importBatchId, issueDate])
+  @@index([issueDate, licenseType])
+  @@map("license_registry_entries")
+}
+
 model SupportRequestType {
   id        String   @id @default(uuid())
   code      String   @unique

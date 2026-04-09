@@ -35,6 +35,7 @@
 ### Backend
 
 1. Скопировать `backend/.env.example` в `backend/.env`
+   Важно: для импорта лицензий заполнить `LICENSE_REGISTRY_SHEET_URL` и `LICENSE_REGISTRY_SHEET_NAME`
 2. Установить зависимости: `npm install`
 3. Сгенерировать Prisma client: `npm run prisma:generate`
 4. Применить миграции: `npm run prisma:migrate:deploy`
@@ -53,6 +54,7 @@
 - `docs/architecture/backend-structure.md`
 - `docs/architecture/frontend-structure.md`
 - `docs/architecture/modules.md`
+- `docs/architecture/license-registry-import.md`
 - `docs/product/*`
 
 ## Базовые сущности каркаса
@@ -66,3 +68,8 @@
 - `LicenseOperation`
 - `SupportRequestType`
 - `SupportRequest`
+
+## Текущие интеграции MVP
+
+- Модуль `licenses` умеет по кнопке обновления читать Google Sheets реестр лицензий через CSV export
+- Текущий сценарий импорта находится в `backend/src/modules/licenses`, сохраняет атомарные строки реестра в БД и уже после этого строит агрегированный результат для frontend
