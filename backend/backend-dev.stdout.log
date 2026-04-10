@@ -582,3 +582,230 @@
 [32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
 [32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +0ms[39m
 [32m[Nest] 42884  - [39m09.04.2026, 15:17:10 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +23ms[39m
+[2J[3J[H[[90m22:14:50[0m] File change detected. Starting incremental compilation...
+
+[96msrc/app.module.ts[0m:[93m13[0m:[93m39[0m - [91merror[0m[90m TS2307: [0mCannot find module './modules/qa-weekly-reports/qa-weekly-reports.module' or its corresponding type declarations.
+
+[7m13[0m import { QaWeeklyReportsModule } from './modules/qa-weekly-reports/qa-weekly-reports.module';
+[7m  [0m [91m                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[[90m22:14:51[0m] Found 1 error. Watching for file changes.
+
+[2J[3J[H[[90m22:16:16[0m] File change detected. Starting incremental compilation...
+
+[96msrc/modules/qa-weekly-reports/controllers/qa-weekly-reports.controller.ts[0m:[93m3[0m:[93m10[0m - [91merror[0m[90m TS2305: [0mModule '"../../../common/http/parse-int-pipe"' has no exported member 'ParseUuidPipe'.
+
+[7m3[0m import { ParseUuidPipe } from '../../../common/http/parse-int-pipe';
+[7m [0m [91m         ~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/mappers/qa-weekly-reports.mapper.ts[0m:[93m34[0m:[93m38[0m - [91merror[0m[90m TS7006: [0mParameter 'item' implicitly has an 'any' type.
+
+[7m34[0m       bugItems: report.bugItems.map((item) => ({
+[7m  [0m [91m                                     ~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/mappers/qa-weekly-reports.mapper.ts[0m:[93m44[0m:[93m50[0m - [91merror[0m[90m TS7006: [0mParameter 'item' implicitly has an 'any' type.
+
+[7m44[0m       otherTaskItems: report.otherTaskItems.map((item) => ({
+[7m  [0m [91m                                                 ~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m20[0m:[93m20[0m - [91merror[0m[90m TS2694: [0mNamespace '"E:/GitRep2/VRC Quality Connect/backend/node_modules/.prisma/client/index".Prisma' has no exported member 'QaWeeklyReportInclude'.
+
+[7m20[0m } satisfies Prisma.QaWeeklyReportInclude;
+[7m  [0m [91m                   ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m22[0m:[93m50[0m - [91merror[0m[90m TS2694: [0mNamespace '"E:/GitRep2/VRC Quality Connect/backend/node_modules/.prisma/client/index".Prisma' has no exported member 'QaWeeklyReportGetPayload'.
+
+[7m22[0m export type QaWeeklyReportWithRelations = Prisma.QaWeeklyReportGetPayload<{
+[7m  [0m [91m                                                 ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m44[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyReport' does not exist on type 'PrismaService'.
+
+[7m44[0m     return this.prisma.qaWeeklyReport.findFirst({
+[7m  [0m [91m                       ~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m63[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyReport' does not exist on type 'PrismaService'.
+
+[7m63[0m     return this.prisma.qaWeeklyReport.upsert({
+[7m  [0m [91m                       ~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m87[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyBugItem' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m87[0m       await transaction.qaWeeklyBugItem.deleteMany({
+[7m  [0m [91m                        ~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m92[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyBugItem' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m92[0m         await transaction.qaWeeklyBugItem.createMany({
+[7m  [0m [91m                          ~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m106[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyOtherTaskItem' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m106[0m       await transaction.qaWeeklyOtherTaskItem.deleteMany({
+[7m   [0m [91m                        ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m111[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyOtherTaskItem' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m111[0m         await transaction.qaWeeklyOtherTaskItem.createMany({
+[7m   [0m [91m                          ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m122[0m:[93m26[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyReport' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m122[0m       return transaction.qaWeeklyReport.findUniqueOrThrow({
+[7m   [0m [91m                         ~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m130[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyReport' does not exist on type 'PrismaService'.
+
+[7m130[0m     return this.prisma.qaWeeklyReport.update({
+[7m   [0m [91m                       ~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m140[0m:[93m69[0m - [91merror[0m[90m TS2694: [0mNamespace '"E:/GitRep2/VRC Quality Connect/backend/node_modules/.prisma/client/index".Prisma' has no exported member 'QaWeeklyReportWhereInput'.
+
+[7m140[0m   private buildWhereInput(filters: QueryQaWeeklyReportsDto): Prisma.QaWeeklyReportWhereInput {
+[7m   [0m [91m                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m141[0m:[93m25[0m - [91merror[0m[90m TS2694: [0mNamespace '"E:/GitRep2/VRC Quality Connect/backend/node_modules/.prisma/client/index".Prisma' has no exported member 'QaWeeklyReportWhereInput'.
+
+[7m141[0m     const where: Prisma.QaWeeklyReportWhereInput = {};
+[7m   [0m [91m                        ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/services/qa-weekly-reports.service.ts[0m:[93m92[0m:[93m90[0m - [91merror[0m[90m TS2339: [0mProperty 'findOneById' does not exist on type 'QaWeeklyReportsRepository'.
+
+[7m92[0m     const report = existing?.id === id ? existing : await this.qaWeeklyReportsRepository.findOneById?.(id);
+[7m  [0m [91m                                                                                         ~~~~~~~~~~~[0m
+
+[[90m22:16:16[0m] Found 16 errors. Watching for file changes.
+
+[2J[3J[H[[90m22:16:35[0m] File change detected. Starting incremental compilation...
+
+[96msrc/modules/qa-weekly-reports/mappers/qa-weekly-reports.mapper.ts[0m:[93m34[0m:[93m38[0m - [91merror[0m[90m TS7006: [0mParameter 'item' implicitly has an 'any' type.
+
+[7m34[0m       bugItems: report.bugItems.map((item) => ({
+[7m  [0m [91m                                     ~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/mappers/qa-weekly-reports.mapper.ts[0m:[93m44[0m:[93m50[0m - [91merror[0m[90m TS7006: [0mParameter 'item' implicitly has an 'any' type.
+
+[7m44[0m       otherTaskItems: report.otherTaskItems.map((item) => ({
+[7m  [0m [91m                                                 ~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m20[0m:[93m20[0m - [91merror[0m[90m TS2694: [0mNamespace '"E:/GitRep2/VRC Quality Connect/backend/node_modules/.prisma/client/index".Prisma' has no exported member 'QaWeeklyReportInclude'.
+
+[7m20[0m } satisfies Prisma.QaWeeklyReportInclude;
+[7m  [0m [91m                   ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m22[0m:[93m50[0m - [91merror[0m[90m TS2694: [0mNamespace '"E:/GitRep2/VRC Quality Connect/backend/node_modules/.prisma/client/index".Prisma' has no exported member 'QaWeeklyReportGetPayload'.
+
+[7m22[0m export type QaWeeklyReportWithRelations = Prisma.QaWeeklyReportGetPayload<{
+[7m  [0m [91m                                                 ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m44[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyReport' does not exist on type 'PrismaService'.
+
+[7m44[0m     return this.prisma.qaWeeklyReport.findFirst({
+[7m  [0m [91m                       ~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m51[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyReport' does not exist on type 'PrismaService'.
+
+[7m51[0m     return this.prisma.qaWeeklyReport.findUnique({
+[7m  [0m [91m                       ~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m70[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyReport' does not exist on type 'PrismaService'.
+
+[7m70[0m     return this.prisma.qaWeeklyReport.upsert({
+[7m  [0m [91m                       ~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m94[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyBugItem' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m94[0m       await transaction.qaWeeklyBugItem.deleteMany({
+[7m  [0m [91m                        ~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m99[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyBugItem' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m99[0m         await transaction.qaWeeklyBugItem.createMany({
+[7m  [0m [91m                          ~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m113[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyOtherTaskItem' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m113[0m       await transaction.qaWeeklyOtherTaskItem.deleteMany({
+[7m   [0m [91m                        ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m118[0m:[93m27[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyOtherTaskItem' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m118[0m         await transaction.qaWeeklyOtherTaskItem.createMany({
+[7m   [0m [91m                          ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m129[0m:[93m26[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyReport' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends">'.
+
+[7m129[0m       return transaction.qaWeeklyReport.findUniqueOrThrow({
+[7m   [0m [91m                         ~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m137[0m:[93m24[0m - [91merror[0m[90m TS2339: [0mProperty 'qaWeeklyReport' does not exist on type 'PrismaService'.
+
+[7m137[0m     return this.prisma.qaWeeklyReport.update({
+[7m   [0m [91m                       ~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m147[0m:[93m69[0m - [91merror[0m[90m TS2694: [0mNamespace '"E:/GitRep2/VRC Quality Connect/backend/node_modules/.prisma/client/index".Prisma' has no exported member 'QaWeeklyReportWhereInput'.
+
+[7m147[0m   private buildWhereInput(filters: QueryQaWeeklyReportsDto): Prisma.QaWeeklyReportWhereInput {
+[7m   [0m [91m                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96msrc/modules/qa-weekly-reports/repositories/qa-weekly-reports.repository.ts[0m:[93m148[0m:[93m25[0m - [91merror[0m[90m TS2694: [0mNamespace '"E:/GitRep2/VRC Quality Connect/backend/node_modules/.prisma/client/index".Prisma' has no exported member 'QaWeeklyReportWhereInput'.
+
+[7m148[0m     const where: Prisma.QaWeeklyReportWhereInput = {};
+[7m   [0m [91m                        ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[[90m22:16:35[0m] Found 15 errors. Watching for file changes.
+
+[2J[3J[H[[90m22:19:54[0m] File change detected. Starting incremental compilation...
+
+[[90m22:19:56[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +19ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +11ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +14ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mQaWeeklyReportsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +5ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/licenses, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mQaWeeklyReportsController {/api/qa-weekly-reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/qa-weekly-reports, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/qa-weekly-reports, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/qa-weekly-reports/:id/submit, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 45740  - [39m09.04.2026, 22:19:58 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +45ms[39m

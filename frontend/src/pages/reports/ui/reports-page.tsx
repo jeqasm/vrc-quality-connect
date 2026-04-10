@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { getReportZone, ReportZoneKey } from '../../../modules/reports/model/report-zone';
+import { QaWeeklyReportPanel } from '../../../modules/reports/ui/qa-weekly-report-panel';
 import { LicenseReportPanel } from '../../../modules/reports/ui/license-report-panel';
-import { getCurrentWeekDateRange } from '../../../shared/lib/date-range';
+import { DateRangeValue, getCurrentWeekDateRange } from '../../../shared/lib/date-range';
 import { DateRangePicker } from '../../../shared/ui/date-range/date-range-picker';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { TopBar } from '../../../shared/ui/top-bar/top-bar';
@@ -18,9 +19,17 @@ function isReportZoneKey(value: string | null): value is ReportZoneKey {
 export function ReportsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const zoneFromSearch = searchParams.get('tab');
-  const zoneKey: ReportZoneKey = isReportZoneKey(zoneFromSearch) ? zoneFromSearch : 'licenses';
+  const zoneKey: ReportZoneKey = isReportZoneKey(zoneFromSearch) ? zoneFromSearch : reportTabs[0];
   const zone = getReportZone(zoneKey);
-  const [dateRange, setDateRange] = useState(currentWeekDateRange);
+  const [workspaceDateRange, setWorkspaceDateRange] = useState<DateRangeValue>(currentWeekDateRange);
+  const [tabDateRanges, setTabDateRanges] = useState<Record<ReportZoneKey, DateRangeValue>>({
+    qa: currentWeekDateRange,
+    licenses: currentWeekDateRange,
+    support: currentWeekDateRange,
+    management: currentWeekDateRange,
+  });
+
+  const activeTabDateRange = tabDateRanges[zoneKey];
 
   function handleZoneChange(nextZoneKey: ReportZoneKey) {
     const nextSearchParams = new URLSearchParams(searchParams);
@@ -28,12 +37,27 @@ export function ReportsPage() {
     setSearchParams(nextSearchParams, { replace: true });
   }
 
+  function handleTabDateRangeChange(nextValue: DateRangeValue) {
+    setTabDateRanges((current) => ({
+      ...current,
+      [zoneKey]: nextValue,
+    }));
+  }
+
   return (
     <div className="page-grid reports-page">
       <TopBar
         title="Reports workspace"
         subtitle={zone.subtitle}
-        dateRange={<DateRangePicker value={dateRange} onChange={setDateRange} />}
+        dateRange={
+          <div className="reports-workspace-range-shell">
+            <div className="reports-workspace-range-label">Общий период отчетов</div>
+            <DateRangePicker
+              value={workspaceDateRange}
+              onChange={setWorkspaceDateRange}
+            />
+          </div>
+        }
       />
 
       <section className="zone-tabs-shell" aria-label="Reports zones">
@@ -59,8 +83,20 @@ export function ReportsPage() {
 
       <section>
         <div className="content-card">
+          <DateRangePicker
+            variant="panel"
+            value={activeTabDateRange}
+            onChange={handleTabDateRangeChange}
+          />
+        </div>
+      </section>
+
+      <section>
+        <div className="content-card">
           {zoneKey === 'licenses' ? (
-            <LicenseReportPanel dateRange={dateRange} />
+            <LicenseReportPanel dateRange={activeTabDateRange} />
+          ) : zoneKey === 'qa' ? (
+            <QaWeeklyReportPanel dateRange={activeTabDateRange} />
           ) : (
             <EmptyState
               title={`${zone.title} report will be added next`}

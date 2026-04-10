@@ -1,0 +1,15 @@
+import { IsDateString, IsOptional, IsUUID } from 'class-validator';
+
+export class QueryQaWeeklyReportsDto {
+  @IsOptional()
+  @IsUUID()
+  userId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  departmentId?: string;
+
+  @IsOptional()
+  @IsDateString()
+  weekStart?: string;
+}

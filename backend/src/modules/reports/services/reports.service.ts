@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { LicenseReportResponseDto } from '../dto/license-report-response.dto';
+import { QaWeeklyReportResponseDto } from '../dto/qa-weekly-report-response.dto';
 import { QueryLicenseReportDto } from '../dto/query-license-report.dto';
+import { QueryQaWeeklyReportDto } from '../dto/query-qa-weekly-report.dto';
 import { SummaryResponseDto } from '../dto/summary-response.dto';
 import { ReportsRepository } from '../repositories/reports.repository';
 
@@ -35,6 +37,35 @@ export class ReportsService {
         issueDate: point.issueDate,
         quantity: point.quantity,
       })),
+    };
+  }
+
+  async getQaWeeklyReport(dto: QueryQaWeeklyReportDto): Promise<QaWeeklyReportResponseDto> {
+    const [totals, retestBugs, newBugs, testedTasks, newTasks, otherTasks] = await Promise.all([
+      this.reportsRepository.aggregateQaWeeklyTotals(dto.dateFrom, dto.dateTo),
+      this.reportsRepository.listQaWeeklyBugItemsByBucket(dto.dateFrom, dto.dateTo, 'retest'),
+      this.reportsRepository.listQaWeeklyBugItemsByBucket(dto.dateFrom, dto.dateTo, 'new_bug'),
+      this.reportsRepository.listQaWeeklyBugItemsByBucket(dto.dateFrom, dto.dateTo, 'tested_task'),
+      this.reportsRepository.listQaWeeklyBugItemsByBucket(dto.dateFrom, dto.dateTo, 'new_task'),
+      this.reportsRepository.listQaWeeklyOtherTaskItems(dto.dateFrom, dto.dateTo),
+    ]);
+
+    return {
+      dateFrom: dto.dateFrom,
+      dateTo: dto.dateTo,
+      totals: {
+        closedRetestBugs: totals.closedRetestBugs,
+        sentToReworkRetestBugs: totals.sentToReworkRetestBugs,
+        totalNewBugs: totals.totalNewBugs,
+        totalTestedTasks: totals.totalTestedTasks,
+        totalNewTasks: totals.totalNewTasks,
+        totalOtherTaskHours: this.toHours(totals.totalOtherTaskMinutes),
+      },
+      retestBugs,
+      newBugs,
+      testedTasks,
+      newTasks,
+      otherTasks,
     };
   }
 

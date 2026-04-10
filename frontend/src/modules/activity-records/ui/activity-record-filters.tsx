@@ -36,7 +36,9 @@ export function ActivityRecordFilters(props: ActivityRecordFiltersProps) {
           value={props.values.userId}
           onChange={(event) => props.onChange('userId', event.target.value)}
         >
-          <option value="">All employees</option>
+          <option value="" disabled hidden={props.values.userId !== ''}>
+            All employees
+          </option>
           {props.referenceData.users.map((user) => (
             <option key={user.id} value={user.id}>
               {user.fullName}
@@ -53,7 +55,9 @@ export function ActivityRecordFilters(props: ActivityRecordFiltersProps) {
           onChange={(event) => props.onChange('departmentId', event.target.value)}
           disabled
         >
-          <option value="">{props.zone.title}</option>
+          <option value="" disabled hidden={props.values.departmentId !== ''}>
+            {props.zone.title}
+          </option>
           {props.referenceData.departments.map((department) => (
             <option key={department.id} value={department.id}>
               {department.name}
@@ -69,7 +73,9 @@ export function ActivityRecordFilters(props: ActivityRecordFiltersProps) {
           value={props.values.activityTypeId}
           onChange={(event) => props.onChange('activityTypeId', event.target.value)}
         >
-          <option value="">All activity types</option>
+          <option value="" disabled hidden={props.values.activityTypeId !== ''}>
+            All activity types
+          </option>
           {props.referenceData.activityTypes.map((activityType) => (
             <option key={activityType.id} value={activityType.id}>
               {activityType.name}

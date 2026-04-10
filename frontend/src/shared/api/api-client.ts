@@ -27,6 +27,15 @@ export async function apiClient<TResponse>(
     throw new ApiError(message || 'Request failed', response.status);
   }
 
-  return response.json() as Promise<TResponse>;
-}
+  if (response.status === 204) {
+    return null as TResponse;
+  }
 
+  const rawBody = await response.text();
+
+  if (!rawBody.trim()) {
+    return null as TResponse;
+  }
+
+  return JSON.parse(rawBody) as TResponse;
+}

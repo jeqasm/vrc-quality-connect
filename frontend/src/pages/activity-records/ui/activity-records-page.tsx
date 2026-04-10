@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Dispatch, FormEvent, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, FormEvent, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import {
@@ -10,8 +10,16 @@ import {
   getLicenseRegistrySnapshot,
   refreshLicenseRegistry,
 } from '../../../modules/licenses/api/licenses-api';
+import {
+  getQaWeeklyReport,
+  saveQaWeeklyReport,
+  submitQaWeeklyReport,
+} from '../../../modules/qa-weekly-reports/api/qa-weekly-reports-api';
+import { getUsers } from '../../../modules/reference-data/api/reference-data-api';
 import { RefreshLicenseRegistryResponse } from '../../../modules/licenses/model/license-registry';
+import { UserOption } from '../../../modules/reference-data/model/reference-data';
 import { DateRangePicker } from '../../../shared/ui/date-range/date-range-picker';
+import { Button } from '../../../shared/ui/button/button';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { getCurrentWeekDateRange } from '../../../shared/lib/date-range';
 import { TopBar } from '../../../shared/ui/top-bar/top-bar';
@@ -191,6 +199,55 @@ function formatRegistryImportedAt(value: string): string {
   });
 }
 
+function resizeTextarea(element: HTMLTextAreaElement | null) {
+  if (!element) {
+    return;
+  }
+
+  element.style.height = 'auto';
+  element.style.height = `${element.scrollHeight}px`;
+}
+
+function toDurationMinutes(hours: string): number {
+  const normalizedHours = hours.replace(',', '.');
+  const value = Number(normalizedHours);
+
+  if (!Number.isFinite(value) || value < 0) {
+    return 0;
+  }
+
+  return Math.round(value * 60);
+}
+
+function toHoursString(durationMinutes: number): string {
+  return `${Math.round((durationMinutes / 60) * 100) / 100}`;
+}
+
+function sanitizeHoursInput(value: string): string {
+  const normalizedValue = value.replace('.', ',');
+
+  let nextValue = '';
+  let hasComma = false;
+
+  for (const character of normalizedValue) {
+    if (character >= '0' && character <= '9') {
+      nextValue += character;
+      continue;
+    }
+
+    if (character === ',' && !hasComma) {
+      nextValue += character;
+      hasComma = true;
+    }
+  }
+
+  return nextValue;
+}
+
+function getQaUsers(users: UserOption[]): UserOption[] {
+  return users.filter((user) => user.department.code === 'qa-testing');
+}
+
 const bugTypeOptions = [
   { value: 'low', label: 'Low' },
   { value: 'normal', label: 'Normal' },
@@ -210,10 +267,15 @@ export function ActivityRecordsPage() {
   const zoneKey: ActivityRecordZoneKey = isActivityRecordZoneKey(zoneFromSearch)
     ? zoneFromSearch
     : 'qa';
+  const usersQuery = useQuery({
+    queryKey: ['users'],
+    queryFn: getUsers,
+  });
   const [restoredPageState] = useState<ActivityRecordsPageState>(() =>
     readStoredActivityRecordsPageState(),
   );
   const [dateRange, setDateRange] = useState<DateRangeState>(restoredPageState.dateRange);
+  const [selectedQaUserId, setSelectedQaUserId] = useState('');
   const [isRetestSectionOpen, setIsRetestSectionOpen] = useState(
     restoredPageState.sections.retestOpen,
   );
@@ -253,7 +315,31 @@ export function ActivityRecordsPage() {
   const [licenseImportResult, setLicenseImportResult] = useState<RefreshLicenseRegistryResponse | null>(
     null,
   );
+  const [qaSaveMessage, setQaSaveMessage] = useState<string | null>(null);
   const [hasStoredLicenseRows] = useState(() => hasLicenseDraft(restoredPageState.rows.qaLicenseRows));
+  const qaUsers = getQaUsers(usersQuery.data ?? []);
+
+  useEffect(() => {
+    if (selectedQaUserId || qaUsers.length === 0) {
+      return;
+    }
+
+    setSelectedQaUserId(qaUsers[0].id);
+  }, [qaUsers, selectedQaUserId]);
+
+  useEffect(() => {
+    setQaSaveMessage(null);
+  }, [selectedQaUserId, dateRange.dateFrom, dateRange.dateTo]);
+
+  const qaWeeklyReportQuery = useQuery({
+    queryKey: ['qa-weekly-report', selectedQaUserId, dateRange.dateFrom],
+    queryFn: () =>
+      getQaWeeklyReport({
+        userId: selectedQaUserId,
+        weekStart: dateRange.dateFrom,
+      }),
+    enabled: zoneKey === 'qa' && Boolean(selectedQaUserId),
+  });
 
   const licenseSnapshotQuery = useQuery({
     queryKey: ['license-registry-snapshot', dateRange.dateFrom, dateRange.dateTo],
@@ -278,6 +364,22 @@ export function ActivityRecordsPage() {
     },
   });
 
+  const qaSaveMutation = useMutation({
+    mutationFn: saveQaWeeklyReport,
+    onSuccess: () => {
+      setQaSaveMessage('Недельный QA-отчет сохранен.');
+      void qaWeeklyReportQuery.refetch();
+    },
+  });
+
+  const qaSubmitMutation = useMutation({
+    mutationFn: submitQaWeeklyReport,
+    onSuccess: () => {
+      setQaSaveMessage('Недельный QA-отчет отправлен.');
+      void qaWeeklyReportQuery.refetch();
+    },
+  });
+
   useEffect(() => {
     if (!licenseSnapshotQuery.data) {
       return;
@@ -296,9 +398,58 @@ export function ActivityRecordsPage() {
             quantity: `${row.quantity}`,
             issuedTo: row.issuedTo,
           }))
-        : [createQaLicenseRow()],
+      : [createQaLicenseRow()],
     );
   }, [hasStoredLicenseRows, licenseSnapshotQuery.data]);
+
+  useEffect(() => {
+    const report = qaWeeklyReportQuery.data;
+
+    if (qaWeeklyReportQuery.isFetched && !report) {
+      setQaRetestRows([createQaBugRow()]);
+      setQaNewBugRows([createQaBugRow()]);
+      setQaTestedTaskRows([createQaBugRow()]);
+      setQaNewTaskRows([createQaBugRow()]);
+      setQaOtherTaskRows([createQaOtherTaskRow()]);
+      return;
+    }
+
+    if (!report) {
+      return;
+    }
+
+    const mapBugItems = (bucketCode: string): QaBugFormState[] => {
+      const items = report.bugItems.filter((item) => item.bucketCode === bucketCode);
+
+      if (items.length === 0) {
+        return [createQaBugRow()];
+      }
+
+      return items.map((item) => ({
+        id: item.id,
+        projectName: item.projectName,
+        bugTitle: item.title,
+        bugUrl: item.externalUrl ?? '',
+        bugType: item.severityCode ?? '',
+        bugStatus: item.resultCode ?? '',
+      }));
+    };
+
+    setQaRetestRows(mapBugItems('retest'));
+    setQaNewBugRows(mapBugItems('new_bug'));
+    setQaTestedTaskRows(mapBugItems('tested_task'));
+    setQaNewTaskRows(mapBugItems('new_task'));
+    setQaOtherTaskRows(
+      report.otherTaskItems.length > 0
+        ? report.otherTaskItems.map((item) => ({
+            id: item.id,
+            taskName: item.taskName,
+            shortDescription: item.description ?? '',
+            hours: toHoursString(item.durationMinutes),
+          }))
+        : [createQaOtherTaskRow()],
+    );
+  }, [qaWeeklyReportQuery.data, qaWeeklyReportQuery.isFetched]);
 
   const zone = getActivityRecordZone(zoneKey);
 
@@ -411,7 +562,14 @@ export function ActivityRecordsPage() {
     value: string,
   ) {
     setQaOtherTaskRows((current) =>
-      current.map((row) => (row.id === rowId ? { ...row, [name]: value } : row)),
+      current.map((row) =>
+        row.id === rowId
+          ? {
+              ...row,
+              [name]: name === 'hours' ? sanitizeHoursInput(value) : value,
+            }
+          : row,
+      ),
     );
   }
 
@@ -429,11 +587,125 @@ export function ActivityRecordsPage() {
     });
   }
 
+  async function handleSaveQaWeeklyReport() {
+    if (!selectedQaUserId) {
+      setQaSaveMessage('Выберите QA-сотрудника.');
+      return;
+    }
+
+    const selectedUser = qaUsers.find((user) => user.id === selectedQaUserId);
+
+    if (!selectedUser) {
+      setQaSaveMessage('Не удалось определить отдел выбранного сотрудника.');
+      return;
+    }
+
+    setQaSaveMessage(null);
+
+    await qaSaveMutation.mutateAsync({
+      userId: selectedQaUserId,
+      departmentId: selectedUser.department.id,
+      weekStart: dateRange.dateFrom,
+      weekEnd: dateRange.dateTo,
+      bugItems: [
+        ...qaRetestRows.map((row) => ({
+          bucketCode: 'retest',
+          projectName: row.projectName.trim(),
+          title: row.bugTitle.trim(),
+          externalUrl: row.bugUrl.trim() || undefined,
+          severityCode: row.bugType.trim() || undefined,
+          resultCode: row.bugStatus.trim() || undefined,
+        })),
+        ...qaNewBugRows.map((row) => ({
+          bucketCode: 'new_bug',
+          projectName: row.projectName.trim(),
+          title: row.bugTitle.trim(),
+          externalUrl: row.bugUrl.trim() || undefined,
+          severityCode: row.bugType.trim() || undefined,
+          resultCode: row.bugStatus.trim() || undefined,
+        })),
+        ...qaTestedTaskRows.map((row) => ({
+          bucketCode: 'tested_task',
+          projectName: row.projectName.trim(),
+          title: row.bugTitle.trim(),
+          externalUrl: row.bugUrl.trim() || undefined,
+          severityCode: undefined,
+          resultCode: row.bugStatus.trim() || undefined,
+        })),
+        ...qaNewTaskRows.map((row) => ({
+          bucketCode: 'new_task',
+          projectName: row.projectName.trim(),
+          title: row.bugTitle.trim(),
+          externalUrl: row.bugUrl.trim() || undefined,
+          severityCode: undefined,
+          resultCode: row.bugStatus.trim() || undefined,
+        })),
+      ].filter((item) => item.projectName && item.title),
+      otherTaskItems: qaOtherTaskRows
+        .map((row) => ({
+          taskName: row.taskName.trim(),
+          description: row.shortDescription.trim() || undefined,
+          durationMinutes: toDurationMinutes(row.hours),
+        }))
+        .filter((item) => item.taskName),
+    });
+  }
+
+  async function handleSubmitQaWeeklyReport() {
+    if (!qaWeeklyReportQuery.data?.id) {
+      setQaSaveMessage('Сначала сохраните отчет.');
+      return;
+    }
+
+    setQaSaveMessage(null);
+    await qaSubmitMutation.mutateAsync(qaWeeklyReportQuery.data.id);
+  }
+
+  const isQaLocked = qaWeeklyReportQuery.data?.status === 'submitted';
+  const isQaBusy =
+    qaWeeklyReportQuery.isFetching || qaSaveMutation.isPending || qaSubmitMutation.isPending;
+
   return (
     <div className="page-grid activity-records-page">
       <TopBar
         title="Activity records workspace"
         subtitle={zone.subtitle}
+        action={
+          zone.key === 'qa' ? (
+            <>
+              <select
+                className="field-select"
+                value={selectedQaUserId}
+                onChange={(event) => setSelectedQaUserId(event.target.value)}
+                disabled={usersQuery.isLoading || isQaBusy}
+              >
+                <option value="" disabled hidden={selectedQaUserId !== ''}>
+                  Выберите QA-сотрудника
+                </option>
+                {qaUsers.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.fullName}
+                  </option>
+                ))}
+              </select>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => void handleSaveQaWeeklyReport()}
+                disabled={!selectedQaUserId || isQaLocked || isQaBusy}
+              >
+                {qaSaveMutation.isPending ? 'Сохранение...' : 'Сохранить отчет'}
+              </Button>
+              <Button
+                type="button"
+                onClick={() => void handleSubmitQaWeeklyReport()}
+                disabled={!qaWeeklyReportQuery.data?.id || isQaLocked || isQaBusy}
+              >
+                {qaSubmitMutation.isPending ? 'Отправка...' : 'Отправить'}
+              </Button>
+            </>
+          ) : null
+        }
       />
 
       <section className="zone-tabs-shell" aria-label="Activity zones">
@@ -471,6 +743,34 @@ export function ActivityRecordsPage() {
         <div className="content-card">
           {zone.key === 'qa' ? (
             <div className="page-grid">
+              {usersQuery.isError ? (
+                <div className="form-inline-notice">
+                  Не удалось загрузить список QA-сотрудников: {usersQuery.error.message}
+                </div>
+              ) : null}
+
+              {qaSaveMutation.isError ? (
+                <div className="form-inline-notice">
+                  Не удалось сохранить недельный QA-отчет: {qaSaveMutation.error.message}
+                </div>
+              ) : null}
+
+              {qaSubmitMutation.isError ? (
+                <div className="form-inline-notice">
+                  Не удалось отправить недельный QA-отчет: {qaSubmitMutation.error.message}
+                </div>
+              ) : null}
+
+              {qaSaveMessage ? (
+                <div className="form-inline-notice form-inline-notice-neutral">{qaSaveMessage}</div>
+              ) : null}
+
+              {isQaLocked ? (
+                <div className="form-inline-notice">
+                  Отчет уже отправлен и доступен только для просмотра.
+                </div>
+              ) : null}
+
               <section className="collapsible-section">
                 <button
                   type="button"
@@ -492,6 +792,7 @@ export function ActivityRecordsPage() {
                   <div className="collapsible-content">
                     <QaBugRowsTable
                       rows={qaRetestRows}
+                      disabled={isQaLocked}
                       onChangeField={(rowId, name, value) =>
                         updateQaBugField(setQaRetestRows, rowId, name, value)
                       }
@@ -523,9 +824,11 @@ export function ActivityRecordsPage() {
                   <div className="collapsible-content">
                     <QaBugRowsTable
                       rows={qaNewBugRows}
+                      disabled={isQaLocked}
                       onChangeField={(rowId, name, value) =>
                         updateQaBugField(setQaNewBugRows, rowId, name, value)
                       }
+                      showStatus={false}
                       onAddRow={() => addQaBugRow(setQaNewBugRows)}
                       onRemoveRow={(rowId) => removeQaBugRow(setQaNewBugRows, rowId)}
                     />
@@ -554,11 +857,13 @@ export function ActivityRecordsPage() {
                   <div className="collapsible-content">
                     <QaBugRowsTable
                       rows={qaTestedTaskRows}
+                      disabled={isQaLocked}
                       onChangeField={(rowId, name, value) =>
                         updateQaBugField(setQaTestedTaskRows, rowId, name, value)
                       }
                       showImpact={false}
                       titleLabel="Название задачи"
+                      linkLabel="Ссылка на задачу"
                       onAddRow={() => addQaBugRow(setQaTestedTaskRows)}
                       onRemoveRow={(rowId) => removeQaBugRow(setQaTestedTaskRows, rowId)}
                     />
@@ -587,11 +892,14 @@ export function ActivityRecordsPage() {
                   <div className="collapsible-content">
                     <QaBugRowsTable
                       rows={qaNewTaskRows}
+                      disabled={isQaLocked}
                       onChangeField={(rowId, name, value) =>
                         updateQaBugField(setQaNewTaskRows, rowId, name, value)
                       }
                       showImpact={false}
+                      showStatus={false}
                       titleLabel="Название задачи"
+                      linkLabel="Ссылка на задачу"
                       onAddRow={() => addQaBugRow(setQaNewTaskRows)}
                       onRemoveRow={(rowId) => removeQaBugRow(setQaNewTaskRows, rowId)}
                     />
@@ -620,6 +928,7 @@ export function ActivityRecordsPage() {
                   <div className="collapsible-content">
                     <QaOtherTasksTable
                       rows={qaOtherTaskRows}
+                      disabled={isQaLocked}
                       onChangeField={updateQaOtherTaskField}
                       onAddRow={addQaOtherTaskRow}
                       onRemoveRow={removeQaOtherTaskRow}
@@ -715,41 +1024,74 @@ export function ActivityRecordsPage() {
 
 type QaBugRowsTableProps = {
   rows: QaBugFormState[];
+  disabled?: boolean;
   onChangeField: (rowId: string, name: keyof Omit<QaBugFormState, 'id'>, value: string) => void;
   onAddRow: () => void;
   onRemoveRow: (rowId: string) => void;
   showImpact?: boolean;
+  showStatus?: boolean;
   titleLabel?: string;
+  linkLabel?: string;
 };
 
 function QaBugRowsTable(props: QaBugRowsTableProps) {
   const showImpact = props.showImpact ?? true;
+  const showStatus = props.showStatus ?? true;
   const titleLabel = props.titleLabel ?? 'Название бага';
+  const linkLabel = props.linkLabel ?? 'Ссылка на баг';
+  const textareaRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
+
+  useEffect(() => {
+    for (const row of props.rows) {
+      resizeTextarea(textareaRefs.current[row.id] ?? null);
+    }
+  }, [props.rows]);
 
   function handleTitleInput(event: FormEvent<HTMLTextAreaElement>, rowId: string) {
     const element = event.currentTarget;
-    element.style.height = 'auto';
-    element.style.height = `${element.scrollHeight}px`;
+    resizeTextarea(element);
     props.onChangeField(rowId, 'bugTitle', element.value);
   }
 
   return (
     <>
       <div className="qa-bugs-grid">
-        <div className={`qa-bugs-head ${showImpact ? 'qa-bugs-row' : 'qa-bugs-row qa-bugs-row-compact'}`}>
+        <div
+          className={
+            showImpact
+              ? showStatus
+                ? 'qa-bugs-row'
+                : 'qa-bugs-row qa-bugs-row-no-status'
+              : showStatus
+                ? 'qa-bugs-row qa-bugs-row-compact'
+                : 'qa-bugs-row qa-bugs-row-compact-no-status'
+          }
+        >
           <div>Проект</div>
           <div>{titleLabel}</div>
-          <div>Ссылка на баг</div>
+          <div>{linkLabel}</div>
           {showImpact ? <div>Влияние</div> : null}
-          <div>Текущий статус</div>
-          <div className="qa-bugs-actions-head">Действия</div>
+          {showStatus ? <div>Текущий статус</div> : null}
+          <div className="qa-bugs-actions-head" aria-hidden="true" />
         </div>
 
         {props.rows.map((row, index) => (
-          <div className={showImpact ? 'qa-bugs-row' : 'qa-bugs-row qa-bugs-row-compact'} key={row.id}>
+          <div
+            className={
+              showImpact
+                ? showStatus
+                  ? 'qa-bugs-row'
+                  : 'qa-bugs-row qa-bugs-row-no-status'
+                : showStatus
+                  ? 'qa-bugs-row qa-bugs-row-compact'
+                  : 'qa-bugs-row qa-bugs-row-compact-no-status'
+            }
+            key={row.id}
+          >
             <input
               className="field-input"
               value={row.projectName}
+              disabled={props.disabled}
               onChange={(event) => props.onChangeField(row.id, 'projectName', event.target.value)}
               placeholder={index === 0 ? 'Например: VRC Portal' : 'Проект'}
             />
@@ -757,7 +1099,11 @@ function QaBugRowsTable(props: QaBugRowsTableProps) {
             <textarea
               className="field-textarea qa-inline-textarea"
               rows={1}
+              ref={(element) => {
+                textareaRefs.current[row.id] = element;
+              }}
               value={row.bugTitle}
+              disabled={props.disabled}
               onInput={(event) => handleTitleInput(event, row.id)}
               placeholder={index === 0 ? `Краткое ${titleLabel.toLowerCase()}` : titleLabel}
             />
@@ -766,6 +1112,7 @@ function QaBugRowsTable(props: QaBugRowsTableProps) {
               className="field-input"
               type="url"
               value={row.bugUrl}
+              disabled={props.disabled}
               onChange={(event) => props.onChangeField(row.id, 'bugUrl', event.target.value)}
               placeholder="https://..."
             />
@@ -774,9 +1121,12 @@ function QaBugRowsTable(props: QaBugRowsTableProps) {
               <select
                 className="field-select"
                 value={row.bugType}
+                disabled={props.disabled}
                 onChange={(event) => props.onChangeField(row.id, 'bugType', event.target.value)}
               >
-                <option value="">Влияние</option>
+                <option value="" disabled hidden={row.bugType !== ''}>
+                  Влияние
+                </option>
                 {bugTypeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
@@ -785,25 +1135,30 @@ function QaBugRowsTable(props: QaBugRowsTableProps) {
               </select>
             ) : null}
 
-            <select
-              className="field-select"
-              value={row.bugStatus}
-              onChange={(event) => props.onChangeField(row.id, 'bugStatus', event.target.value)}
-            >
-              <option value="">Статус</option>
-              {bugStatusOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
+            {showStatus ? (
+              <select
+                className="field-select"
+                value={row.bugStatus}
+                disabled={props.disabled}
+                onChange={(event) => props.onChangeField(row.id, 'bugStatus', event.target.value)}
+              >
+                <option value="" disabled hidden={row.bugStatus !== ''}>
+                  Статус
                 </option>
-              ))}
-            </select>
+                {bugStatusOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            ) : null}
 
             <div className="qa-bugs-actions">
               <button
                 type="button"
                 className="qa-bugs-remove"
                 onClick={() => props.onRemoveRow(row.id)}
-                disabled={props.rows.length === 1}
+                disabled={props.disabled || props.rows.length === 1}
                 aria-label="Удалить строку"
                 title="Удалить строку"
               >
@@ -815,7 +1170,12 @@ function QaBugRowsTable(props: QaBugRowsTableProps) {
       </div>
 
       <div className="qa-bugs-toolbar">
-        <button type="button" className="qa-add-row-button" onClick={props.onAddRow}>
+        <button
+          type="button"
+          className="qa-add-row-button"
+          onClick={props.onAddRow}
+          disabled={props.disabled}
+        >
           <span className="qa-add-row-icon">+</span>
           <span>Добавить новую строку</span>
         </button>
@@ -843,7 +1203,7 @@ function QaLicensesTable(props: QaLicensesTableProps) {
           <div>Тип лицензии</div>
           <div>Количество</div>
           <div>Кому выдано</div>
-          <div className="qa-bugs-actions-head">Действия</div>
+          <div className="qa-bugs-actions-head" aria-hidden="true" />
         </div>
 
         {props.rows.map((row) => (
@@ -899,6 +1259,7 @@ function QaLicensesTable(props: QaLicensesTableProps) {
 
 type QaOtherTasksTableProps = {
   rows: QaOtherTaskRowState[];
+  disabled?: boolean;
   onChangeField: (
     rowId: string,
     name: keyof Omit<QaOtherTaskRowState, 'id'>,
@@ -909,20 +1270,27 @@ type QaOtherTasksTableProps = {
 };
 
 function QaOtherTasksTable(props: QaOtherTasksTableProps) {
+  const textareaRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
+
+  useEffect(() => {
+    for (const row of props.rows) {
+      resizeTextarea(textareaRefs.current[row.id] ?? null);
+    }
+  }, [props.rows]);
+
   function handleDescriptionInput(
     event: FormEvent<HTMLTextAreaElement>,
     rowId: string,
   ) {
     const element = event.currentTarget;
-    element.style.height = 'auto';
-    element.style.height = `${element.scrollHeight}px`;
+    resizeTextarea(element);
     props.onChangeField(rowId, 'shortDescription', element.value);
   }
 
   return (
     <>
       <div className="qa-bugs-grid">
-        <div className="qa-other-tasks-head qa-other-tasks-row">
+        <div className="qa-bugs-head qa-other-tasks-row">
           <div>Задача</div>
           <div>Краткое описание</div>
           <div>Часы</div>
@@ -934,6 +1302,7 @@ function QaOtherTasksTable(props: QaOtherTasksTableProps) {
             <input
               className="field-input"
               value={row.taskName}
+              disabled={props.disabled}
               onChange={(event) => props.onChangeField(row.id, 'taskName', event.target.value)}
               placeholder={index === 0 ? 'Название задачи' : 'Задача'}
             />
@@ -941,17 +1310,21 @@ function QaOtherTasksTable(props: QaOtherTasksTableProps) {
             <textarea
               className="field-textarea qa-inline-textarea"
               rows={1}
+              ref={(element) => {
+                textareaRefs.current[row.id] = element;
+              }}
               value={row.shortDescription}
+              disabled={props.disabled}
               onInput={(event) => handleDescriptionInput(event, row.id)}
               placeholder="Краткое описание"
             />
 
             <input
               className="field-input"
-              type="number"
-              min="0"
-              step="0.5"
+              type="text"
+              inputMode="decimal"
               value={row.hours}
+              disabled={props.disabled}
               onChange={(event) => props.onChangeField(row.id, 'hours', event.target.value)}
               placeholder="Часы"
             />
@@ -961,7 +1334,7 @@ function QaOtherTasksTable(props: QaOtherTasksTableProps) {
                 type="button"
                 className="qa-bugs-remove"
                 onClick={() => props.onRemoveRow(row.id)}
-                disabled={props.rows.length === 1}
+                disabled={props.disabled || props.rows.length === 1}
                 aria-label="Удалить строку"
                 title="Удалить строку"
               >
@@ -973,7 +1346,12 @@ function QaOtherTasksTable(props: QaOtherTasksTableProps) {
       </div>
 
       <div className="qa-bugs-toolbar">
-        <button type="button" className="qa-add-row-button" onClick={props.onAddRow}>
+        <button
+          type="button"
+          className="qa-add-row-button"
+          onClick={props.onAddRow}
+          disabled={props.disabled}
+        >
           <span className="qa-add-row-icon">+</span>
           <span>Добавить новую строку</span>
         </button>

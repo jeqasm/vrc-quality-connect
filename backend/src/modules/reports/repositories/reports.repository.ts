@@ -100,6 +100,174 @@ export class ReportsRepository {
     }));
   }
 
+  async aggregateQaWeeklyTotals(dateFrom: string, dateTo: string): Promise<{
+    closedRetestBugs: number;
+    sentToReworkRetestBugs: number;
+    totalNewBugs: number;
+    totalTestedTasks: number;
+    totalNewTasks: number;
+    totalOtherTaskMinutes: number;
+  }> {
+    const rows = await this.prisma.$queryRaw<
+      Array<{
+        closedRetestBugs: bigint | number | null;
+        sentToReworkRetestBugs: bigint | number | null;
+        totalNewBugs: bigint | number | null;
+        totalTestedTasks: bigint | number | null;
+        totalNewTasks: bigint | number | null;
+        totalOtherTaskMinutes: bigint | number | null;
+      }>
+    >(Prisma.sql`
+      WITH scoped_reports AS (
+        SELECT id
+        FROM qa_weekly_reports
+        WHERE week_start >= ${dateFrom}::date
+          AND week_start <= ${dateTo}::date
+      ),
+      bug_totals AS (
+        SELECT
+          COUNT(CASE
+            WHEN bug.bucket_code = 'retest'
+             AND bug.result_code IN ('resolved', 'fixed_confirmed', 'fixed-confirmed')
+            THEN 1
+          END) AS "closedRetestBugs",
+          COUNT(CASE
+            WHEN bug.bucket_code = 'retest'
+             AND bug.result_code IN ('rework', 'sent_to_rework', 'sent-to-rework')
+            THEN 1
+          END) AS "sentToReworkRetestBugs",
+          COUNT(CASE WHEN bug.bucket_code = 'new_bug' THEN 1 END) AS "totalNewBugs",
+          COUNT(CASE WHEN bug.bucket_code = 'tested_task' THEN 1 END) AS "totalTestedTasks",
+          COUNT(CASE WHEN bug.bucket_code = 'new_task' THEN 1 END) AS "totalNewTasks"
+        FROM qa_weekly_bug_items bug
+        INNER JOIN scoped_reports report ON report.id = bug.report_id
+      ),
+      other_task_totals AS (
+        SELECT COALESCE(SUM(other_task.duration_minutes), 0) AS "totalOtherTaskMinutes"
+        FROM qa_weekly_other_task_items other_task
+        INNER JOIN scoped_reports report ON report.id = other_task.report_id
+      )
+      SELECT
+        COALESCE((SELECT "closedRetestBugs" FROM bug_totals), 0) AS "closedRetestBugs",
+        COALESCE((SELECT "sentToReworkRetestBugs" FROM bug_totals), 0) AS "sentToReworkRetestBugs",
+        COALESCE((SELECT "totalNewBugs" FROM bug_totals), 0) AS "totalNewBugs",
+        COALESCE((SELECT "totalTestedTasks" FROM bug_totals), 0) AS "totalTestedTasks",
+        COALESCE((SELECT "totalNewTasks" FROM bug_totals), 0) AS "totalNewTasks",
+        COALESCE((SELECT "totalOtherTaskMinutes" FROM other_task_totals), 0) AS "totalOtherTaskMinutes"
+    `);
+
+    const row = rows[0] ?? {
+      closedRetestBugs: 0,
+      sentToReworkRetestBugs: 0,
+      totalNewBugs: 0,
+      totalTestedTasks: 0,
+      totalNewTasks: 0,
+      totalOtherTaskMinutes: 0,
+    };
+
+    return {
+      closedRetestBugs: Number(row.closedRetestBugs ?? 0),
+      sentToReworkRetestBugs: Number(row.sentToReworkRetestBugs ?? 0),
+      totalNewBugs: Number(row.totalNewBugs ?? 0),
+      totalTestedTasks: Number(row.totalTestedTasks ?? 0),
+      totalNewTasks: Number(row.totalNewTasks ?? 0),
+      totalOtherTaskMinutes: Number(row.totalOtherTaskMinutes ?? 0),
+    };
+  }
+
+  async listQaWeeklyBugItemsByBucket(
+    dateFrom: string,
+    dateTo: string,
+    bucketCode: 'retest' | 'new_bug' | 'tested_task' | 'new_task',
+  ): Promise<
+    Array<{
+      weekStart: string;
+      userId: string;
+      userFullName: string;
+      projectName: string;
+      title: string;
+      externalUrl: string | null;
+      severityCode: string | null;
+      resultCode: string | null;
+    }>
+  > {
+    const rows = await this.prisma.$queryRaw<
+      Array<{
+        weekStart: string;
+        userId: string;
+        userFullName: string;
+        projectName: string;
+        title: string;
+        externalUrl: string | null;
+        severityCode: string | null;
+        resultCode: string | null;
+      }>
+    >(Prisma.sql`
+      SELECT
+        TO_CHAR(report.week_start, 'YYYY-MM-DD') AS "weekStart",
+        report.user_id AS "userId",
+        user_account.full_name AS "userFullName",
+        bug.project_name AS "projectName",
+        bug.title AS "title",
+        bug.external_url AS "externalUrl",
+        bug.severity_code AS "severityCode",
+        bug.result_code AS "resultCode"
+      FROM qa_weekly_reports report
+      INNER JOIN users user_account ON user_account.id = report.user_id
+      INNER JOIN qa_weekly_bug_items bug ON bug.report_id = report.id
+      WHERE report.week_start >= ${dateFrom}::date
+        AND report.week_start <= ${dateTo}::date
+        AND bug.bucket_code = ${bucketCode}
+      ORDER BY report.week_start DESC, user_account.full_name ASC, bug.sort_order ASC, bug.created_at ASC
+    `);
+
+    return rows;
+  }
+
+  async listQaWeeklyOtherTaskItems(
+    dateFrom: string,
+    dateTo: string,
+  ): Promise<
+    Array<{
+      weekStart: string;
+      userId: string;
+      userFullName: string;
+      taskName: string;
+      description: string | null;
+      durationMinutes: number;
+    }>
+  > {
+    const rows = await this.prisma.$queryRaw<
+      Array<{
+        weekStart: string;
+        userId: string;
+        userFullName: string;
+        taskName: string;
+        description: string | null;
+        durationMinutes: bigint | number;
+      }>
+    >(Prisma.sql`
+      SELECT
+        TO_CHAR(report.week_start, 'YYYY-MM-DD') AS "weekStart",
+        report.user_id AS "userId",
+        user_account.full_name AS "userFullName",
+        other_task.task_name AS "taskName",
+        other_task.description AS "description",
+        other_task.duration_minutes AS "durationMinutes"
+      FROM qa_weekly_reports report
+      INNER JOIN users user_account ON user_account.id = report.user_id
+      INNER JOIN qa_weekly_other_task_items other_task ON other_task.report_id = report.id
+      WHERE report.week_start >= ${dateFrom}::date
+        AND report.week_start <= ${dateTo}::date
+      ORDER BY report.week_start DESC, user_account.full_name ASC, other_task.sort_order ASC, other_task.created_at ASC
+    `);
+
+    return rows.map((row) => ({
+      ...row,
+      durationMinutes: Number(row.durationMinutes),
+    }));
+  }
+
   aggregateTotals(): Promise<DurationAggregate> {
     return this.prisma.activityRecord.aggregate({
       _sum: {

@@ -20,10 +20,6 @@ export function AppShell() {
           <NavigationLink to="/support-requests">Поддержка</NavigationLink>
           <NavigationLink to="/settings">Настройки</NavigationLink>
         </nav>
-
-        <div className="sidebar-footnote">
-          Activity records are the primary operational source for dashboards and reports.
-        </div>
       </aside>
 
       <main className="app-main">

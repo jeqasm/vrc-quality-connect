@@ -212,7 +212,9 @@ export function ActivityRecordCreateForm(props: ActivityRecordCreateFormProps) {
           value={formState.userId}
           onChange={(event) => updateField('userId', event.target.value)}
         >
-          <option value="">Select user</option>
+          <option value="" disabled hidden={formState.userId !== ''}>
+            Select user
+          </option>
           {props.referenceData.users.map((user) => (
             <option key={user.id} value={user.id}>
               {user.fullName}
@@ -229,7 +231,9 @@ export function ActivityRecordCreateForm(props: ActivityRecordCreateFormProps) {
           value={formState.departmentId}
           disabled
         >
-          <option value="">Resolved from user</option>
+          <option value="" disabled hidden={formState.departmentId !== ''}>
+            Resolved from user
+          </option>
           {props.referenceData.departments.map((department) => (
             <option key={department.id} value={department.id}>
               {department.name}
@@ -246,7 +250,9 @@ export function ActivityRecordCreateForm(props: ActivityRecordCreateFormProps) {
           value={formState.activityTypeId}
           onChange={(event) => updateField('activityTypeId', event.target.value)}
         >
-          <option value="">Select activity type</option>
+          <option value="" disabled hidden={formState.activityTypeId !== ''}>
+            Select activity type
+          </option>
           {props.referenceData.activityTypes.map((activityType) => (
             <option key={activityType.id} value={activityType.id}>
               {activityType.name}
@@ -263,7 +269,9 @@ export function ActivityRecordCreateForm(props: ActivityRecordCreateFormProps) {
           value={formState.activityResultId}
           onChange={(event) => updateField('activityResultId', event.target.value)}
         >
-          <option value="">Select activity result</option>
+          <option value="" disabled hidden={formState.activityResultId !== ''}>
+            Select activity result
+          </option>
           {props.referenceData.activityResults.map((activityResult) => (
             <option key={activityResult.id} value={activityResult.id}>
               {activityResult.name}

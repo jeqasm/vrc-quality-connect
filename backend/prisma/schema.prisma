@@ -18,6 +18,7 @@ model User {
 
   department        Department         @relation(fields: [departmentId], references: [id])
   activityRecords   ActivityRecord[]
+  qaWeeklyReports   QaWeeklyReport[]
   licenseOperations LicenseOperation[]
   supportRequests   SupportRequest[]
 
@@ -35,6 +36,7 @@ model Department {
 
   users           User[]
   activityRecords ActivityRecord[]
+  qaWeeklyReports QaWeeklyReport[]
 
   @@map("departments")
 }
@@ -195,4 +197,61 @@ model SupportRequest {
 
   @@index([userId])
   @@map("support_requests")
+}
+
+model QaWeeklyReport {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @db.Uuid @map("user_id")
+  departmentId String    @db.Uuid @map("department_id")
+  weekStart    DateTime  @db.Date @map("week_start")
+  weekEnd      DateTime  @db.Date @map("week_end")
+  status       String
+  submittedAt  DateTime? @map("submitted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user           User                @relation(fields: [userId], references: [id])
+  department     Department          @relation(fields: [departmentId], references: [id])
+  bugItems       QaWeeklyBugItem[]
+  otherTaskItems QaWeeklyOtherTaskItem[]
+
+  @@unique([userId, weekStart])
+  @@index([departmentId, weekStart])
+  @@index([status, weekStart])
+  @@map("qa_weekly_reports")
+}
+
+model QaWeeklyBugItem {
+  id           String   @id @default(uuid()) @db.Uuid
+  reportId     String   @db.Uuid @map("report_id")
+  bucketCode  String   @map("bucket_code")
+  projectName String   @map("project_name")
+  title       String
+  externalUrl String?  @map("external_url")
+  severityCode String?  @map("severity_code")
+  resultCode  String?  @map("result_code")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  report QaWeeklyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId, bucketCode, sortOrder])
+  @@map("qa_weekly_bug_items")
+}
+
+model QaWeeklyOtherTaskItem {
+  id              String   @id @default(uuid()) @db.Uuid
+  reportId        String   @db.Uuid @map("report_id")
+  taskName        String   @map("task_name")
+  description     String?  @map("description")
+  durationMinutes Int      @map("duration_minutes")
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  report QaWeeklyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId, sortOrder])
+  @@map("qa_weekly_other_task_items")
 }

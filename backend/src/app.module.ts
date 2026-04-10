@@ -10,6 +10,7 @@ import { DepartmentsModule } from './modules/departments/departments.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { LicensesModule } from './modules/licenses/licenses.module';
 import { LicenseTypesModule } from './modules/license-types/license-types.module';
+import { QaWeeklyReportsModule } from './modules/qa-weekly-reports/qa-weekly-reports.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { SupportRequestsModule } from './modules/support-requests/support-requests.module';
 import { SupportRequestTypesModule } from './modules/support-request-types/support-request-types.module';
@@ -32,6 +33,7 @@ import { PrismaModule } from './prisma/prisma.module';
     SupportRequestsModule,
     SupportRequestTypesModule,
     ReportsModule,
+    QaWeeklyReportsModule,
     LicensesModule,
     LicenseTypesModule,
     IntegrationsModule,
