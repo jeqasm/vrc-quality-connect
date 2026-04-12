@@ -1,0 +1,45 @@
+
+> vrc-quality-connect-frontend@0.1.0 dev
+> vite --host 127.0.0.1 --port 8011 --strictPort
+
+
+  [32m[1mVITE[22m v6.4.2[39m  [2mready in [0m[1m7074[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m8011[22m/[39m
+[2m14:46:41[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m14:51:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m14:54:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx, /src/pages/activity-records/ui/activity-records-page.tsx[22m
+[2m14:54:48[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/date-range/date-range-picker.tsx[22m
+[2m14:55:19[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m14:55:27[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m14:55:44[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m14:55:50[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m14:59:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m15:01:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/date-range/date-range-picker.tsx[22m
+[2m15:01:44[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m15:02:31[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/date-range/date-range-picker.tsx[22m
+[2m15:02:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m15:04:02[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/date-range/date-range-picker.tsx[22m
+[2m15:04:09[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m15:04:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m15:05:38[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m15:05:46[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m15:06:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m15:06:58[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m15:07:47[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m15:08:32[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/date-range/date-range-picker.tsx[22m
+[2m15:08:49[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m15:10:07[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m15:13:25[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m15:13:37[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+[2m15:14:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/licenses/ui/licenses-page.tsx[22m
+[2m15:14:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/shared/ui/global.css[22m
+
+> vrc-quality-connect-frontend@0.1.0 dev
+> vite --host 127.0.0.1 --port 8011 --strictPort
+
+
+  [32m[1mVITE[22m v6.4.2[39m  [2mready in [0m[1m9629[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m8011[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m

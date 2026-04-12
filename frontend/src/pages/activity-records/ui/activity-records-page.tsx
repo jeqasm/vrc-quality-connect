@@ -8,7 +8,6 @@ import {
 } from '../../../modules/activity-records/model/activity-record-zone';
 import {
   getLicenseRegistrySnapshot,
-  refreshLicenseRegistry,
 } from '../../../modules/licenses/api/licenses-api';
 import {
   getQaWeeklyReport,
@@ -16,7 +15,6 @@ import {
   submitQaWeeklyReport,
 } from '../../../modules/qa-weekly-reports/api/qa-weekly-reports-api';
 import { getUsers } from '../../../modules/reference-data/api/reference-data-api';
-import { RefreshLicenseRegistryResponse } from '../../../modules/licenses/model/license-registry';
 import { UserOption } from '../../../modules/reference-data/model/reference-data';
 import { DateRangePicker } from '../../../shared/ui/date-range/date-range-picker';
 import { Button } from '../../../shared/ui/button/button';
@@ -189,16 +187,6 @@ function hasLicenseDraft(rows: QaLicenseRowState[]): boolean {
   return rows.some((row) => row.licenseType || row.quantity || row.issuedTo);
 }
 
-function formatRegistryImportedAt(value: string): string {
-  return new Date(value).toLocaleString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
 function resizeTextarea(element: HTMLTextAreaElement | null) {
   if (!element) {
     return;
@@ -312,9 +300,6 @@ export function ActivityRecordsPage() {
   const [qaLicenseRows, setQaLicenseRows] = useState<QaLicenseRowState[]>(
     restoredPageState.rows.qaLicenseRows,
   );
-  const [licenseImportResult, setLicenseImportResult] = useState<RefreshLicenseRegistryResponse | null>(
-    null,
-  );
   const [qaSaveMessage, setQaSaveMessage] = useState<string | null>(null);
   const [hasStoredLicenseRows] = useState(() => hasLicenseDraft(restoredPageState.rows.qaLicenseRows));
   const qaUsers = getQaUsers(usersQuery.data ?? []);
@@ -347,23 +332,6 @@ export function ActivityRecordsPage() {
     enabled: zoneKey === 'licenses',
   });
 
-  const licenseRefreshMutation = useMutation({
-    mutationFn: refreshLicenseRegistry,
-    onSuccess: (result) => {
-      setLicenseImportResult(result);
-      setQaLicenseRows(
-        result.rows.length > 0
-          ? result.rows.map((row) => ({
-              id: Math.random().toString(36).slice(2, 10),
-              licenseType: row.licenseType,
-              quantity: `${row.quantity}`,
-              issuedTo: row.issuedTo,
-            }))
-          : [createQaLicenseRow()],
-      );
-    },
-  });
-
   const qaSaveMutation = useMutation({
     mutationFn: saveQaWeeklyReport,
     onSuccess: () => {
@@ -385,16 +353,15 @@ export function ActivityRecordsPage() {
       return;
     }
 
-    setLicenseImportResult(licenseSnapshotQuery.data.importedAt ? licenseSnapshotQuery.data : null);
     if (hasStoredLicenseRows) {
       return;
     }
 
-    setQaLicenseRows(
+      setQaLicenseRows(
       licenseSnapshotQuery.data.rows.length > 0
         ? licenseSnapshotQuery.data.rows.map((row) => ({
             id: Math.random().toString(36).slice(2, 10),
-            licenseType: row.licenseType,
+            licenseType: row.licenseType.name,
             quantity: `${row.quantity}`,
             issuedTo: row.issuedTo,
           }))
@@ -959,44 +926,15 @@ export function ActivityRecordsPage() {
                 {isLicensesSectionOpen ? (
                   <div className="collapsible-content">
                     <div className="qa-license-import-toolbar">
-                      <button
-                        type="button"
-                        className="primary-button"
-                        onClick={() => licenseRefreshMutation.mutate(dateRange)}
-                        disabled={licenseRefreshMutation.isPending}
-                      >
-                        {licenseRefreshMutation.isPending ? 'Обновление...' : 'Обновить из реестра'}
-                      </button>
-
-                      {licenseImportResult ? (
-                        <div className="qa-license-import-meta">
-                          За период найдено {licenseImportResult.matchedSourceRows} строк, сведено в{' '}
-                          {licenseImportResult.aggregatedRows} типов лицензий. Последнее обновление из
-                          реестра: {formatRegistryImportedAt(licenseImportResult.importedAt)}.
-                        </div>
-                      ) : (
-                        <div className="qa-license-import-meta">
-                          Нажмите кнопку, чтобы автоматически заполнить таблицу по выбранному периоду.
-                        </div>
-                      )}
-                    </div>
-
-                    {licenseRefreshMutation.isError ? (
-                      <div className="form-inline-notice">
-                        Не удалось загрузить данные из реестра: {licenseRefreshMutation.error.message}
+                      <div className="qa-license-import-meta">
+                        За выбранный период загружено {licenseSnapshotQuery.data?.totalRecords ?? 0}{' '}
+                        записей на {licenseSnapshotQuery.data?.totalIssuedLicenses ?? 0} лицензий.
                       </div>
-                    ) : null}
+                    </div>
 
                     {licenseSnapshotQuery.isError ? (
                       <div className="form-inline-notice">
                         Не удалось загрузить сохраненные данные: {licenseSnapshotQuery.error.message}
-                      </div>
-                    ) : null}
-
-                    {licenseImportResult && licenseImportResult.warnings.length > 0 ? (
-                      <div className="qa-license-import-warnings">
-                        В реестре пропущено строк: {licenseImportResult.skippedRows}. Проверьте источник,
-                        если ожидаете больше данных.
                       </div>
                     ) : null}
 

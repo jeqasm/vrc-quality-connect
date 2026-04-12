@@ -38,7 +38,6 @@
 ### Backend
 
 1. Скопировать `backend/.env.example` в `backend/.env`
-   Важно: для импорта лицензий заполнить `LICENSE_REGISTRY_SHEET_URL` и `LICENSE_REGISTRY_SHEET_NAME`
 2. Установить зависимости: `npm install`
 3. Сгенерировать Prisma client: `npm run prisma:generate`
 4. Применить миграции: `npm run prisma:migrate:deploy`
@@ -80,7 +79,7 @@
 
 ## Текущие интеграции MVP
 
-- Модуль `licenses` умеет по кнопке обновления читать Google Sheets реестр лицензий через CSV export
-- Текущий сценарий импорта находится в `backend/src/modules/licenses`, сохраняет атомарные строки реестра в БД и уже после этого строит агрегированный результат для frontend
+- Модуль `licenses` теперь ведет внутренний реестр выдачи лицензий через CRUD API и UI-таблицу без обязательного Excel / Google Sheets runtime-источника
+- Отчеты по лицензиям строятся напрямую из `license_registry_records`
 - Подсистема доступа заложена через `auth`, `access-control` и `groups`: backend считает effective permissions, frontend скрывает страницы и вкладки по ответу `GET /auth/me`
 - Регистрация новых аккаунтов выполняется только по invite-ссылке, которую создает администратор в `Настройки -> Администрирование -> Пользователи`

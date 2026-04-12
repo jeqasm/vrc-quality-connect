@@ -74,9 +74,22 @@ export class LicenseRegistryRepository {
   }
 
   async aggregateActiveEntriesByPeriod(
-    dateFrom: string,
-    dateTo: string,
+    dateFrom?: string,
+    dateTo?: string,
   ): Promise<{ rows: LicenseRegistryRow[]; matchedSourceRows: number }> {
+    const whereClauses: Prisma.Sql[] = [
+      Prisma.sql`import_batch_id IN (
+        SELECT id
+        FROM license_registry_import_batches
+        WHERE is_active = true
+      )`,
+    ];
+
+    if (dateFrom && dateTo) {
+      whereClauses.push(Prisma.sql`issue_date >= ${dateFrom}::date`);
+      whereClauses.push(Prisma.sql`issue_date <= ${dateTo}::date`);
+    }
+
     const entries = await this.prisma.$queryRaw<
       Array<{ licenseType: string; quantity: number; issuedTo: string }>
     >(Prisma.sql`
@@ -85,13 +98,7 @@ export class LicenseRegistryRepository {
         quantity,
         issued_to AS "issuedTo"
       FROM license_registry_entries
-      WHERE issue_date >= ${dateFrom}::date
-        AND issue_date <= ${dateTo}::date
-        AND import_batch_id IN (
-          SELECT id
-          FROM license_registry_import_batches
-          WHERE is_active = true
-        )
+      WHERE ${Prisma.join(whereClauses, ' AND ')}
       ORDER BY issue_date ASC, license_type ASC
     `);
 

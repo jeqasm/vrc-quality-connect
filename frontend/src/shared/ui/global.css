@@ -522,6 +522,10 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.licenses-filters {
+  margin-bottom: 18px;
+}
+
 .toolbar-date-range {
   padding: 10px 12px;
   border-radius: 16px;
@@ -540,6 +544,123 @@ button:disabled {
   display: grid;
   gap: 4px;
   min-width: 150px;
+  align-content: start;
+}
+
+.date-field-control {
+  position: relative;
+  display: block;
+}
+
+.date-field-input {
+  padding-right: 96px;
+}
+
+.date-field-input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.date-field-input::-webkit-clear-button,
+.date-field-input::-webkit-inner-spin-button {
+  display: none;
+}
+
+.date-picker-icon-button,
+.date-clear-icon-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.date-picker-icon-button {
+  right: 44px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.date-picker-icon-button:hover {
+  transform: translateY(-50%);
+  color: var(--text);
+}
+
+.date-clear-icon-button {
+  right: 14px;
+  background: rgba(97, 115, 139, 0.08);
+  color: var(--muted);
+}
+
+.date-clear-icon-button:hover {
+  transform: translateY(-50%);
+  background: rgba(97, 115, 139, 0.14);
+  color: var(--text);
+}
+
+.date-picker-icon {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 1.8px solid currentColor;
+  border-radius: 2px;
+}
+
+.date-picker-icon::before,
+.date-picker-icon::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+  border-radius: 999px;
+}
+
+.date-picker-icon::before {
+  top: -3px;
+  left: 3px;
+  width: 2px;
+  height: 5px;
+  box-shadow: 6px 0 0 currentColor;
+}
+
+.date-picker-icon::after {
+  top: 4px;
+  left: 2px;
+  width: 10px;
+  height: 1.8px;
+}
+
+.date-clear-icon {
+  position: relative;
+  width: 10px;
+  height: 10px;
+}
+
+.date-clear-icon::before,
+.date-clear-icon::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 10px;
+  height: 1.5px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.date-clear-icon::before {
+  transform: rotate(45deg);
+}
+
+.date-clear-icon::after {
+  transform: rotate(-45deg);
 }
 
 .toolbar-date-field span {
@@ -1430,6 +1551,24 @@ button:disabled {
   gap: 12px;
 }
 
+.license-table-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.license-table-action,
+.license-table-delete {
+  min-height: 26px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.license-table-delete {
+  color: var(--danger);
+}
+
 .user-summary-main strong,
 .invite-summary-main strong {
   font-size: 14px;
@@ -1547,11 +1686,6 @@ button:disabled {
   border-bottom: 1px solid rgba(143, 165, 189, 0.2);
   text-align: left;
   vertical-align: top;
-}
-
-.data-table tbody tr {
-  cursor: pointer;
-  transition: background-color 120ms ease;
 }
 
 .data-table tbody tr:hover {
@@ -1781,6 +1915,254 @@ button:disabled {
 .license-registry-table td:nth-child(2),
 .license-registry-table th:nth-child(2) {
   width: 140px;
+}
+
+.license-registry-sheet {
+  display: grid;
+  gap: 12px;
+}
+
+.license-sheet-table-wrapper {
+  border: 1px solid rgba(143, 165, 189, 0.28);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.license-registry-table {
+  min-width: 980px;
+}
+
+.license-registry-table th,
+.license-registry-table td {
+  padding: 10px 10px;
+  font-size: 13px;
+  line-height: 1.25;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(143, 165, 189, 0.16);
+  border-right: 1px solid rgba(143, 165, 189, 0.12);
+}
+
+.license-registry-table th:last-child,
+.license-registry-table td:last-child {
+  border-right: none;
+}
+
+.license-registry-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f7fafc;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.license-registry-table tbody tr:hover {
+  background: rgba(15, 23, 42, 0.02);
+}
+
+.license-registry-empty-row:hover {
+  background: transparent;
+}
+
+.license-registry-create-toggle-row:hover {
+  background: transparent;
+}
+
+.license-registry-create-toggle-row td {
+  padding: 0;
+}
+
+.license-registry-plus-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: none;
+  background: rgba(247, 250, 252, 0.9);
+  color: var(--muted);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.license-registry-plus-row:hover {
+  background: rgba(241, 245, 249, 0.96);
+  color: var(--foreground);
+}
+
+.license-registry-plus-icon {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.08);
+  color: rgb(15, 118, 110);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.license-registry-create-row-shell {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(247, 250, 252, 0.82);
+}
+
+.license-registry-create-row-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.license-registry-create-grid {
+  display: grid;
+  grid-template-columns: 110px 170px 76px minmax(160px, 1.1fr) minmax(160px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.license-registry-inline-input,
+.license-registry-inline-select {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.license-registry-inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.license-registry-empty-row td {
+  padding: 0;
+}
+
+.license-registry-empty-state {
+  display: grid;
+  gap: 6px;
+  padding: 20px 18px;
+  min-height: 96px;
+  align-content: center;
+  justify-items: start;
+  color: var(--muted);
+}
+
+.license-registry-empty-state strong {
+  color: var(--foreground);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.license-registry-empty-state span {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.license-registry-table td:nth-child(1),
+.license-registry-table th:nth-child(1) {
+  width: 110px;
+}
+
+.license-registry-table td:nth-child(2),
+.license-registry-table th:nth-child(2) {
+  width: 170px;
+}
+
+.license-registry-table td:nth-child(3),
+.license-registry-table th:nth-child(3) {
+  width: 76px;
+  text-align: center;
+}
+
+.license-registry-table td:nth-child(8),
+.license-registry-table th:nth-child(8) {
+  width: 90px;
+}
+
+.license-registry-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+
+.license-registry-progress {
+  color: var(--muted);
+  font-size: 13px;
+  justify-self: start;
+}
+
+.license-registry-load-more-button {
+  justify-self: center;
+}
+
+.license-registry-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-self: end;
+}
+
+.license-registry-stepper-label {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.license-registry-stepper-options {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.license-registry-step-button {
+  min-width: 38px;
+  padding: 6px 10px;
+  border: 1px solid rgba(132, 153, 177, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #445469;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.license-registry-step-button-active {
+  border-color: rgba(15, 118, 110, 0.2);
+  background: rgba(15, 118, 110, 0.1);
+  color: var(--accent-strong);
+}
+
+@media (max-width: 960px) {
+  .license-registry-toolbar {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .license-registry-progress,
+  .license-registry-load-more-button,
+  .license-registry-stepper {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 1100px) {
+  .license-registry-create-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .license-registry-inline-actions {
+    grid-column: 1 / -1;
+  }
 }
 
 .license-registry-warnings .list-item {

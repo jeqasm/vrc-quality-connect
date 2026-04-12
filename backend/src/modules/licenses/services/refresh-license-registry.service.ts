@@ -17,6 +17,11 @@ type LicenseRegistryWarning = {
 };
 
 const headerAliases = {
+  recipientName: [
+    'реестр выданных лицензий фио получателя',
+    'фио получателя',
+    'получатель',
+  ],
   issueDate: ['дата выдачи'],
   quantity: ['количество', 'количество '],
   organizationName: ['наименование организации'],
@@ -69,6 +74,7 @@ export class RefreshLicenseRegistryService {
         continue;
       }
 
+      const recipientName = this.readCell(row, headerIndexes.recipientName);
       const issueDateRaw = this.readCell(row, headerIndexes.issueDate);
       const quantityRaw = this.readCell(row, headerIndexes.quantity);
       const organizationName = this.readCell(row, headerIndexes.organizationName);
@@ -79,7 +85,7 @@ export class RefreshLicenseRegistryService {
         continue;
       }
 
-      if (!issueDateRaw && !quantityRaw && !organizationName && !recipientEmail && !licensePurpose) {
+      if (!recipientName && !issueDateRaw && !quantityRaw && !organizationName && !recipientEmail && !licensePurpose) {
         continue;
       }
 
@@ -104,7 +110,7 @@ export class RefreshLicenseRegistryService {
         licenseType: licensePurpose || 'Не определено',
         organizationName: this.toNullableValue(organizationName),
         recipientEmail: this.toNullableValue(recipientEmail),
-        issuedTo: this.resolveIssuedTo(organizationName, recipientEmail),
+        issuedTo: this.resolveIssuedTo(recipientName, organizationName, recipientEmail),
       });
     }
 
@@ -119,13 +125,14 @@ export class RefreshLicenseRegistryService {
         continue;
       }
 
+      const recipientName = this.readCell(row, headerIndexes.recipientName);
       const issueDateRaw = this.readCell(row, headerIndexes.issueDate);
       const quantityRaw = this.readCell(row, headerIndexes.quantity);
       const organizationName = this.readCell(row, headerIndexes.organizationName);
       const recipientEmail = this.readCell(row, headerIndexes.recipientEmail);
       const licensePurpose = this.readCell(row, headerIndexes.licensePurpose);
 
-      if (!issueDateRaw && !quantityRaw && !organizationName && !recipientEmail && !licensePurpose) {
+      if (!recipientName && !issueDateRaw && !quantityRaw && !organizationName && !recipientEmail && !licensePurpose) {
         continue;
       }
 
@@ -201,11 +208,15 @@ export class RefreshLicenseRegistryService {
   }
 
   async getSnapshot(dto: QueryLicenseRegistryDto): Promise<RefreshLicenseRegistryResponseDto> {
-    const dateFrom = this.parseIsoDate(dto.dateFrom);
-    const dateTo = this.parseIsoDate(dto.dateTo);
+    const hasFullPeriod = Boolean(dto.dateFrom && dto.dateTo);
 
-    if (dateFrom.getTime() > dateTo.getTime()) {
-      throw new BadRequestException('dateFrom must be less than or equal to dateTo');
+    if (hasFullPeriod) {
+      const dateFrom = this.parseIsoDate(dto.dateFrom!);
+      const dateTo = this.parseIsoDate(dto.dateTo!);
+
+      if (dateFrom.getTime() > dateTo.getTime()) {
+        throw new BadRequestException('dateFrom must be less than or equal to dateTo');
+      }
     }
 
     const activeBatch = await this.licenseRegistryRepository.findActiveBatch();
@@ -215,8 +226,8 @@ export class RefreshLicenseRegistryService {
         importedAt: '',
         sourceSheetName: '',
         sourceDocumentUrl: '',
-        dateFrom: dto.dateFrom,
-        dateTo: dto.dateTo,
+        dateFrom: hasFullPeriod ? dto.dateFrom! : '',
+        dateTo: hasFullPeriod ? dto.dateTo! : '',
         totalSourceRows: 0,
         matchedSourceRows: 0,
         aggregatedRows: 0,
@@ -227,16 +238,16 @@ export class RefreshLicenseRegistryService {
     }
 
     const aggregate = await this.licenseRegistryRepository.aggregateActiveEntriesByPeriod(
-      dto.dateFrom,
-      dto.dateTo,
+      hasFullPeriod ? dto.dateFrom : undefined,
+      hasFullPeriod ? dto.dateTo : undefined,
     );
 
     return {
       importedAt: activeBatch.importedAt.toISOString(),
       sourceSheetName: activeBatch.sourceSheetName,
       sourceDocumentUrl: activeBatch.sourceDocumentUrl,
-      dateFrom: dto.dateFrom,
-      dateTo: dto.dateTo,
+      dateFrom: hasFullPeriod ? dto.dateFrom! : '',
+      dateTo: hasFullPeriod ? dto.dateTo! : '',
       totalSourceRows: activeBatch.totalSourceRows,
       matchedSourceRows: aggregate.matchedSourceRows,
       aggregatedRows: aggregate.rows.length,
@@ -251,6 +262,7 @@ export class RefreshLicenseRegistryService {
       const normalizedRow = row.map((cell) => this.normalizeCellValue(cell));
 
       return (
+        this.containsAnyAlias(normalizedRow, headerAliases.recipientName) &&
         this.containsAnyAlias(normalizedRow, headerAliases.issueDate) &&
         this.containsAnyAlias(normalizedRow, headerAliases.quantity) &&
         this.containsAnyAlias(normalizedRow, headerAliases.organizationName) &&
@@ -264,6 +276,11 @@ export class RefreshLicenseRegistryService {
     const normalizedRow = row.map((cell) => this.normalizeCellValue(cell));
 
     return {
+      recipientName: this.findHeaderIndex(
+        normalizedRow,
+        headerAliases.recipientName,
+        'ФИО получателя',
+      ),
       issueDate: this.findHeaderIndex(normalizedRow, headerAliases.issueDate, 'Дата выдачи'),
       quantity: this.findHeaderIndex(normalizedRow, headerAliases.quantity, 'Количество'),
       organizationName: this.findHeaderIndex(
@@ -371,7 +388,15 @@ export class RefreshLicenseRegistryService {
     return Number.parseInt(match[0], 10);
   }
 
-  private resolveIssuedTo(organizationName: string, recipientEmail: string): string {
+  private resolveIssuedTo(
+    recipientName: string,
+    organizationName: string,
+    recipientEmail: string,
+  ): string {
+    if (recipientName && recipientName !== '-') {
+      return recipientName;
+    }
+
     if (organizationName && organizationName !== '-') {
       return organizationName;
     }

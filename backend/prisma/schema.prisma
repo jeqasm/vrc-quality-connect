@@ -23,6 +23,7 @@ model User {
   activityRecords   ActivityRecord[]
   qaWeeklyReports   QaWeeklyReport[]
   licenseOperations LicenseOperation[]
+  licenseRegistryRecords LicenseRegistryRecord[] @relation("LicenseRegistryRecordCreator")
   supportRequests   SupportRequest[]
 
   @@index([departmentId])
@@ -257,6 +258,7 @@ model LicenseType {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   licenseOperations LicenseOperation[]
+  licenseRegistryRecords LicenseRegistryRecord[]
 
   @@map("license_types")
 }
@@ -318,6 +320,27 @@ model LicenseRegistryEntry {
   @@index([importBatchId, issueDate])
   @@index([issueDate, licenseType])
   @@map("license_registry_entries")
+}
+
+model LicenseRegistryRecord {
+  id               String   @id @default(uuid()) @db.Uuid
+  issueDate        DateTime @db.Date @map("issue_date")
+  licenseTypeId    String   @db.Uuid @map("license_type_id")
+  quantity         Int
+  organizationName String?  @map("organization_name")
+  recipientEmail   String?  @map("recipient_email")
+  issuedTo         String   @map("issued_to")
+  comment          String?
+  createdByUserId  String?  @db.Uuid @map("created_by_user_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  licenseType   LicenseType @relation(fields: [licenseTypeId], references: [id])
+  createdByUser User?       @relation("LicenseRegistryRecordCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@index([issueDate, licenseTypeId])
+  @@index([createdByUserId])
+  @@map("license_registry_records")
 }
 
 model SupportRequestType {

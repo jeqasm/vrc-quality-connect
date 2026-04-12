@@ -1,9 +1,25 @@
-import { IsDateString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDateString, IsInt, IsOptional, Max, Min } from 'class-validator';
 
 export class QueryLicenseRegistryDto {
+  @IsOptional()
   @IsDateString()
-  dateFrom!: string;
+  dateFrom?: string;
 
+  @IsOptional()
   @IsDateString()
-  dateTo!: string;
+  dateTo?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  offset?: number;
 }
