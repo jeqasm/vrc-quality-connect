@@ -26,6 +26,9 @@
 - `license-types`
 - `support-requests`
 - `support-request-types`
+- `auth`
+- `access-control`
+- `groups`
 - `integrations`
 
 На текущем этапе репозиторий зафиксирован как архитектурный scaffold. Полная бизнес-логика намеренно не реализуется до стабилизации структуры модулей и модели данных.
@@ -53,6 +56,7 @@
 - `docs/architecture/overview.md`
 - `docs/architecture/backend-structure.md`
 - `docs/architecture/frontend-structure.md`
+- `docs/architecture/access-control.md`
 - `docs/architecture/modules.md`
 - `docs/architecture/license-registry-import.md`
 - `docs/product/*`
@@ -60,6 +64,11 @@
 ## Базовые сущности каркаса
 
 - `User`
+- `AuthAccount`
+- `RegistrationInvite`
+- `AccessRole`
+- `AccessPermission`
+- `Group`
 - `Department`
 - `ActivityType`
 - `ActivityResult`
@@ -73,3 +82,5 @@
 
 - Модуль `licenses` умеет по кнопке обновления читать Google Sheets реестр лицензий через CSV export
 - Текущий сценарий импорта находится в `backend/src/modules/licenses`, сохраняет атомарные строки реестра в БД и уже после этого строит агрегированный результат для frontend
+- Подсистема доступа заложена через `auth`, `access-control` и `groups`: backend считает effective permissions, frontend скрывает страницы и вкладки по ответу `GET /auth/me`
+- Регистрация новых аккаунтов выполняется только по invite-ссылке, которую создает администратор в `Настройки -> Администрирование -> Пользователи`

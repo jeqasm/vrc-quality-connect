@@ -11,23 +11,128 @@ model User {
   id           String   @id @default(uuid())
   email        String   @unique
   fullName     String   @map("full_name")
-  role         String
   departmentId String   @map("department_id")
+  accessRoleId String   @map("access_role_id")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   department        Department         @relation(fields: [departmentId], references: [id])
+  accessRole        AccessRole         @relation(fields: [accessRoleId], references: [id])
+  authAccount       AuthAccount?
+  groupMemberships  GroupMembership[]
   activityRecords   ActivityRecord[]
   qaWeeklyReports   QaWeeklyReport[]
   licenseOperations LicenseOperation[]
   supportRequests   SupportRequest[]
 
   @@index([departmentId])
+  @@index([accessRoleId])
   @@map("users")
 }
 
+model AuthAccount {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @unique @map("user_id") @db.Uuid
+  email           String    @unique
+  passwordHash    String    @map("password_hash")
+  status          String
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  lastLoginAt     DateTime? @map("last_login_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions AuthSession[]
+  createdInvites RegistrationInvite[] @relation("RegistrationInviteCreator")
+
+  @@map("auth_accounts")
+}
+
+model RegistrationInvite {
+  id                   String     @id @default(uuid()) @db.Uuid
+  tokenHash            String     @unique @map("token_hash")
+  email                String?
+  departmentId         String     @map("department_id") @db.Uuid
+  accessRoleId         String     @map("access_role_id") @db.Uuid
+  createdByAccountId   String     @map("created_by_account_id") @db.Uuid
+  expiresAt            DateTime   @map("expires_at")
+  usedAt               DateTime?  @map("used_at")
+  createdAt            DateTime   @default(now()) @map("created_at")
+  updatedAt            DateTime   @updatedAt @map("updated_at")
+
+  department         Department   @relation(fields: [departmentId], references: [id])
+  accessRole         AccessRole   @relation(fields: [accessRoleId], references: [id])
+  createdByAccount   AuthAccount  @relation("RegistrationInviteCreator", fields: [createdByAccountId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@index([createdByAccountId, createdAt])
+  @@index([departmentId])
+  @@index([accessRoleId])
+  @@map("registration_invites")
+}
+
+model AuthSession {
+  id            String    @id @default(uuid())
+  authAccountId String    @map("auth_account_id")
+  tokenHash     String    @unique @map("token_hash")
+  expiresAt     DateTime  @map("expires_at")
+  revokedAt     DateTime? @map("revoked_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  authAccount AuthAccount @relation(fields: [authAccountId], references: [id], onDelete: Cascade)
+
+  @@index([authAccountId, expiresAt])
+  @@index([expiresAt])
+  @@map("auth_sessions")
+}
+
+model AccessRole {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  isSystem    Boolean  @default(true) @map("is_system")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  users           User[]
+  rolePermissions AccessRolePermission[]
+  registrationInvites RegistrationInvite[]
+
+  @@map("access_roles")
+}
+
+model AccessPermission {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  description String?
+  category    String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  roleAssignments  AccessRolePermission[]
+  groupAssignments GroupPermissionAssignment[]
+
+  @@index([category, code])
+  @@map("access_permissions")
+}
+
+model AccessRolePermission {
+  roleId       String   @map("role_id")
+  permissionId String   @map("permission_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  role       AccessRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission AccessPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("access_role_permissions")
+}
+
 model Department {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @db.Uuid
   code      String   @unique
   name      String
   isActive  Boolean  @default(true) @map("is_active")
@@ -35,10 +140,60 @@ model Department {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   users           User[]
+  groups          Group[]
+  registrationInvites RegistrationInvite[]
   activityRecords ActivityRecord[]
   qaWeeklyReports QaWeeklyReport[]
 
   @@map("departments")
+}
+
+model Group {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  name         String
+  description  String?
+  type         String
+  isActive     Boolean  @default(true) @map("is_active")
+  departmentId String?  @map("department_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  department            Department?                @relation(fields: [departmentId], references: [id])
+  memberships           GroupMembership[]
+  permissionAssignments GroupPermissionAssignment[]
+
+  @@index([type, isActive])
+  @@index([departmentId])
+  @@map("groups")
+}
+
+model GroupMembership {
+  id        String   @id @default(uuid())
+  groupId    String   @map("group_id")
+  userId     String   @map("user_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@map("group_memberships")
+}
+
+model GroupPermissionAssignment {
+  id           String   @id @default(uuid())
+  groupId      String   @map("group_id")
+  permissionId String   @map("permission_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  group      Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  permission AccessPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, permissionId])
+  @@index([permissionId])
+  @@map("group_permission_assignments")
 }
 
 model ActivityType {

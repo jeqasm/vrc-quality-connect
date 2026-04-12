@@ -1,0 +1,79 @@
+
+> vrc-quality-connect-backend@0.1.0 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m10:45:24[0m] Starting compilation in watch mode...
+
+[[90m10:45:26[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +18ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIntegrationsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCoreModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDepartmentsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicenseTypesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSupportRequestsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAccessControlModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mGroupsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityTypesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityResultsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mQaWeeklyReportsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLicensesModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthController {/api/health}:[39m[38;5;3m +5ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAccessControlController {/api/access-control}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/access-control/permissions, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/auth}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/register-by-invite, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/registration-invites/:inviteToken, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/registration-invites, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/registration-invites, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/me, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/me, PATCH} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/logout, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users/:userId, DELETE} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDepartmentsController {/api/departments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/departments, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mGroupsController {/api/groups}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/groups, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/groups, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/groups/:groupId/members, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/groups/:groupId/permissions, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityTypesController {/api/activity-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-types, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityResultsController {/api/activity-results}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-results, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRecordsController {/api/activity-records}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-records/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestsController {/api/support-requests}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-requests, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSupportRequestTypesController {/api/support-request-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/support-request-types/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportsController {/api/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/licenses, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/qa/weekly-summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/reports/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mQaWeeklyReportsController {/api/qa-weekly-reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/qa-weekly-reports, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/qa-weekly-reports, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/qa-weekly-reports/:id/submit, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesMetaController {/api/licenses}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/meta, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicensesRegistryController {/api/licenses/registry}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/licenses/registry/refresh, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLicenseTypesController {/api/license-types}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 27984  - [39m11.04.2026, 10:45:27 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/license-types/meta, GET} route[39m[38;5;3m +0ms[39m

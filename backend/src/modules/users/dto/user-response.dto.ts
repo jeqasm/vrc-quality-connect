@@ -4,10 +4,15 @@ class UserDepartmentDto {
   name!: string;
 }
 
+class UserAccessRoleDto {
+  code!: string;
+  name!: string;
+}
+
 export class UserResponseDto {
   id!: string;
   email!: string;
   fullName!: string;
-  role!: string;
+  accessRole!: UserAccessRoleDto;
   department!: UserDepartmentDto;
 }

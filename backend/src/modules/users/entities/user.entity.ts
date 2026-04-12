@@ -4,10 +4,15 @@ class UserDepartmentEntity {
   name!: string;
 }
 
+class UserAccessRoleEntity {
+  code!: string;
+  name!: string;
+}
+
 export class UserEntity {
   id!: string;
   email!: string;
   fullName!: string;
-  role!: string;
+  accessRole!: UserAccessRoleEntity;
   department!: UserDepartmentEntity;
 }

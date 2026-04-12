@@ -1,4 +1,5 @@
 import { env } from '../config/env';
+import { getStoredAccessToken } from '../../modules/auth/model/auth-storage';
 
 export class ApiError extends Error {
   constructor(
@@ -18,13 +19,20 @@ export async function apiClient<TResponse>(
     ...init,
     headers: {
       'Content-Type': 'application/json',
+      ...(getStoredAccessToken() ? { Authorization: `Bearer ${getStoredAccessToken()}` } : {}),
       ...init?.headers,
     },
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new ApiError(message || 'Request failed', response.status);
+    const rawMessage = await response.text();
+
+    try {
+      const parsedError = JSON.parse(rawMessage) as { message?: string };
+      throw new ApiError(parsedError.message || 'Request failed', response.status);
+    } catch {
+      throw new ApiError(rawMessage || 'Request failed', response.status);
+    }
   }
 
   if (response.status === 204) {

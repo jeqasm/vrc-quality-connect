@@ -9,6 +9,12 @@ export function getUsers(): Promise<UserOption[]> {
   return apiClient<UserOption[]>('/users');
 }
 
+export function deleteUser(userId: string): Promise<void> {
+  return apiClient<void>(`/users/${userId}`, {
+    method: 'DELETE',
+  });
+}
+
 export function getDepartments(): Promise<ReferenceOption[]> {
   return apiClient<ReferenceOption[]>('/departments');
 }

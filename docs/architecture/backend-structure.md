@@ -15,6 +15,9 @@
 - `activity-types`
 - `activity-results`
 - `activity-records`
+- `auth`
+- `access-control`
+- `groups`
 - `reports`
 - `licenses`
 - `license-types`

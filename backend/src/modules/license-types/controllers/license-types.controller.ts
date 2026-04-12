@@ -1,8 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 
+import { accessPermissionCodes } from '../../access-control/constants/access-permission-codes';
+import { RequirePermissions } from '../../auth/decorators/require-permissions.decorator';
+import { AuthSessionGuard } from '../../auth/guards/auth-session.guard';
+import { PermissionsGuard } from '../../auth/guards/permissions.guard';
+
+@UseGuards(AuthSessionGuard, PermissionsGuard)
 @Controller('license-types')
 export class LicenseTypesController {
   @Get('meta')
+  @RequirePermissions(accessPermissionCodes.licensesView)
   getMeta() {
     return {
       module: 'license-types',
@@ -10,4 +17,3 @@ export class LicenseTypesController {
     };
   }
 }
-

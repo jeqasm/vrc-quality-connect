@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import { hasPermission } from '../../../modules/access/model/access-check';
+import { accessPermissions } from '../../../modules/access/model/access-permissions';
+import { useAuth } from '../../../modules/auth/providers/auth-provider';
 import { getReportZone, ReportZoneKey } from '../../../modules/reports/model/report-zone';
 import { QaWeeklyReportPanel } from '../../../modules/reports/ui/qa-weekly-report-panel';
 import { LicenseReportPanel } from '../../../modules/reports/ui/license-report-panel';
@@ -9,17 +12,39 @@ import { DateRangePicker } from '../../../shared/ui/date-range/date-range-picker
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { TopBar } from '../../../shared/ui/top-bar/top-bar';
 
-const reportTabs: ReportZoneKey[] = ['qa', 'licenses', 'support', 'management'];
 const currentWeekDateRange = getCurrentWeekDateRange();
 
-function isReportZoneKey(value: string | null): value is ReportZoneKey {
-  return value !== null && reportTabs.includes(value as ReportZoneKey);
-}
-
 export function ReportsPage() {
+  const auth = useAuth();
+  const reportTabs: ReportZoneKey[] = [
+    hasPermission(auth.account?.permissions ?? [], accessPermissions.reportsQaView) ? 'qa' : null,
+    hasPermission(auth.account?.permissions ?? [], accessPermissions.reportsLicensesView)
+      ? 'licenses'
+      : null,
+    hasPermission(auth.account?.permissions ?? [], accessPermissions.reportsSupportView)
+      ? 'support'
+      : null,
+    hasPermission(auth.account?.permissions ?? [], accessPermissions.reportsManagementView)
+      ? 'management'
+      : null,
+  ].filter(Boolean) as ReportZoneKey[];
   const [searchParams, setSearchParams] = useSearchParams();
   const zoneFromSearch = searchParams.get('tab');
-  const zoneKey: ReportZoneKey = isReportZoneKey(zoneFromSearch) ? zoneFromSearch : reportTabs[0];
+  if (reportTabs.length === 0) {
+    return (
+      <div className="page-grid">
+        <EmptyState
+          title="No report tabs available"
+          message="Для текущего аккаунта доступ к вкладкам отчетности пока не назначен."
+        />
+      </div>
+    );
+  }
+
+  const zoneKey: ReportZoneKey =
+    zoneFromSearch !== null && reportTabs.includes(zoneFromSearch as ReportZoneKey)
+      ? (zoneFromSearch as ReportZoneKey)
+      : reportTabs[0];
   const zone = getReportZone(zoneKey);
   const [workspaceDateRange, setWorkspaceDateRange] = useState<DateRangeValue>(currentWeekDateRange);
   const [tabDateRanges, setTabDateRanges] = useState<Record<ReportZoneKey, DateRangeValue>>({

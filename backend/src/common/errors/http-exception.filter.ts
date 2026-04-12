@@ -8,6 +8,8 @@ import {
 import { Response } from 'express';
 
 import { ApplicationNotFoundError } from './application-not-found.error';
+import { AuthenticationFailedError } from './authentication-failed.error';
+import { PermissionDeniedError } from './permission-denied.error';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -18,6 +20,22 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (exception instanceof ApplicationNotFoundError) {
       response.status(HttpStatus.NOT_FOUND).json({
         statusCode: HttpStatus.NOT_FOUND,
+        message: exception.message,
+      });
+      return;
+    }
+
+    if (exception instanceof AuthenticationFailedError) {
+      response.status(HttpStatus.UNAUTHORIZED).json({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: exception.message,
+      });
+      return;
+    }
+
+    if (exception instanceof PermissionDeniedError) {
+      response.status(HttpStatus.FORBIDDEN).json({
+        statusCode: HttpStatus.FORBIDDEN,
         message: exception.message,
       });
       return;
@@ -34,4 +52,3 @@ export class HttpExceptionFilter implements ExceptionFilter {
     });
   }
 }
-

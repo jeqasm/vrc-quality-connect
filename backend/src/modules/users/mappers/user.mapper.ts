@@ -8,7 +8,10 @@ export class UserMapper {
       id: user.id,
       email: user.email,
       fullName: user.fullName,
-      role: user.role,
+      accessRole: {
+        code: user.accessRole.code,
+        name: user.accessRole.name,
+      },
       department: {
         id: user.department.id,
         code: user.department.code,
@@ -18,6 +21,12 @@ export class UserMapper {
   }
 
   static toResponse(entity: UserEntity): UserResponseDto {
-    return { ...entity };
+    return {
+      id: entity.id,
+      email: entity.email,
+      fullName: entity.fullName,
+      accessRole: { ...entity.accessRole },
+      department: { ...entity.department },
+    };
   }
 }

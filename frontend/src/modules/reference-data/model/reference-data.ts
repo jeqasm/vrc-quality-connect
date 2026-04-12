@@ -9,7 +9,10 @@ export type UserOption = {
   id: string;
   email: string;
   fullName: string;
-  role: string;
+  accessRole: {
+    code: string;
+    name: string;
+  };
   department: {
     id: string;
     code: string;
