@@ -17,6 +17,7 @@ import { QaWeeklyReportsModule } from './modules/qa-weekly-reports/qa-weekly-rep
 import { ReportsModule } from './modules/reports/reports.module';
 import { SupportRequestsModule } from './modules/support-requests/support-requests.module';
 import { SupportRequestTypesModule } from './modules/support-request-types/support-request-types.module';
+import { SupportWeeklyReportsModule } from './modules/support-weekly-reports/support-weekly-reports.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -40,6 +41,7 @@ import { PrismaModule } from './prisma/prisma.module';
     SupportRequestTypesModule,
     ReportsModule,
     QaWeeklyReportsModule,
+    SupportWeeklyReportsModule,
     LicensesModule,
     LicenseTypesModule,
     IntegrationsModule,

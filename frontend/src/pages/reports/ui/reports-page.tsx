@@ -7,6 +7,7 @@ import { useAuth } from '../../../modules/auth/providers/auth-provider';
 import { getReportZone, ReportZoneKey } from '../../../modules/reports/model/report-zone';
 import { QaWeeklyReportPanel } from '../../../modules/reports/ui/qa-weekly-report-panel';
 import { LicenseReportPanel } from '../../../modules/reports/ui/license-report-panel';
+import { SupportWeeklyReportPanel } from '../../../modules/reports/ui/support-weekly-report-panel';
 import { DateRangeValue, getCurrentWeekDateRange } from '../../../shared/lib/date-range';
 import { DateRangePicker } from '../../../shared/ui/date-range/date-range-picker';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
@@ -122,6 +123,8 @@ export function ReportsPage() {
             <LicenseReportPanel dateRange={activeTabDateRange} />
           ) : zoneKey === 'qa' ? (
             <QaWeeklyReportPanel dateRange={activeTabDateRange} />
+          ) : zoneKey === 'support' ? (
+            <SupportWeeklyReportPanel dateRange={activeTabDateRange} />
           ) : (
             <EmptyState
               title={`${zone.title} report will be added next`}

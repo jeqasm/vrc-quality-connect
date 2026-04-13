@@ -18,17 +18,38 @@ export class LicenseRegistryRecordsService {
     const hasFullPeriod = Boolean(dto.dateFrom && dto.dateTo);
     const dateFrom = hasFullPeriod ? dto.dateFrom : undefined;
     const dateTo = hasFullPeriod ? dto.dateTo : undefined;
+    const search = dto.search?.trim() || undefined;
+    const licenseTypeId = dto.licenseTypeId?.trim() || undefined;
+    const sortBy = dto.sortBy ?? 'issueDate';
+    const sortDirection = dto.sortDirection ?? 'desc';
     const [rows, summary] = await Promise.all([
-      this.licenseRegistryRecordsRepository.findManyByPeriod(dateFrom, dateTo, {
-        limit,
-        offset,
+      this.licenseRegistryRecordsRepository.findManyByPeriod(
+        dateFrom,
+        dateTo,
+        {
+          search,
+          licenseTypeId,
+          sortBy,
+          sortDirection,
+        },
+        {
+          limit,
+          offset,
+        },
+      ),
+      this.licenseRegistryRecordsRepository.summarizeByPeriod(dateFrom, dateTo, {
+        search,
+        licenseTypeId,
       }),
-      this.licenseRegistryRecordsRepository.summarizeByPeriod(dateFrom, dateTo),
     ]);
 
     return {
       dateFrom: dateFrom ?? '',
       dateTo: dateTo ?? '',
+      search: search ?? '',
+      licenseTypeId: licenseTypeId ?? '',
+      sortBy,
+      sortDirection,
       limit,
       offset,
       totalIssuedLicenses: summary.totalIssuedLicenses,

@@ -8,6 +8,8 @@ import { LicenseReportResponseDto } from '../dto/license-report-response.dto';
 import { QaWeeklyReportResponseDto } from '../dto/qa-weekly-report-response.dto';
 import { QueryLicenseReportDto } from '../dto/query-license-report.dto';
 import { QueryQaWeeklyReportDto } from '../dto/query-qa-weekly-report.dto';
+import { QuerySupportWeeklyReportDto } from '../dto/query-support-weekly-report.dto';
+import { SupportWeeklyReportResponseDto } from '../dto/support-weekly-report-response.dto';
 import { SummaryResponseDto } from '../dto/summary-response.dto';
 import { ReportsService } from '../services/reports.service';
 
@@ -30,6 +32,14 @@ export class ReportsController {
     @Query() dto: QueryQaWeeklyReportDto,
   ): Promise<QaWeeklyReportResponseDto> {
     return this.reportsService.getQaWeeklyReport(dto);
+  }
+
+  @Get('support/weekly-summary')
+  @RequirePermissions(accessPermissionCodes.reportsSupportView)
+  getSupportWeeklyReport(
+    @Query() dto: QuerySupportWeeklyReportDto,
+  ): Promise<SupportWeeklyReportResponseDto> {
+    return this.reportsService.getSupportWeeklyReport(dto);
   }
 
   @Get('summary')

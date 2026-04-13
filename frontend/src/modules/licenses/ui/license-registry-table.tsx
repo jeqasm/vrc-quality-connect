@@ -1,5 +1,5 @@
 import { Button } from '../../../shared/ui/button/button';
-import { LicenseRegistryRecord, LicenseTypeOption } from '../model/license-registry';
+import { LicenseRegistryRecord, LicenseRegistrySortBy, LicenseTypeOption, SortDirection } from '../model/license-registry';
 
 type LicenseRegistryTableProps = {
   rows: LicenseRegistryRecord[];
@@ -25,20 +25,48 @@ type LicenseRegistryTableProps = {
   onSubmitCreateRow: () => void;
   onEdit: (record: LicenseRegistryRecord) => void;
   onDelete: (record: LicenseRegistryRecord) => void;
+  sortBy: LicenseRegistrySortBy;
+  sortDirection: SortDirection;
+  onSort: (sortBy: LicenseRegistrySortBy) => void;
 };
 
 export function LicenseRegistryTable(props: LicenseRegistryTableProps) {
+  function renderSortIndicator(column: LicenseRegistrySortBy) {
+    if (props.sortBy !== column) {
+      return <span className="license-registry-sort-indicator">↕</span>;
+    }
+
+    return (
+      <span className="license-registry-sort-indicator">
+        {props.sortDirection === 'asc' ? '↑' : '↓'}
+      </span>
+    );
+  }
+
+  function renderSortableHeader(label: string, column: LicenseRegistrySortBy) {
+    return (
+      <button
+        type="button"
+        className={`license-registry-sort-button${props.sortBy === column ? ' license-registry-sort-button-active' : ''}`}
+        onClick={() => props.onSort(column)}
+      >
+        <span>{label}</span>
+        {renderSortIndicator(column)}
+      </button>
+    );
+  }
+
   return (
     <div className="table-wrapper license-sheet-table-wrapper">
       <table className="data-table license-registry-table">
         <thead>
           <tr>
-            <th>Дата</th>
-            <th>Тип лицензии</th>
-            <th>Количество</th>
-            <th>Кому выдано</th>
-            <th>Организация</th>
-            <th>Email</th>
+            <th>{renderSortableHeader('Дата', 'issueDate')}</th>
+            <th>{renderSortableHeader('Тип лицензии', 'licenseType')}</th>
+            <th>{renderSortableHeader('Количество', 'quantity')}</th>
+            <th>{renderSortableHeader('Кому выдано', 'issuedTo')}</th>
+            <th>{renderSortableHeader('Организация', 'organizationName')}</th>
+            <th>{renderSortableHeader('Email', 'recipientEmail')}</th>
             <th>Комментарий</th>
             <th>Действия</th>
           </tr>

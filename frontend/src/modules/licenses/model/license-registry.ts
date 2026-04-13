@@ -4,6 +4,16 @@ export type LicenseTypeOption = {
   name: string;
 };
 
+export type LicenseRegistrySortBy =
+  | 'issueDate'
+  | 'licenseType'
+  | 'quantity'
+  | 'issuedTo'
+  | 'organizationName'
+  | 'recipientEmail';
+
+export type SortDirection = 'asc' | 'desc';
+
 export type LicenseRegistryRecord = {
   id: string;
   issueDate: string;
@@ -20,6 +30,10 @@ export type LicenseRegistryRecord = {
 export type LicenseRegistrySnapshot = {
   dateFrom: string;
   dateTo: string;
+  search: string;
+  licenseTypeId: string;
+  sortBy: LicenseRegistrySortBy;
+  sortDirection: SortDirection;
   limit: number;
   offset: number;
   totalIssuedLicenses: number;

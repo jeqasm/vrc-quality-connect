@@ -15,7 +15,6 @@ export function AppShell() {
       permission: accessPermissions.activityRecordsView,
     },
     { to: '/reports', label: 'Отчеты', permission: accessPermissions.reportsView },
-    { to: '/licenses', label: 'Лицензии', permission: accessPermissions.licensesView },
     {
       to: '/support-requests',
       label: 'Поддержка',

@@ -6,19 +6,22 @@ import {
   ActivityRecordZoneKey,
   getActivityRecordZone,
 } from '../../../modules/activity-records/model/activity-record-zone';
-import {
-  getLicenseRegistrySnapshot,
-} from '../../../modules/licenses/api/licenses-api';
+import { hasPermission } from '../../../modules/access/model/access-check';
+import { accessPermissions } from '../../../modules/access/model/access-permissions';
+import { useAuth } from '../../../modules/auth/providers/auth-provider';
+import { LicensesRegistryWorkspace } from '../../../modules/licenses/ui/licenses-registry-workspace';
 import {
   getQaWeeklyReport,
   saveQaWeeklyReport,
   submitQaWeeklyReport,
 } from '../../../modules/qa-weekly-reports/api/qa-weekly-reports-api';
+import { SupportWeeklyReportWorkspace } from '../../../modules/support-weekly-reports/ui/support-weekly-report-workspace';
 import { getUsers } from '../../../modules/reference-data/api/reference-data-api';
 import { UserOption } from '../../../modules/reference-data/model/reference-data';
 import { DateRangePicker } from '../../../shared/ui/date-range/date-range-picker';
 import { Button } from '../../../shared/ui/button/button';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
+import { Select } from '../../../shared/ui/select/select';
 import { getCurrentWeekDateRange } from '../../../shared/lib/date-range';
 import { TopBar } from '../../../shared/ui/top-bar/top-bar';
 
@@ -80,7 +83,6 @@ type ActivityRecordsPageState = {
     qaTestedTaskRows: QaBugFormState[];
     qaNewTaskRows: QaBugFormState[];
     qaOtherTaskRows: QaOtherTaskRowState[];
-    qaLicenseRows: QaLicenseRowState[];
   };
 };
 
@@ -130,7 +132,6 @@ function buildDefaultActivityRecordsPageState(): ActivityRecordsPageState {
       qaTestedTaskRows: [createQaBugRow()],
       qaNewTaskRows: [createQaBugRow()],
       qaOtherTaskRows: [createQaOtherTaskRow()],
-      qaLicenseRows: [createQaLicenseRow()],
     },
   };
 }
@@ -173,9 +174,6 @@ function readStoredActivityRecordsPageState(): ActivityRecordsPageState {
         qaOtherTaskRows: parsedState.rows?.qaOtherTaskRows?.length
           ? parsedState.rows.qaOtherTaskRows
           : defaultState.rows.qaOtherTaskRows,
-        qaLicenseRows: parsedState.rows?.qaLicenseRows?.length
-          ? parsedState.rows.qaLicenseRows
-          : defaultState.rows.qaLicenseRows,
       },
     };
   } catch {
@@ -236,6 +234,10 @@ function getQaUsers(users: UserOption[]): UserOption[] {
   return users.filter((user) => user.department.code === 'qa-testing');
 }
 
+function formatQaUserOption(user: UserOption): string {
+  return user.fullName;
+}
+
 const bugTypeOptions = [
   { value: 'low', label: 'Low' },
   { value: 'normal', label: 'Normal' },
@@ -250,6 +252,7 @@ const bugStatusOptions = [
 ];
 
 export function ActivityRecordsPage() {
+  const auth = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const zoneFromSearch = searchParams.get('tab');
   const zoneKey: ActivityRecordZoneKey = isActivityRecordZoneKey(zoneFromSearch)
@@ -297,20 +300,31 @@ export function ActivityRecordsPage() {
   const [qaOtherTaskRows, setQaOtherTaskRows] = useState<QaOtherTaskRowState[]>(
     restoredPageState.rows.qaOtherTaskRows,
   );
-  const [qaLicenseRows, setQaLicenseRows] = useState<QaLicenseRowState[]>(
-    restoredPageState.rows.qaLicenseRows,
-  );
   const [qaSaveMessage, setQaSaveMessage] = useState<string | null>(null);
-  const [hasStoredLicenseRows] = useState(() => hasLicenseDraft(restoredPageState.rows.qaLicenseRows));
-  const qaUsers = getQaUsers(usersQuery.data ?? []);
+  const currentUser = auth.account?.user;
+  const canManageQaReports = hasPermission(
+    auth.account?.permissions ?? [],
+    accessPermissions.usersManage,
+  );
+  const allUsers = usersQuery.data ?? [];
+  const currentAccountUser = currentUser
+    ? allUsers.find((user) => user.id === currentUser.id) ?? null
+    : null;
+  const qaUsers = canManageQaReports
+    ? allUsers
+    : currentAccountUser
+      ? [currentAccountUser]
+      : getQaUsers(allUsers);
 
   useEffect(() => {
     if (selectedQaUserId || qaUsers.length === 0) {
       return;
     }
 
-    setSelectedQaUserId(qaUsers[0].id);
-  }, [qaUsers, selectedQaUserId]);
+    const preferredUser =
+      (currentUser ? qaUsers.find((user) => user.id === currentUser.id) : null) ?? qaUsers[0];
+    setSelectedQaUserId(preferredUser.id);
+  }, [currentUser, qaUsers, selectedQaUserId]);
 
   useEffect(() => {
     setQaSaveMessage(null);
@@ -324,12 +338,6 @@ export function ActivityRecordsPage() {
         weekStart: dateRange.dateFrom,
       }),
     enabled: zoneKey === 'qa' && Boolean(selectedQaUserId),
-  });
-
-  const licenseSnapshotQuery = useQuery({
-    queryKey: ['license-registry-snapshot', dateRange.dateFrom, dateRange.dateTo],
-    queryFn: () => getLicenseRegistrySnapshot(dateRange),
-    enabled: zoneKey === 'licenses',
   });
 
   const qaSaveMutation = useMutation({
@@ -347,27 +355,6 @@ export function ActivityRecordsPage() {
       void qaWeeklyReportQuery.refetch();
     },
   });
-
-  useEffect(() => {
-    if (!licenseSnapshotQuery.data) {
-      return;
-    }
-
-    if (hasStoredLicenseRows) {
-      return;
-    }
-
-      setQaLicenseRows(
-      licenseSnapshotQuery.data.rows.length > 0
-        ? licenseSnapshotQuery.data.rows.map((row) => ({
-            id: Math.random().toString(36).slice(2, 10),
-            licenseType: row.licenseType.name,
-            quantity: `${row.quantity}`,
-            issuedTo: row.issuedTo,
-          }))
-      : [createQaLicenseRow()],
-    );
-  }, [hasStoredLicenseRows, licenseSnapshotQuery.data]);
 
   useEffect(() => {
     const report = qaWeeklyReportQuery.data;
@@ -447,7 +434,6 @@ export function ActivityRecordsPage() {
         qaTestedTaskRows,
         qaNewTaskRows,
         qaOtherTaskRows,
-        qaLicenseRows,
       },
     };
 
@@ -468,7 +454,6 @@ export function ActivityRecordsPage() {
     qaTestedTaskRows,
     qaNewTaskRows,
     qaOtherTaskRows,
-    qaLicenseRows,
   ]);
 
   function updateQaBugField(
@@ -491,30 +476,6 @@ export function ActivityRecordsPage() {
     rowId: string,
   ) {
     rowsSetter((current) => {
-      if (current.length === 1) {
-        return current;
-      }
-
-      return current.filter((row) => row.id !== rowId);
-    });
-  }
-
-  function updateQaLicenseField(
-    rowId: string,
-    name: keyof Omit<QaLicenseRowState, 'id'>,
-    value: string,
-  ) {
-    setQaLicenseRows((current) =>
-      current.map((row) => (row.id === rowId ? { ...row, [name]: value } : row)),
-    );
-  }
-
-  function addQaLicenseRow() {
-    setQaLicenseRows((current) => [...current, createQaLicenseRow()]);
-  }
-
-  function removeQaLicenseRow(rowId: string) {
-    setQaLicenseRows((current) => {
       if (current.length === 1) {
         return current;
       }
@@ -637,42 +598,6 @@ export function ActivityRecordsPage() {
       <TopBar
         title="Activity records workspace"
         subtitle={zone.subtitle}
-        action={
-          zone.key === 'qa' ? (
-            <>
-              <select
-                className="field-select"
-                value={selectedQaUserId}
-                onChange={(event) => setSelectedQaUserId(event.target.value)}
-                disabled={usersQuery.isLoading || isQaBusy}
-              >
-                <option value="" disabled hidden={selectedQaUserId !== ''}>
-                  Выберите QA-сотрудника
-                </option>
-                {qaUsers.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.fullName}
-                  </option>
-                ))}
-              </select>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => void handleSaveQaWeeklyReport()}
-                disabled={!selectedQaUserId || isQaLocked || isQaBusy}
-              >
-                {qaSaveMutation.isPending ? 'Сохранение...' : 'Сохранить отчет'}
-              </Button>
-              <Button
-                type="button"
-                onClick={() => void handleSubmitQaWeeklyReport()}
-                disabled={!qaWeeklyReportQuery.data?.id || isQaLocked || isQaBusy}
-              >
-                {qaSubmitMutation.isPending ? 'Отправка...' : 'Отправить'}
-              </Button>
-            </>
-          ) : null
-        }
       />
 
       <section className="zone-tabs-shell" aria-label="Activity zones">
@@ -696,20 +621,63 @@ export function ActivityRecordsPage() {
         </div>
       </section>
 
-      <section>
-        <div className="content-card">
-          <DateRangePicker
-            variant="panel"
-            value={dateRange}
-            onChange={setDateRange}
-          />
-        </div>
-      </section>
+      {zone.key !== 'licenses' ? (
+        <section>
+          <div className="content-card">
+            <DateRangePicker
+              variant="panel"
+              value={dateRange}
+              onChange={setDateRange}
+            />
+          </div>
+        </section>
+      ) : null}
 
       <section>
         <div className="content-card">
           {zone.key === 'qa' ? (
             <div className="page-grid">
+              <div className="reports-toolbar">
+                <div className="reports-toolbar-copy">
+                  <h2 className="collapsible-title">QA weekly input</h2>
+                  <p className="collapsible-subtitle">
+                    Текущая неделя: {dateRange.dateFrom} - {dateRange.dateTo}
+                  </p>
+                </div>
+                <div className="reports-toolbar-actions">
+                  {qaUsers.length > 0 ? (
+                    <div className="qa-topbar-user-filter">
+                      <span className="qa-topbar-user-label">Сотрудник</span>
+                      <Select
+                        className="qa-topbar-user-select"
+                        value={selectedQaUserId}
+                        onChange={setSelectedQaUserId}
+                        disabled={isQaBusy}
+                        options={qaUsers.map((user) => ({
+                          value: user.id,
+                          label: formatQaUserOption(user),
+                        }))}
+                      />
+                    </div>
+                  ) : null}
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => void handleSaveQaWeeklyReport()}
+                    disabled={!selectedQaUserId || isQaLocked || isQaBusy}
+                  >
+                    {qaSaveMutation.isPending ? 'Сохранение...' : 'Сохранить отчет'}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => void handleSubmitQaWeeklyReport()}
+                    disabled={!qaWeeklyReportQuery.data?.id || isQaLocked || isQaBusy}
+                  >
+                    {qaSubmitMutation.isPending ? 'Отправка...' : 'Отправить'}
+                  </Button>
+                </div>
+              </div>
+
               {usersQuery.isError ? (
                 <div className="form-inline-notice">
                   Не удалось загрузить список QA-сотрудников: {usersQuery.error.message}
@@ -905,49 +873,9 @@ export function ActivityRecordsPage() {
               </section>
             </div>
           ) : zone.key === 'licenses' ? (
-            <div className="page-grid">
-              <section className="collapsible-section">
-                <button
-                  type="button"
-                  className="collapsible-trigger"
-                  onClick={() => setIsLicensesSectionOpen((current) => !current)}
-                >
-                  <div>
-                    <h2 className="collapsible-title">Выдача лицензий</h2>
-                    <p className="collapsible-subtitle">
-                      Здесь фиксируется выдача лицензий за текущую неделю.
-                    </p>
-                  </div>
-                  <span className="collapsible-indicator">
-                    {isLicensesSectionOpen ? '−' : '+'}
-                  </span>
-                </button>
-
-                {isLicensesSectionOpen ? (
-                  <div className="collapsible-content">
-                    <div className="qa-license-import-toolbar">
-                      <div className="qa-license-import-meta">
-                        За выбранный период загружено {licenseSnapshotQuery.data?.totalRecords ?? 0}{' '}
-                        записей на {licenseSnapshotQuery.data?.totalIssuedLicenses ?? 0} лицензий.
-                      </div>
-                    </div>
-
-                    {licenseSnapshotQuery.isError ? (
-                      <div className="form-inline-notice">
-                        Не удалось загрузить сохраненные данные: {licenseSnapshotQuery.error.message}
-                      </div>
-                    ) : null}
-
-                    <QaLicensesTable
-                      rows={qaLicenseRows}
-                      onChangeField={updateQaLicenseField}
-                      onAddRow={addQaLicenseRow}
-                      onRemoveRow={removeQaLicenseRow}
-                    />
-                  </div>
-                ) : null}
-              </section>
-            </div>
+            <LicensesRegistryWorkspace />
+          ) : zone.key === 'support' ? (
+            <SupportWeeklyReportWorkspace dateRange={dateRange} />
           ) : (
             <EmptyState
               title={`${zone.title} form will be added next`}

@@ -4,6 +4,8 @@ import { LicenseReportResponseDto } from '../dto/license-report-response.dto';
 import { QaWeeklyReportResponseDto } from '../dto/qa-weekly-report-response.dto';
 import { QueryLicenseReportDto } from '../dto/query-license-report.dto';
 import { QueryQaWeeklyReportDto } from '../dto/query-qa-weekly-report.dto';
+import { QuerySupportWeeklyReportDto } from '../dto/query-support-weekly-report.dto';
+import { SupportWeeklyReportResponseDto } from '../dto/support-weekly-report-response.dto';
 import { SummaryResponseDto } from '../dto/summary-response.dto';
 import { ReportsRepository } from '../repositories/reports.repository';
 
@@ -66,6 +68,48 @@ export class ReportsService {
       testedTasks,
       newTasks,
       otherTasks,
+    };
+  }
+
+  async getSupportWeeklyReport(
+    dto: QuerySupportWeeklyReportDto,
+  ): Promise<SupportWeeklyReportResponseDto> {
+    const [totals, projectItems, otherTaskItems, categoryItems, categoryHours] = await Promise.all([
+      this.reportsRepository.aggregateSupportWeeklyTotals(dto.dateFrom, dto.dateTo),
+      this.reportsRepository.listSupportWeeklyProjectItems(dto.dateFrom, dto.dateTo),
+      this.reportsRepository.listSupportWeeklyOtherTaskItems(dto.dateFrom, dto.dateTo),
+      this.reportsRepository.listSupportWeeklyCategoryItems(dto.dateFrom, dto.dateTo),
+      this.reportsRepository.groupSupportWeeklyCategoryMinutes(dto.dateFrom, dto.dateTo),
+    ]);
+
+    const totalCategoryHours = this.toHours(
+      categoryHours.reduce((sum, item) => sum + item.durationMinutes, 0),
+    );
+
+    return {
+      dateFrom: dto.dateFrom,
+      dateTo: dto.dateTo,
+      totals: {
+        totalProjects: totals.totalProjects,
+        inProgressProjects: totals.inProgressProjects,
+        inReviewProjects: totals.inReviewProjects,
+        completedProjects: totals.completedProjects,
+        cancelledProjects: totals.cancelledProjects,
+        totalOtherTasks: totals.totalOtherTasks,
+        totalCategoryHours,
+      },
+      projectItems,
+      otherTaskItems,
+      categoryItems,
+      categoryHours: categoryHours.map((item) => ({
+        categoryName: item.categoryName,
+        durationMinutes: item.durationMinutes,
+        hours: this.toHours(item.durationMinutes),
+        percentage:
+          totalCategoryHours > 0
+            ? Math.round((this.toHours(item.durationMinutes) / totalCategoryHours) * 1000) / 10
+            : 0,
+      })),
     };
   }
 

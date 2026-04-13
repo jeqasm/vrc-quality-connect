@@ -1,9 +1,19 @@
 import { apiClient } from '../../../shared/api/api-client';
-import { LicenseRegistryRecord, LicenseRegistrySnapshot, LicensesMeta } from '../model/license-registry';
+import {
+  LicenseRegistryRecord,
+  LicenseRegistrySnapshot,
+  LicenseRegistrySortBy,
+  LicensesMeta,
+  SortDirection,
+} from '../model/license-registry';
 
 type LicenseRegistryPeriodPayload = {
   dateFrom?: string;
   dateTo?: string;
+  search?: string;
+  licenseTypeId?: string;
+  sortBy?: LicenseRegistrySortBy;
+  sortDirection?: SortDirection;
   limit?: number;
   offset?: number;
 };
@@ -19,6 +29,22 @@ export function getLicenseRegistrySnapshot(
 
   if (payload.dateTo) {
     searchParams.set('dateTo', payload.dateTo);
+  }
+
+  if (payload.search) {
+    searchParams.set('search', payload.search);
+  }
+
+  if (payload.licenseTypeId) {
+    searchParams.set('licenseTypeId', payload.licenseTypeId);
+  }
+
+  if (payload.sortBy) {
+    searchParams.set('sortBy', payload.sortBy);
+  }
+
+  if (payload.sortDirection) {
+    searchParams.set('sortDirection', payload.sortDirection);
   }
 
   if (payload.limit !== undefined) {

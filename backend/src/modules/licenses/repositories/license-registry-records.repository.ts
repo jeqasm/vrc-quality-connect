@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../../prisma/prisma.service';
+import { LicenseRegistrySortBy, SortDirection } from '../dto/query-license-registry.dto';
 
 export type LicenseRegistryRecordWithRelations = Prisma.LicenseRegistryRecordGetPayload<{
   include: {
@@ -16,6 +17,12 @@ export class LicenseRegistryRecordsRepository {
   findManyByPeriod(
     dateFrom?: string,
     dateTo?: string,
+    filters?: {
+      search?: string;
+      licenseTypeId?: string;
+      sortBy?: LicenseRegistrySortBy;
+      sortDirection?: SortDirection;
+    },
     pagination?: {
       limit?: number;
       offset?: number;
@@ -31,15 +38,48 @@ export class LicenseRegistryRecordsRepository {
       issueDateFilter.lte = new Date(`${dateTo}T00:00:00.000Z`);
     }
 
+    const where: Prisma.LicenseRegistryRecordWhereInput = {};
+
+    if (Object.keys(issueDateFilter).length > 0) {
+      where.issueDate = issueDateFilter;
+    }
+
+    if (filters?.licenseTypeId) {
+      where.licenseTypeId = filters.licenseTypeId;
+    }
+
+    if (filters?.search) {
+      where.OR = [
+        {
+          issuedTo: {
+            contains: filters.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          recipientEmail: {
+            contains: filters.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          organizationName: {
+            contains: filters.search,
+            mode: 'insensitive',
+          },
+        },
+      ];
+    }
+
+    const sortDirection = filters?.sortDirection ?? 'desc';
+    const orderBy = this.buildOrderBy(filters?.sortBy, sortDirection);
+
     return this.prisma.licenseRegistryRecord.findMany({
-      where: Object.keys(issueDateFilter).length > 0 ? { issueDate: issueDateFilter } : undefined,
+      where: Object.keys(where).length > 0 ? where : undefined,
       include: {
         licenseType: true,
       },
-      orderBy: [
-        { issueDate: 'desc' },
-        { createdAt: 'desc' },
-      ],
+      orderBy,
       take: pagination?.limit,
       skip: pagination?.offset,
     });
@@ -117,7 +157,14 @@ export class LicenseRegistryRecordsRepository {
     });
   }
 
-  async summarizeByPeriod(dateFrom?: string, dateTo?: string): Promise<{
+  async summarizeByPeriod(
+    dateFrom?: string,
+    dateTo?: string,
+    filters?: {
+      search?: string;
+      licenseTypeId?: string;
+    },
+  ): Promise<{
     totalIssuedLicenses: number;
     totalRecords: number;
     uniqueRecipients: number;
@@ -131,6 +178,21 @@ export class LicenseRegistryRecordsRepository {
 
     if (dateTo) {
       whereClauses.push(Prisma.sql`issue_date <= ${dateTo}::date`);
+    }
+
+    if (filters?.licenseTypeId) {
+      whereClauses.push(Prisma.sql`license_type_id = ${filters.licenseTypeId}`);
+    }
+
+    if (filters?.search) {
+      const searchPattern = `%${filters.search}%`;
+      whereClauses.push(
+        Prisma.sql`(
+          issued_to ILIKE ${searchPattern}
+          OR recipient_email ILIKE ${searchPattern}
+          OR organization_name ILIKE ${searchPattern}
+        )`,
+      );
     }
 
     const whereSql =
@@ -168,5 +230,49 @@ export class LicenseRegistryRecordsRepository {
       uniqueRecipients: Number(row.uniqueRecipients ?? 0),
       uniqueOrganizations: Number(row.uniqueOrganizations ?? 0),
     };
+  }
+
+  private buildOrderBy(
+    sortBy: LicenseRegistrySortBy | undefined,
+    sortDirection: SortDirection,
+  ): Prisma.LicenseRegistryRecordOrderByWithRelationInput[] {
+    switch (sortBy) {
+      case 'licenseType':
+        return [
+          { licenseType: { name: sortDirection } },
+          { issueDate: 'desc' },
+          { createdAt: 'desc' },
+        ];
+      case 'quantity':
+        return [
+          { quantity: sortDirection },
+          { issueDate: 'desc' },
+          { createdAt: 'desc' },
+        ];
+      case 'issuedTo':
+        return [
+          { issuedTo: sortDirection },
+          { issueDate: 'desc' },
+          { createdAt: 'desc' },
+        ];
+      case 'organizationName':
+        return [
+          { organizationName: sortDirection },
+          { issueDate: 'desc' },
+          { createdAt: 'desc' },
+        ];
+      case 'recipientEmail':
+        return [
+          { recipientEmail: sortDirection },
+          { issueDate: 'desc' },
+          { createdAt: 'desc' },
+        ];
+      case 'issueDate':
+      default:
+        return [
+          { issueDate: sortDirection },
+          { createdAt: 'desc' },
+        ];
+    }
   }
 }
