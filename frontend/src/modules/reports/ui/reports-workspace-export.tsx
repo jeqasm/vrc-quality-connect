@@ -21,6 +21,7 @@ type ReportsWorkspaceExportProps = {
   dateRange: DateRangeValue;
   bundle: ReportsExportBundle;
   sectionRefs: {
+    coverSectionRef: RefObject<HTMLDivElement | null>;
     licenseSectionRef: RefObject<HTMLDivElement | null>;
     qaSectionRef: RefObject<HTMLDivElement | null>;
     supportSectionRef: RefObject<HTMLDivElement | null>;
@@ -30,7 +31,7 @@ type ReportsWorkspaceExportProps = {
 };
 
 type DepartmentHoursSummary = {
-  departmentCode: 'licenses' | 'qa' | 'support' | 'management';
+  departmentCode: 'qa' | 'support' | 'management';
   departmentName: string;
   totalHours: number;
   employees: Array<{
@@ -55,18 +56,87 @@ export function ReportsWorkspaceExport(props: ReportsWorkspaceExportProps) {
         pointerEvents: 'none',
       }}
     >
-      <div ref={props.sectionRefs.licenseSectionRef}>
-        <section className="content-card report-export-header">
-          <div className="section-heading">
-            <h2>Сводный экспорт отчетов</h2>
-          </div>
-          <div className="report-export-meta">
-            <div className="pill">
-              Период: {formatDateRange(props.dateRange.dateFrom, props.dateRange.dateTo)}
+      <div ref={props.sectionRefs.coverSectionRef}>
+        <section className="report-cover-sheet">
+          <div className="report-cover-top">
+            <div className="report-cover-brand">
+              <div className="report-cover-brand-mark">VRC</div>
+              <div className="report-cover-brand-copy">
+                <div className="report-cover-brand-title">Quality Connect</div>
+                <div className="report-cover-brand-subtitle">Operations reporting package</div>
+              </div>
             </div>
-            <div className="pill pill-neutral">Порядок: Licenses → QA → Technical Support → Management</div>
+            <div className="report-cover-top-line" />
+          </div>
+
+          <div className="report-cover-body">
+            <div className="report-cover-kicker">Weekly reporting export</div>
+            <h1 className="report-cover-title">Сводный пакет отчетов</h1>
+            <p className="report-cover-description">
+              Консолидированный экспорт операционных данных по направлениям Licenses, QA, Technical Support и
+              Management.
+            </p>
+
+            <div className="report-cover-meta-grid">
+              <div className="report-cover-meta-card">
+                <span className="report-cover-meta-label">Период</span>
+                <strong className="report-cover-meta-value">
+                  {formatDateRange(props.dateRange.dateFrom, props.dateRange.dateTo)}
+                </strong>
+              </div>
+            </div>
+
+            <div className="report-cover-section-list">
+              <div className="report-cover-section-item">
+                <span className="report-cover-section-index">01</span>
+                <div>
+                  <div className="report-cover-section-title">Licenses</div>
+                  <div className="report-cover-section-text">Сводка выдачи, распределение по типам и динамика по датам</div>
+                </div>
+              </div>
+              <div className="report-cover-section-item">
+                <span className="report-cover-section-index">02</span>
+                <div>
+                  <div className="report-cover-section-title">QA</div>
+                  <div className="report-cover-section-text">Баги, задачи, ретест и аналитика по критичности</div>
+                </div>
+              </div>
+              <div className="report-cover-section-item">
+                <span className="report-cover-section-index">03</span>
+                <div>
+                  <div className="report-cover-section-title">Technical Support</div>
+                  <div className="report-cover-section-text">Проектная работа, категории поддержки и трудозатраты</div>
+                </div>
+              </div>
+              <div className="report-cover-section-item">
+                <span className="report-cover-section-index">04</span>
+                <div>
+                  <div className="report-cover-section-title">Management</div>
+                  <div className="report-cover-section-text">Проекты, управленческие категории и распределение часов</div>
+                </div>
+              </div>
+              <div className="report-cover-section-item">
+                <span className="report-cover-section-index">05</span>
+                <div>
+                  <div className="report-cover-section-title">Summary</div>
+                  <div className="report-cover-section-text">Итоговая сводка часов по отделам и сотрудникам</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="report-cover-footer">
+            <div className="report-cover-watermark">REPORTS</div>
           </div>
         </section>
+      </div>
+
+      <div ref={props.sectionRefs.licenseSectionRef}>
+        <ExportSectionHeading
+          sectionCode="01"
+          title="Licenses"
+          subtitle="Отчет по лицензиям"
+        />
         <LicenseReportPanel
           dateRange={props.dateRange}
           reportData={props.bundle.licenseReport}
@@ -75,6 +145,11 @@ export function ReportsWorkspaceExport(props: ReportsWorkspaceExportProps) {
       </div>
 
       <div ref={props.sectionRefs.qaSectionRef}>
+        <ExportSectionHeading
+          sectionCode="02"
+          title="QA"
+          subtitle="QA weekly report"
+        />
         <QaWeeklyReportPanel
           dateRange={props.dateRange}
           reportData={props.bundle.qaReport}
@@ -83,6 +158,11 @@ export function ReportsWorkspaceExport(props: ReportsWorkspaceExportProps) {
       </div>
 
       <div ref={props.sectionRefs.supportSectionRef}>
+        <ExportSectionHeading
+          sectionCode="03"
+          title="Technical Support"
+          subtitle="Support weekly report"
+        />
         <SupportWeeklyReportPanel
           dateRange={props.dateRange}
           reportData={props.bundle.supportReport}
@@ -91,6 +171,11 @@ export function ReportsWorkspaceExport(props: ReportsWorkspaceExportProps) {
       </div>
 
       <div ref={props.sectionRefs.managementSectionRef}>
+        <ExportSectionHeading
+          sectionCode="04"
+          title="Management"
+          subtitle="Management weekly report"
+        />
         <ManagementWeeklyReportPanel
           dateRange={props.dateRange}
           reportData={props.bundle.managementReport}
@@ -99,6 +184,11 @@ export function ReportsWorkspaceExport(props: ReportsWorkspaceExportProps) {
       </div>
 
       <div ref={props.sectionRefs.summarySectionRef} className="page-grid">
+        <ExportSectionHeading
+          sectionCode="05"
+          title="Summary"
+          subtitle="Итоговая сводка"
+        />
         <section className="content-card report-export-header">
           <div className="section-heading">
             <h2>Итоговая сводка по часам</h2>
@@ -178,12 +268,6 @@ export function ReportsWorkspaceExport(props: ReportsWorkspaceExportProps) {
 function buildDepartmentHoursSummary(bundle: ReportsExportBundle): DepartmentHoursSummary[] {
   return [
     {
-      departmentCode: 'licenses',
-      departmentName: 'Licenses',
-      totalHours: 0,
-      employees: [],
-    },
-    {
       departmentCode: 'qa',
       departmentName: 'QA',
       totalHours: bundle.qaReport.totals.totalOtherTaskHours,
@@ -260,6 +344,18 @@ function SummaryInlineStat(props: { label: string; value: string }) {
       <span className="qa-report-inline-label">{props.label}</span>
       <span className="qa-report-inline-value">{props.value}</span>
     </div>
+  );
+}
+
+function ExportSectionHeading(props: { sectionCode: string; title: string; subtitle: string }) {
+  return (
+    <section className="report-export-section-heading">
+      <div className="report-export-section-code">{props.sectionCode}</div>
+      <div className="report-export-section-copy">
+        <h1 className="report-export-section-title">{props.title}</h1>
+        <p className="report-export-section-subtitle">{props.subtitle}</p>
+      </div>
+    </section>
   );
 }
 

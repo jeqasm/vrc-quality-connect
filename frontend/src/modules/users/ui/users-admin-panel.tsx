@@ -47,6 +47,8 @@ export function UsersAdminPanel() {
   const [userToDelete, setUserToDelete] = useState<UserOption | null>(null);
   const [formState, setFormState] = useState({
     email: '',
+    firstName: '',
+    lastName: '',
     departmentId: '',
     accessRoleCode: roleOptions[0].code,
     expiresInDays: expirationOptions[1].value,
@@ -294,6 +296,30 @@ export function UsersAdminPanel() {
               placeholder="name@company.com"
             />
           </FormField>
+
+          <div className="two-column-grid">
+            <FormField htmlFor="invite-first-name" label="Имя">
+              <Input
+                id="invite-first-name"
+                value={formState.firstName}
+                onChange={(event) =>
+                  setFormState((current) => ({ ...current, firstName: event.target.value }))
+                }
+                placeholder="Иван"
+              />
+            </FormField>
+
+            <FormField htmlFor="invite-last-name" label="Фамилия">
+              <Input
+                id="invite-last-name"
+                value={formState.lastName}
+                onChange={(event) =>
+                  setFormState((current) => ({ ...current, lastName: event.target.value }))
+                }
+                placeholder="Иванов"
+              />
+            </FormField>
+          </div>
 
           <FormField htmlFor="invite-department" label="Отдел">
             <select

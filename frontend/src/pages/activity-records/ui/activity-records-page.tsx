@@ -22,6 +22,7 @@ import { UserOption } from '../../../modules/reference-data/model/reference-data
 import { DateRangePicker } from '../../../shared/ui/date-range/date-range-picker';
 import { Button } from '../../../shared/ui/button/button';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
+import { Modal } from '../../../shared/ui/modal/modal';
 import { Select } from '../../../shared/ui/select/select';
 import { getCurrentWeekDateRange } from '../../../shared/lib/date-range';
 import { TopBar } from '../../../shared/ui/top-bar/top-bar';
@@ -302,6 +303,8 @@ export function ActivityRecordsPage() {
     restoredPageState.rows.qaOtherTaskRows,
   );
   const [qaSaveMessage, setQaSaveMessage] = useState<string | null>(null);
+  const [isQaSaveSuccessMessage, setIsQaSaveSuccessMessage] = useState(false);
+  const [isQaSubmitConfirmOpen, setIsQaSubmitConfirmOpen] = useState(false);
   const currentUser = auth.account?.user;
   const canManageQaReports = hasPermission(
     auth.account?.permissions ?? [],
@@ -329,6 +332,8 @@ export function ActivityRecordsPage() {
 
   useEffect(() => {
     setQaSaveMessage(null);
+    setIsQaSaveSuccessMessage(false);
+    setIsQaSubmitConfirmOpen(false);
   }, [selectedQaUserId, dateRange.dateFrom, dateRange.dateTo]);
 
   const qaWeeklyReportQuery = useQuery({
@@ -344,7 +349,8 @@ export function ActivityRecordsPage() {
   const qaSaveMutation = useMutation({
     mutationFn: saveQaWeeklyReport,
     onSuccess: () => {
-      setQaSaveMessage('Недельный QA-отчет сохранен.');
+      setQaSaveMessage('Отчет сохранен как черновик');
+      setIsQaSaveSuccessMessage(true);
       void qaWeeklyReportQuery.refetch();
     },
   });
@@ -353,6 +359,7 @@ export function ActivityRecordsPage() {
     mutationFn: submitQaWeeklyReport,
     onSuccess: () => {
       setQaSaveMessage('Недельный QA-отчет отправлен.');
+      setIsQaSaveSuccessMessage(false);
       void qaWeeklyReportQuery.refetch();
     },
   });
@@ -530,6 +537,7 @@ export function ActivityRecordsPage() {
     }
 
     setQaSaveMessage(null);
+    setIsQaSaveSuccessMessage(false);
 
     await qaSaveMutation.mutateAsync({
       userId: selectedQaUserId,
@@ -580,14 +588,84 @@ export function ActivityRecordsPage() {
     });
   }
 
-  async function handleSubmitQaWeeklyReport() {
-    if (!qaWeeklyReportQuery.data?.id) {
-      setQaSaveMessage('Сначала сохраните отчет.');
+  function handleSubmitQaWeeklyReportClick() {
+    setQaSaveMessage(null);
+    setIsQaSaveSuccessMessage(false);
+    setIsQaSubmitConfirmOpen(true);
+  }
+
+  async function handleSubmitQaWeeklyReportConfirm() {
+    if (!selectedQaUserId) {
+      setQaSaveMessage('Выберите QA-сотрудника.');
+      setIsQaSaveSuccessMessage(false);
       return;
     }
 
-    setQaSaveMessage(null);
-    await qaSubmitMutation.mutateAsync(qaWeeklyReportQuery.data.id);
+    const selectedUser = qaUsers.find((user) => user.id === selectedQaUserId);
+
+    if (!selectedUser) {
+      setQaSaveMessage('Не удалось определить отдел выбранного сотрудника.');
+      setIsQaSaveSuccessMessage(false);
+      return;
+    }
+
+    setIsQaSubmitConfirmOpen(false);
+
+    let reportId = qaWeeklyReportQuery.data?.id;
+
+    if (!reportId) {
+      const savedReport = await qaSaveMutation.mutateAsync({
+        userId: selectedQaUserId,
+        departmentId: selectedUser.department.id,
+        weekStart: dateRange.dateFrom,
+        weekEnd: dateRange.dateTo,
+        bugItems: [
+          ...qaRetestRows.map((row) => ({
+            bucketCode: 'retest',
+            projectName: row.projectName.trim(),
+            title: row.bugTitle.trim(),
+            externalUrl: row.bugUrl.trim() || undefined,
+            severityCode: row.bugType.trim() || undefined,
+            resultCode: row.bugStatus.trim() || undefined,
+          })),
+          ...qaNewBugRows.map((row) => ({
+            bucketCode: 'new_bug',
+            projectName: row.projectName.trim(),
+            title: row.bugTitle.trim(),
+            externalUrl: row.bugUrl.trim() || undefined,
+            severityCode: row.bugType.trim() || undefined,
+            resultCode: row.bugStatus.trim() || undefined,
+          })),
+          ...qaTestedTaskRows.map((row) => ({
+            bucketCode: 'tested_task',
+            projectName: row.projectName.trim(),
+            title: row.bugTitle.trim(),
+            externalUrl: row.bugUrl.trim() || undefined,
+            severityCode: undefined,
+            resultCode: row.bugStatus.trim() || undefined,
+          })),
+          ...qaNewTaskRows.map((row) => ({
+            bucketCode: 'new_task',
+            projectName: row.projectName.trim(),
+            title: row.bugTitle.trim(),
+            externalUrl: row.bugUrl.trim() || undefined,
+            severityCode: undefined,
+            resultCode: row.bugStatus.trim() || undefined,
+          })),
+        ].filter((item) => item.projectName && item.title),
+        otherTaskItems: qaOtherTaskRows
+          .map((row) => ({
+            taskName: row.taskName.trim(),
+            description: row.shortDescription.trim() || undefined,
+            durationMinutes: toDurationMinutes(row.hours),
+          }))
+          .filter((item) => item.taskName),
+      });
+
+      reportId = savedReport.id;
+    }
+
+    await qaSubmitMutation.mutateAsync(reportId);
   }
 
   const isQaLocked = qaWeeklyReportQuery.data?.status === 'submitted';
@@ -671,8 +749,8 @@ export function ActivityRecordsPage() {
                   </Button>
                   <Button
                     type="button"
-                    onClick={() => void handleSubmitQaWeeklyReport()}
-                    disabled={!qaWeeklyReportQuery.data?.id || isQaLocked || isQaBusy}
+                    onClick={handleSubmitQaWeeklyReportClick}
+                    disabled={isQaLocked || isQaBusy}
                   >
                     {qaSubmitMutation.isPending ? 'Отправка...' : 'Отправить'}
                   </Button>
@@ -698,14 +776,53 @@ export function ActivityRecordsPage() {
               ) : null}
 
               {qaSaveMessage ? (
-                <div className="form-inline-notice form-inline-notice-neutral">{qaSaveMessage}</div>
+                <div
+                  className={
+                    isQaSaveSuccessMessage
+                      ? 'form-inline-notice form-inline-notice-info'
+                      : 'form-inline-notice form-inline-notice-neutral'
+                  }
+                >
+                  {qaSaveMessage}
+                </div>
               ) : null}
 
               {isQaLocked ? (
-                <div className="form-inline-notice">
-                  Отчет уже отправлен и доступен только для просмотра.
+                <div className="form-inline-notice form-inline-notice-warning">
+                  Отчет уже отправлен. Для внесения изменений обратитесь к администратору
                 </div>
               ) : null}
+
+              <Modal
+                isOpen={isQaSubmitConfirmOpen}
+                title="Подтвердите отправку отчета"
+                description="После отправки дальнейшие изменения будут невозможны. Отправить отчет?"
+                onClose={() => {
+                  if (qaSubmitMutation.isPending) {
+                    return;
+                  }
+
+                  setIsQaSubmitConfirmOpen(false);
+                }}
+              >
+                <div className="actions-row">
+                  <Button
+                    type="button"
+                    disabled={isQaBusy}
+                    onClick={() => void handleSubmitQaWeeklyReportConfirm()}
+                  >
+                    {qaSubmitMutation.isPending ? 'Отправка...' : 'Отправить'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    disabled={isQaBusy}
+                    onClick={() => setIsQaSubmitConfirmOpen(false)}
+                  >
+                    Отмена
+                  </Button>
+                </div>
+              </Modal>
 
               <section className="collapsible-section">
                 <button

@@ -18,6 +18,7 @@ import { UserOption } from '../../reference-data/model/reference-data';
 import { DateRangeValue } from '../../../shared/lib/date-range';
 import { Button } from '../../../shared/ui/button/button';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
+import { Modal } from '../../../shared/ui/modal/modal';
 import { Select } from '../../../shared/ui/select/select';
 
 type SupportProjectRowState = {
@@ -136,6 +137,8 @@ export function SupportWeeklyReportWorkspace(props: {
     createSupportCategoryRow(),
   ]);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [isSaveSuccessMessage, setIsSaveSuccessMessage] = useState(false);
+  const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState('');
 
   const currentUser = auth.account?.user;
@@ -176,7 +179,8 @@ export function SupportWeeklyReportWorkspace(props: {
   const saveMutation = useMutation({
     mutationFn: saveSupportWeeklyReport,
     onSuccess: () => {
-      setSaveMessage('Недельный Technical Support-отчет сохранен.');
+      setSaveMessage('Отчет сохранен как черновик');
+      setIsSaveSuccessMessage(true);
       void supportWeeklyReportQuery.refetch();
     },
   });
@@ -185,12 +189,15 @@ export function SupportWeeklyReportWorkspace(props: {
     mutationFn: submitSupportWeeklyReport,
     onSuccess: () => {
       setSaveMessage('Недельный Technical Support-отчет отправлен.');
+      setIsSaveSuccessMessage(false);
       void supportWeeklyReportQuery.refetch();
     },
   });
 
   useEffect(() => {
     setSaveMessage(null);
+    setIsSaveSuccessMessage(false);
+    setIsSubmitConfirmOpen(false);
   }, [props.dateRange.dateFrom, props.dateRange.dateTo, selectedUserId]);
 
   useEffect(() => {
@@ -357,16 +364,27 @@ export function SupportWeeklyReportWorkspace(props: {
 
   function handleSave() {
     setSaveMessage(null);
+    setIsSaveSuccessMessage(false);
     saveMutation.mutate(buildPayload());
   }
 
-  function handleSubmit() {
-    if (!supportWeeklyReportQuery.data?.id) {
-      return;
+  function handleSubmitClick() {
+    setSaveMessage(null);
+    setIsSaveSuccessMessage(false);
+    setIsSubmitConfirmOpen(true);
+  }
+
+  async function handleSubmitConfirm() {
+    setIsSubmitConfirmOpen(false);
+
+    let reportId = supportWeeklyReportQuery.data?.id;
+
+    if (!reportId) {
+      const savedReport = await saveMutation.mutateAsync(buildPayload());
+      reportId = savedReport.id;
     }
 
-    setSaveMessage(null);
-    submitMutation.mutate(supportWeeklyReportQuery.data.id);
+    await submitMutation.mutateAsync(reportId);
   }
 
   return (
@@ -397,17 +415,26 @@ export function SupportWeeklyReportWorkspace(props: {
           </Button>
           <Button
             type="button"
-            onClick={handleSubmit}
-            disabled={isBusy || isSubmitted || !supportWeeklyReportQuery.data?.id}
+            onClick={handleSubmitClick}
+            disabled={isBusy || isSubmitted}
           >
             {submitMutation.isPending ? 'Отправка...' : 'Отправить'}
           </Button>
         </div>
       </div>
 
-      {saveMessage ? <div className="pill pill-neutral">{saveMessage}</div> : null}
+      {saveMessage ? (
+        <div className={isSaveSuccessMessage ? 'form-inline-notice form-inline-notice-info' : 'pill pill-neutral'}>
+          {saveMessage}
+        </div>
+      ) : null}
       {saveMutation.isError ? <div className="form-error">{saveMutation.error.message}</div> : null}
       {submitMutation.isError ? <div className="form-error">{submitMutation.error.message}</div> : null}
+      {isSubmitted ? (
+        <div className="form-inline-notice form-inline-notice-warning">
+          Отчет уже отправлен. Для внесения изменений обратитесь к администратору
+        </div>
+      ) : null}
 
       <section className="content-card">
         <div className="qa-report-section-head">
@@ -468,6 +495,33 @@ export function SupportWeeklyReportWorkspace(props: {
           textareaRefs={textareaRefs}
         />
       </section>
+
+      <Modal
+        isOpen={isSubmitConfirmOpen}
+        title="Подтвердите отправку отчета"
+        description="После отправки дальнейшие изменения будут невозможны. Отправить отчет?"
+        onClose={() => {
+          if (submitMutation.isPending) {
+            return;
+          }
+
+          setIsSubmitConfirmOpen(false);
+        }}
+      >
+        <div className="actions-row">
+          <Button type="button" disabled={isBusy} onClick={() => void handleSubmitConfirm()}>
+            {submitMutation.isPending ? 'Отправка...' : 'Отправить'}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={isBusy}
+            onClick={() => setIsSubmitConfirmOpen(false)}
+          >
+            Отмена
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

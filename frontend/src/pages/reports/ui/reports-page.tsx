@@ -59,6 +59,7 @@ export function ReportsPage() {
   const activeTabDateRange = workspaceDateRange;
   const [isExportingAllReports, setIsExportingAllReports] = useState(false);
   const [exportBundle, setExportBundle] = useState<ReportsExportBundle | null>(null);
+  const coverSectionRef = useRef<HTMLDivElement | null>(null);
   const licenseSectionRef = useRef<HTMLDivElement | null>(null);
   const qaSectionRef = useRef<HTMLDivElement | null>(null);
   const supportSectionRef = useRef<HTMLDivElement | null>(null);
@@ -98,6 +99,7 @@ export function ReportsPage() {
 
       await exportHtmlSectionsToPdf(
         [
+          coverSectionRef.current,
           licenseSectionRef.current,
           qaSectionRef.current,
           supportSectionRef.current,
@@ -192,6 +194,7 @@ export function ReportsPage() {
           dateRange={workspaceDateRange}
           bundle={exportBundle}
           sectionRefs={{
+            coverSectionRef,
             licenseSectionRef,
             qaSectionRef,
             supportSectionRef,
