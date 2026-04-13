@@ -46,6 +46,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return;
     }
 
+    // Keep unknown errors visible in backend logs for faster incident diagnosis.
+    // eslint-disable-next-line no-console
+    console.error(exception);
+
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Internal server error',

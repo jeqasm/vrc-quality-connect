@@ -13,6 +13,7 @@ import { GroupsModule } from './modules/groups/groups.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { LicensesModule } from './modules/licenses/licenses.module';
 import { LicenseTypesModule } from './modules/license-types/license-types.module';
+import { ManagementWeeklyReportsModule } from './modules/management-weekly-reports/management-weekly-reports.module';
 import { QaWeeklyReportsModule } from './modules/qa-weekly-reports/qa-weekly-reports.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { SupportRequestsModule } from './modules/support-requests/support-requests.module';
@@ -41,6 +42,7 @@ import { PrismaModule } from './prisma/prisma.module';
     SupportRequestTypesModule,
     ReportsModule,
     QaWeeklyReportsModule,
+    ManagementWeeklyReportsModule,
     SupportWeeklyReportsModule,
     LicensesModule,
     LicenseTypesModule,

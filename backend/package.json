@@ -10,7 +10,12 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "db:up": "docker compose -f ../docker-compose.yml up -d postgres",
+    "db:down": "docker compose -f ../docker-compose.yml stop postgres",
+    "db:logs": "docker compose -f ../docker-compose.yml logs -f postgres",
+    "db:check": "node scripts/db-check.mjs",
+    "db:backup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/db-backup.ps1"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

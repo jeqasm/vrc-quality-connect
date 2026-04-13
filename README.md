@@ -38,11 +38,22 @@
 ### Backend
 
 1. Скопировать `backend/.env.example` в `backend/.env`
-2. Установить зависимости: `npm install`
-3. Сгенерировать Prisma client: `npm run prisma:generate`
-4. Применить миграции: `npm run prisma:migrate:deploy`
-5. Заполнить справочники: `npm run prisma:seed`
-6. Запустить dev server: `npm run start:dev`
+2. Поднять изолированную БД проекта: `npm run db:up`
+3. Проверить подключение: `npm run db:check`
+4. Установить зависимости: `npm install`
+5. Сгенерировать Prisma client: `npm run prisma:generate`
+6. Применить миграции: `npm run prisma:migrate:deploy`
+7. Заполнить справочники: `npm run prisma:seed`
+8. Запустить dev server: `npm run start:dev`
+
+`backend/.env` по умолчанию использует `localhost:55432`, чтобы не конфликтовать с другими проектами на `5432`.
+
+Полезные команды:
+- `npm run db:up` - запустить PostgreSQL контейнер этого проекта
+- `npm run db:down` - остановить PostgreSQL контейнер этого проекта
+- `npm run db:logs` - смотреть логи PostgreSQL
+- `npm run db:check` - проверить, к какому host/port/db подключается backend
+- `npm run db:backup` - сделать backup в `backups/`
 
 ### Frontend
 

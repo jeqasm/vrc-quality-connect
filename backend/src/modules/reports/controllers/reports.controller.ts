@@ -5,8 +5,10 @@ import { RequirePermissions } from '../../auth/decorators/require-permissions.de
 import { AuthSessionGuard } from '../../auth/guards/auth-session.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { LicenseReportResponseDto } from '../dto/license-report-response.dto';
+import { ManagementWeeklyReportResponseDto } from '../dto/management-weekly-report-response.dto';
 import { QaWeeklyReportResponseDto } from '../dto/qa-weekly-report-response.dto';
 import { QueryLicenseReportDto } from '../dto/query-license-report.dto';
+import { QueryManagementWeeklyReportDto } from '../dto/query-management-weekly-report.dto';
 import { QueryQaWeeklyReportDto } from '../dto/query-qa-weekly-report.dto';
 import { QuerySupportWeeklyReportDto } from '../dto/query-support-weekly-report.dto';
 import { SupportWeeklyReportResponseDto } from '../dto/support-weekly-report-response.dto';
@@ -40,6 +42,14 @@ export class ReportsController {
     @Query() dto: QuerySupportWeeklyReportDto,
   ): Promise<SupportWeeklyReportResponseDto> {
     return this.reportsService.getSupportWeeklyReport(dto);
+  }
+
+  @Get('management/weekly-summary')
+  @RequirePermissions(accessPermissionCodes.reportsManagementView)
+  getManagementWeeklyReport(
+    @Query() dto: QueryManagementWeeklyReportDto,
+  ): Promise<ManagementWeeklyReportResponseDto> {
+    return this.reportsService.getManagementWeeklyReport(dto);
   }
 
   @Get('summary')

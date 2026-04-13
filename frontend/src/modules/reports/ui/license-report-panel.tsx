@@ -1,17 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
-import { toPng } from 'html-to-image';
-import jsPDF from 'jspdf';
 import { RefObject, useRef, useState } from 'react';
 
 import { getLicenseReport } from '../api/license-reports-api';
-import { LicenseTrendPoint, LicenseTypeSummary } from '../model/license-report';
+import { LicenseReport, LicenseTrendPoint, LicenseTypeSummary } from '../model/license-report';
 import { DateRangeValue } from '../../../shared/lib/date-range';
 import { ErrorBlock } from '../../../shared/ui/error-block/error-block';
+import { exportHtmlElementToPdf } from '../lib/report-pdf-export';
 
 const reportPalette = ['#0f766e', '#2563eb', '#d97706', '#be185d', '#7c3aed', '#0891b2'];
 
 type LicenseReportPanelProps = {
   dateRange: DateRangeValue;
+  reportData?: LicenseReport;
+  showExportAction?: boolean;
 };
 
 export function LicenseReportPanel(props: LicenseReportPanelProps) {
@@ -22,13 +23,17 @@ export function LicenseReportPanel(props: LicenseReportPanelProps) {
   const licenseReportQuery = useQuery({
     queryKey: ['license-report', props.dateRange],
     queryFn: () => getLicenseReport(props.dateRange),
+    enabled: props.reportData === undefined,
   });
 
-  if (licenseReportQuery.isLoading) {
+  const report = props.reportData ?? licenseReportQuery.data;
+  const showExportAction = props.showExportAction ?? true;
+
+  if (!report && licenseReportQuery.isLoading) {
     return <div className="muted-text">Loading reports...</div>;
   }
 
-  if (licenseReportQuery.isError || !licenseReportQuery.data) {
+  if (!report && (licenseReportQuery.isError || !licenseReportQuery.data)) {
     return (
       <ErrorBlock
         title="Failed to load license report"
@@ -40,7 +45,10 @@ export function LicenseReportPanel(props: LicenseReportPanelProps) {
     );
   }
 
-  const report = licenseReportQuery.data;
+  if (!report) {
+    return null;
+  }
+
   const exportLabel = isExporting ? 'Экспорт...' : 'Экспорт';
 
   return (
@@ -52,16 +60,18 @@ export function LicenseReportPanel(props: LicenseReportPanelProps) {
             Аналитика строится по сохраненным данным реестра и поддерживает любой диапазон дат.
           </p>
         </div>
-        <div className="reports-toolbar-actions">
-          <button
-            type="button"
-            className="secondary-button"
-            disabled={isExporting}
-            onClick={() => void exportReportToPdf(exportContainerRef, props.dateRange, setIsExporting)}
-          >
-            {exportLabel}
-          </button>
-        </div>
+        {showExportAction ? (
+          <div className="reports-toolbar-actions">
+            <button
+              type="button"
+              className="secondary-button"
+              disabled={isExporting}
+              onClick={() => void exportReportToPdf(exportContainerRef, props.dateRange, setIsExporting)}
+            >
+              {exportLabel}
+            </button>
+          </div>
+        ) : null}
       </div>
 
       <div className="report-export-sheet" ref={exportContainerRef}>
@@ -139,38 +149,7 @@ async function exportReportToPdf(
   setIsExporting(true);
 
   try {
-    const imageDataUrl = await toPng(exportNode, {
-      cacheBust: true,
-      backgroundColor: '#edf4fb',
-      pixelRatio: 2,
-    });
-
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-    });
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const imageProps = pdf.getImageProperties(imageDataUrl);
-    const imageWidth = pageWidth;
-    const imageHeight = (imageProps.height * imageWidth) / imageProps.width;
-
-    let renderedHeight = imageHeight;
-    let offsetY = 0;
-
-    pdf.addImage(imageDataUrl, 'PNG', 0, offsetY, imageWidth, imageHeight);
-    renderedHeight -= pageHeight;
-
-    while (renderedHeight > 0) {
-      offsetY = renderedHeight - imageHeight;
-      pdf.addPage();
-      pdf.addImage(imageDataUrl, 'PNG', 0, offsetY, imageWidth, imageHeight);
-      renderedHeight -= pageHeight;
-    }
-
-    pdf.save(`license-report-${dateRange.dateFrom}_to_${dateRange.dateTo}.pdf`);
+    await exportHtmlElementToPdf(exportNode, `license-report-${dateRange.dateFrom}_to_${dateRange.dateTo}.pdf`);
   } finally {
     setIsExporting(false);
   }

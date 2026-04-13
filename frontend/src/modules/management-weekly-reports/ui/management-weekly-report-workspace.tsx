@@ -2,14 +2,14 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormEvent, MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import {
-  getSupportWeeklyReport,
-  saveSupportWeeklyReport,
-  submitSupportWeeklyReport,
-} from '../api/support-weekly-reports-api';
+  getManagementWeeklyReport,
+  saveManagementWeeklyReport,
+  submitManagementWeeklyReport,
+} from '../api/management-weekly-reports-api';
 import {
-  SaveSupportWeeklyReportPayload,
-  SupportProjectStatusCode,
-} from '../model/support-weekly-report';
+  ManagementProjectStatusCode,
+  SaveManagementWeeklyReportPayload,
+} from '../model/management-weekly-report';
 import { useAuth } from '../../auth/providers/auth-provider';
 import { hasPermission } from '../../access/model/access-check';
 import { accessPermissions } from '../../access/model/access-permissions';
@@ -20,35 +20,35 @@ import { Button } from '../../../shared/ui/button/button';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { Select } from '../../../shared/ui/select/select';
 
-type SupportProjectRowState = {
+type ManagementProjectRowState = {
   id: string;
   projectName: string;
   customerName: string;
   description: string;
-  statusCode: SupportProjectStatusCode;
+  statusCode: ManagementProjectStatusCode;
 };
 
-type SupportOtherTaskRowState = {
+type ManagementOtherTaskRowState = {
   id: string;
   taskName: string;
   description: string;
 };
 
-type SupportCategoryRowState = {
+type ManagementCategoryRowState = {
   id: string;
   categoryName: string;
   comment: string;
   hours: string;
 };
 
-const supportProjectStatusOptions: Array<{ value: SupportProjectStatusCode; label: string }> = [
+const managementProjectStatusOptions: Array<{ value: ManagementProjectStatusCode; label: string }> = [
   { value: 'in_progress', label: 'В работе' },
   { value: 'in_review', label: 'На проверке' },
   { value: 'completed', label: 'Завершен' },
   { value: 'cancelled', label: 'Отменен' },
 ];
 
-function createSupportProjectRow(): SupportProjectRowState {
+function createManagementProjectRow(): ManagementProjectRowState {
   return {
     id: Math.random().toString(36).slice(2, 10),
     projectName: '',
@@ -58,7 +58,7 @@ function createSupportProjectRow(): SupportProjectRowState {
   };
 }
 
-function createSupportOtherTaskRow(): SupportOtherTaskRowState {
+function createManagementOtherTaskRow(): ManagementOtherTaskRowState {
   return {
     id: Math.random().toString(36).slice(2, 10),
     taskName: '',
@@ -66,7 +66,7 @@ function createSupportOtherTaskRow(): SupportOtherTaskRowState {
   };
 }
 
-function createSupportCategoryRow(): SupportCategoryRowState {
+function createManagementCategoryRow(): ManagementCategoryRowState {
   return {
     id: Math.random().toString(36).slice(2, 10),
     categoryName: '',
@@ -75,8 +75,8 @@ function createSupportCategoryRow(): SupportCategoryRowState {
   };
 }
 
-function getSupportUsers(users: UserOption[]): UserOption[] {
-  return users.filter((user) => user.department.code === 'technical-support');
+function getManagementUsers(users: UserOption[]): UserOption[] {
+  return users.filter((user) => user.department.code === 'quality-management');
 }
 
 function sanitizeHoursInput(value: string): string {
@@ -123,69 +123,69 @@ function resizeTextarea(element: HTMLTextAreaElement | null) {
   element.style.height = `${element.scrollHeight}px`;
 }
 
-export function SupportWeeklyReportWorkspace(props: {
+export function ManagementWeeklyReportWorkspace(props: {
   dateRange: DateRangeValue;
 }) {
   const auth = useAuth();
   const textareaRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
-  const [projectRows, setProjectRows] = useState<SupportProjectRowState[]>([createSupportProjectRow()]);
-  const [otherTaskRows, setOtherTaskRows] = useState<SupportOtherTaskRowState[]>([
-    createSupportOtherTaskRow(),
+  const [projectRows, setProjectRows] = useState<ManagementProjectRowState[]>([createManagementProjectRow()]);
+  const [otherTaskRows, setOtherTaskRows] = useState<ManagementOtherTaskRowState[]>([
+    createManagementOtherTaskRow(),
   ]);
-  const [categoryRows, setCategoryRows] = useState<SupportCategoryRowState[]>([
-    createSupportCategoryRow(),
+  const [categoryRows, setCategoryRows] = useState<ManagementCategoryRowState[]>([
+    createManagementCategoryRow(),
   ]);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState('');
 
   const currentUser = auth.account?.user;
-  const canManageSupportReports = hasPermission(
+  const canManageManagementReports = hasPermission(
     auth.account?.permissions ?? [],
-    accessPermissions.reportsSupportView,
+    accessPermissions.reportsManagementView,
   );
   const usersQuery = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
-    enabled: canManageSupportReports,
+    enabled: canManageManagementReports,
   });
   const allUsers = usersQuery.data ?? [];
-  const supportUsers = getSupportUsers(allUsers);
+  const managementUsers = getManagementUsers(allUsers);
   const currentAccountUser = currentUser
     ? allUsers.find((user) => user.id === currentUser.id) ?? null
     : null;
   const availableUsers =
-    supportUsers.length > 0
-      ? currentAccountUser && !supportUsers.some((user) => user.id === currentAccountUser.id)
-        ? [currentAccountUser, ...supportUsers]
-        : supportUsers
+    managementUsers.length > 0
+      ? currentAccountUser && !managementUsers.some((user) => user.id === currentAccountUser.id)
+        ? [currentAccountUser, ...managementUsers]
+        : managementUsers
       : currentAccountUser
         ? [currentAccountUser]
         : allUsers;
   const selectedUser = availableUsers.find((user) => user.id === selectedUserId) ?? null;
 
-  const supportWeeklyReportQuery = useQuery({
-    queryKey: ['support-weekly-report', selectedUser?.id, props.dateRange.dateFrom],
+  const managementWeeklyReportQuery = useQuery({
+    queryKey: ['management-weekly-report', selectedUser?.id, props.dateRange.dateFrom],
     enabled: Boolean(selectedUser?.id),
     queryFn: () =>
-      getSupportWeeklyReport({
+      getManagementWeeklyReport({
         userId: selectedUser!.id,
         weekStart: props.dateRange.dateFrom,
       }),
   });
 
   const saveMutation = useMutation({
-    mutationFn: saveSupportWeeklyReport,
+    mutationFn: saveManagementWeeklyReport,
     onSuccess: () => {
-      setSaveMessage('Недельный Technical Support-отчет сохранен.');
-      void supportWeeklyReportQuery.refetch();
+      setSaveMessage('Недельный Management-отчет сохранен.');
+      void managementWeeklyReportQuery.refetch();
     },
   });
 
   const submitMutation = useMutation({
-    mutationFn: submitSupportWeeklyReport,
+    mutationFn: submitManagementWeeklyReport,
     onSuccess: () => {
-      setSaveMessage('Недельный Technical Support-отчет отправлен.');
-      void supportWeeklyReportQuery.refetch();
+      setSaveMessage('Недельный Management-отчет отправлен.');
+      void managementWeeklyReportQuery.refetch();
     },
   });
 
@@ -205,12 +205,12 @@ export function SupportWeeklyReportWorkspace(props: {
   }, [availableUsers, currentAccountUser, selectedUserId]);
 
   useEffect(() => {
-    const report = supportWeeklyReportQuery.data;
+    const report = managementWeeklyReportQuery.data;
 
-    if (supportWeeklyReportQuery.isFetched && !report) {
-      setProjectRows([createSupportProjectRow()]);
-      setOtherTaskRows([createSupportOtherTaskRow()]);
-      setCategoryRows([createSupportCategoryRow()]);
+    if (managementWeeklyReportQuery.isFetched && !report) {
+      setProjectRows([createManagementProjectRow()]);
+      setOtherTaskRows([createManagementOtherTaskRow()]);
+      setCategoryRows([createManagementCategoryRow()]);
       return;
     }
 
@@ -227,7 +227,7 @@ export function SupportWeeklyReportWorkspace(props: {
             description: item.description ?? '',
             statusCode: item.statusCode,
           }))
-        : [createSupportProjectRow()],
+        : [createManagementProjectRow()],
     );
     setOtherTaskRows(
       report.otherTaskItems.length > 0
@@ -236,7 +236,7 @@ export function SupportWeeklyReportWorkspace(props: {
             taskName: item.taskName,
             description: item.description ?? '',
           }))
-        : [createSupportOtherTaskRow()],
+        : [createManagementOtherTaskRow()],
     );
     setCategoryRows(
       report.categoryItems.length > 0
@@ -246,9 +246,9 @@ export function SupportWeeklyReportWorkspace(props: {
             comment: item.comment ?? '',
             hours: toHoursString(item.durationMinutes),
           }))
-        : [createSupportCategoryRow()],
+        : [createManagementCategoryRow()],
     );
-  }, [supportWeeklyReportQuery.data, supportWeeklyReportQuery.isFetched]);
+  }, [managementWeeklyReportQuery.data, managementWeeklyReportQuery.isFetched]);
 
   useEffect(() => {
     for (const row of [...projectRows, ...otherTaskRows, ...categoryRows]) {
@@ -282,18 +282,18 @@ export function SupportWeeklyReportWorkspace(props: {
     return (
       <EmptyState
         title="Пользователи недоступны"
-        message="В системе нет доступных сотрудников для создания Technical Support weekly report."
+        message="В системе нет доступных сотрудников для создания Management weekly report."
       />
     );
   }
 
   const activeSelectedUser = selectedUser;
-  const isSubmitted = supportWeeklyReportQuery.data?.status === 'submitted';
+  const isSubmitted = managementWeeklyReportQuery.data?.status === 'submitted';
   const isBusy = saveMutation.isPending || submitMutation.isPending;
 
   function updateProjectRow(
     rowId: string,
-    field: keyof Omit<SupportProjectRowState, 'id'>,
+    field: keyof Omit<ManagementProjectRowState, 'id'>,
     value: string,
   ) {
     setProjectRows((current) =>
@@ -303,7 +303,7 @@ export function SupportWeeklyReportWorkspace(props: {
 
   function updateOtherTaskRow(
     rowId: string,
-    field: keyof Omit<SupportOtherTaskRowState, 'id'>,
+    field: keyof Omit<ManagementOtherTaskRowState, 'id'>,
     value: string,
   ) {
     setOtherTaskRows((current) =>
@@ -313,7 +313,7 @@ export function SupportWeeklyReportWorkspace(props: {
 
   function updateCategoryRow(
     rowId: string,
-    field: keyof Omit<SupportCategoryRowState, 'id'>,
+    field: keyof Omit<ManagementCategoryRowState, 'id'>,
     value: string,
   ) {
     setCategoryRows((current) =>
@@ -325,7 +325,7 @@ export function SupportWeeklyReportWorkspace(props: {
     );
   }
 
-  function buildPayload(): SaveSupportWeeklyReportPayload {
+  function buildPayload(): SaveManagementWeeklyReportPayload {
     return {
       userId: activeSelectedUser.id,
       departmentId: activeSelectedUser.department.id,
@@ -361,19 +361,19 @@ export function SupportWeeklyReportWorkspace(props: {
   }
 
   function handleSubmit() {
-    if (!supportWeeklyReportQuery.data?.id) {
+    if (!managementWeeklyReportQuery.data?.id) {
       return;
     }
 
     setSaveMessage(null);
-    submitMutation.mutate(supportWeeklyReportQuery.data.id);
+    submitMutation.mutate(managementWeeklyReportQuery.data.id);
   }
 
   return (
     <div className="page-grid">
       <div className="reports-toolbar">
         <div className="reports-toolbar-copy">
-          <h2 className="collapsible-title">Technical Support weekly input</h2>
+          <h2 className="collapsible-title">Management weekly input</h2>
           <p className="collapsible-subtitle">
             Текущая неделя: {props.dateRange.dateFrom} - {props.dateRange.dateTo}
           </p>
@@ -388,7 +388,7 @@ export function SupportWeeklyReportWorkspace(props: {
               disabled={isBusy}
               options={availableUsers.map((user) => ({
                 value: user.id,
-                label: formatSupportReportUserOption(user),
+                label: formatManagementReportUserOption(user),
               }))}
             />
           </div>
@@ -398,7 +398,7 @@ export function SupportWeeklyReportWorkspace(props: {
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={isBusy || isSubmitted || !supportWeeklyReportQuery.data?.id}
+            disabled={isBusy || isSubmitted || !managementWeeklyReportQuery.data?.id}
           >
             {submitMutation.isPending ? 'Отправка...' : 'Отправить'}
           </Button>
@@ -415,10 +415,10 @@ export function SupportWeeklyReportWorkspace(props: {
             <h2>Работа над проектами</h2>
           </div>
         </div>
-        <SupportProjectsEditor
+        <ManagementProjectsEditor
           rows={projectRows}
           disabled={isBusy || isSubmitted}
-          onAddRow={() => setProjectRows((current) => [...current, createSupportProjectRow()])}
+          onAddRow={() => setProjectRows((current) => [...current, createManagementProjectRow()])}
           onRemoveRow={(rowId) =>
             setProjectRows((current) =>
               current.length === 1 ? current : current.filter((row) => row.id !== rowId),
@@ -435,10 +435,10 @@ export function SupportWeeklyReportWorkspace(props: {
             <h2>Прочие задачи</h2>
           </div>
         </div>
-        <SupportOtherTasksEditor
+        <ManagementOtherTasksEditor
           rows={otherTaskRows}
           disabled={isBusy || isSubmitted}
-          onAddRow={() => setOtherTaskRows((current) => [...current, createSupportOtherTaskRow()])}
+          onAddRow={() => setOtherTaskRows((current) => [...current, createManagementOtherTaskRow()])}
           onRemoveRow={(rowId) =>
             setOtherTaskRows((current) =>
               current.length === 1 ? current : current.filter((row) => row.id !== rowId),
@@ -455,10 +455,10 @@ export function SupportWeeklyReportWorkspace(props: {
             <h2>Задачи по категориям</h2>
           </div>
         </div>
-        <SupportCategoriesEditor
+        <ManagementCategoriesEditor
           rows={categoryRows}
           disabled={isBusy || isSubmitted}
-          onAddRow={() => setCategoryRows((current) => [...current, createSupportCategoryRow()])}
+          onAddRow={() => setCategoryRows((current) => [...current, createManagementCategoryRow()])}
           onRemoveRow={(rowId) =>
             setCategoryRows((current) =>
               current.length === 1 ? current : current.filter((row) => row.id !== rowId),
@@ -472,18 +472,18 @@ export function SupportWeeklyReportWorkspace(props: {
   );
 }
 
-function formatSupportReportUserOption(user: UserOption) {
+function formatManagementReportUserOption(user: UserOption) {
   return user.fullName;
 }
 
-function SupportProjectsEditor(props: {
-  rows: SupportProjectRowState[];
+function ManagementProjectsEditor(props: {
+  rows: ManagementProjectRowState[];
   disabled: boolean;
   onAddRow: () => void;
   onRemoveRow: (rowId: string) => void;
   onChangeField: (
     rowId: string,
-    field: keyof Omit<SupportProjectRowState, 'id'>,
+    field: keyof Omit<ManagementProjectRowState, 'id'>,
     value: string,
   ) => void;
   textareaRefs: MutableRefObject<Record<string, HTMLTextAreaElement | null>>;
@@ -537,10 +537,10 @@ function SupportProjectsEditor(props: {
               value={row.statusCode}
               disabled={props.disabled}
               onChange={(event) =>
-                props.onChangeField(row.id, 'statusCode', event.target.value as SupportProjectStatusCode)
+                props.onChangeField(row.id, 'statusCode', event.target.value as ManagementProjectStatusCode)
               }
             >
-              {supportProjectStatusOptions.map((option) => (
+              {managementProjectStatusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -577,14 +577,14 @@ function SupportProjectsEditor(props: {
   );
 }
 
-function SupportOtherTasksEditor(props: {
-  rows: SupportOtherTaskRowState[];
+function ManagementOtherTasksEditor(props: {
+  rows: ManagementOtherTaskRowState[];
   disabled: boolean;
   onAddRow: () => void;
   onRemoveRow: (rowId: string) => void;
   onChangeField: (
     rowId: string,
-    field: keyof Omit<SupportOtherTaskRowState, 'id'>,
+    field: keyof Omit<ManagementOtherTaskRowState, 'id'>,
     value: string,
   ) => void;
   textareaRefs: MutableRefObject<Record<string, HTMLTextAreaElement | null>>;
@@ -655,14 +655,14 @@ function SupportOtherTasksEditor(props: {
   );
 }
 
-function SupportCategoriesEditor(props: {
-  rows: SupportCategoryRowState[];
+function ManagementCategoriesEditor(props: {
+  rows: ManagementCategoryRowState[];
   disabled: boolean;
   onAddRow: () => void;
   onRemoveRow: (rowId: string) => void;
   onChangeField: (
     rowId: string,
-    field: keyof Omit<SupportCategoryRowState, 'id'>,
+    field: keyof Omit<ManagementCategoryRowState, 'id'>,
     value: string,
   ) => void;
   textareaRefs: MutableRefObject<Record<string, HTMLTextAreaElement | null>>;

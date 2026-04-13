@@ -23,6 +23,7 @@ model User {
   activityRecords   ActivityRecord[]
   qaWeeklyReports   QaWeeklyReport[]
   supportWeeklyReports SupportWeeklyReport[]
+  managementWeeklyReports ManagementWeeklyReport[]
   licenseOperations LicenseOperation[]
   licenseRegistryRecords LicenseRegistryRecord[] @relation("LicenseRegistryRecordCreator")
   supportRequests   SupportRequest[]
@@ -147,6 +148,7 @@ model Department {
   activityRecords ActivityRecord[]
   qaWeeklyReports QaWeeklyReport[]
   supportWeeklyReports SupportWeeklyReport[]
+  managementWeeklyReports ManagementWeeklyReport[]
 
   @@map("departments")
 }
@@ -505,4 +507,75 @@ model SupportWeeklyCategoryItem {
 
   @@index([reportId, sortOrder])
   @@map("support_weekly_category_items")
+}
+
+model ManagementWeeklyReport {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @db.Uuid @map("user_id")
+  departmentId String    @db.Uuid @map("department_id")
+  weekStart    DateTime  @db.Date @map("week_start")
+  weekEnd      DateTime  @db.Date @map("week_end")
+  status       String
+  submittedAt  DateTime? @map("submitted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user           User                            @relation(fields: [userId], references: [id])
+  department     Department                      @relation(fields: [departmentId], references: [id])
+  projectItems   ManagementWeeklyProjectItem[]
+  otherTaskItems ManagementWeeklyOtherTaskItem[]
+  categoryItems  ManagementWeeklyCategoryItem[]
+
+  @@unique([userId, weekStart])
+  @@index([departmentId, weekStart])
+  @@index([status, weekStart])
+  @@map("management_weekly_reports")
+}
+
+model ManagementWeeklyProjectItem {
+  id           String   @id @default(uuid()) @db.Uuid
+  reportId     String   @db.Uuid @map("report_id")
+  projectName  String   @map("project_name")
+  customerName String   @map("customer_name")
+  description  String?  @map("description")
+  statusCode   String   @map("status_code")
+  sortOrder    Int      @default(0) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  report ManagementWeeklyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId, sortOrder])
+  @@map("management_weekly_project_items")
+}
+
+model ManagementWeeklyOtherTaskItem {
+  id          String   @id @default(uuid()) @db.Uuid
+  reportId    String   @db.Uuid @map("report_id")
+  taskName    String   @map("task_name")
+  description String?  @map("description")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  report ManagementWeeklyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId, sortOrder])
+  @@map("management_weekly_other_task_items")
+}
+
+model ManagementWeeklyCategoryItem {
+  id              String   @id @default(uuid()) @db.Uuid
+  reportId        String   @db.Uuid @map("report_id")
+  categoryName    String   @map("category_name")
+  comment         String?  @map("comment")
+  durationMinutes Int      @map("duration_minutes")
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  report ManagementWeeklyReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId, sortOrder])
+  @@map("management_weekly_category_items")
 }

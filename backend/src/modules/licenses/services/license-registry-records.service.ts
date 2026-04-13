@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { ApplicationNotFoundError } from '../../../common/errors/application-not-found.error';
 import { LicenseRegistrySnapshotResponseDto } from '../dto/license-registry-snapshot-response.dto';
@@ -75,7 +75,11 @@ export class LicenseRegistryRecordsService {
         comment: dto.comment?.trim() || undefined,
         createdByUserId: currentUserId,
       })
-      .then((record) => this.mapRecord(record));
+      .then((record) => this.mapRecord(record))
+      .catch((error: unknown) => {
+        this.throwDuplicateRecordErrorIfNeeded(error);
+        throw error;
+      });
   }
 
   async update(id: string, dto: UpdateLicenseRegistryRecordDto): Promise<LicenseRegistryRecordResponseDto> {
@@ -85,15 +89,20 @@ export class LicenseRegistryRecordsService {
       throw new ApplicationNotFoundError('License registry record', `id=${id}`);
     }
 
-    const updatedRecord = await this.licenseRegistryRecordsRepository.update(id, {
-      issueDate: new Date(`${dto.issueDate ?? existingRecord.issueDate.toISOString().slice(0, 10)}T00:00:00.000Z`),
-      licenseTypeId: dto.licenseTypeId ?? existingRecord.licenseTypeId,
-      quantity: dto.quantity ?? existingRecord.quantity,
-      organizationName: dto.organizationName?.trim() ?? existingRecord.organizationName ?? undefined,
-      recipientEmail: dto.recipientEmail?.trim().toLowerCase() ?? existingRecord.recipientEmail ?? undefined,
-      issuedTo: dto.issuedTo?.trim() ?? existingRecord.issuedTo,
-      comment: dto.comment?.trim() ?? existingRecord.comment ?? undefined,
-    });
+    const updatedRecord = await this.licenseRegistryRecordsRepository
+      .update(id, {
+        issueDate: new Date(`${dto.issueDate ?? existingRecord.issueDate.toISOString().slice(0, 10)}T00:00:00.000Z`),
+        licenseTypeId: dto.licenseTypeId ?? existingRecord.licenseTypeId,
+        quantity: dto.quantity ?? existingRecord.quantity,
+        organizationName: dto.organizationName?.trim() ?? existingRecord.organizationName ?? undefined,
+        recipientEmail: dto.recipientEmail?.trim().toLowerCase() ?? existingRecord.recipientEmail ?? undefined,
+        issuedTo: dto.issuedTo?.trim() ?? existingRecord.issuedTo,
+        comment: dto.comment?.trim() ?? existingRecord.comment ?? undefined,
+      })
+      .catch((error: unknown) => {
+        this.throwDuplicateRecordErrorIfNeeded(error);
+        throw error;
+      });
 
     return this.mapRecord(updatedRecord);
   }
@@ -125,5 +134,16 @@ export class LicenseRegistryRecordsService {
         name: record.licenseType.name,
       },
     };
+  }
+
+  private throwDuplicateRecordErrorIfNeeded(error: unknown): void {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code?: string }).code === 'P2002'
+    ) {
+      throw new BadRequestException('Такая запись уже есть в реестре');
+    }
   }
 }

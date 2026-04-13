@@ -1,52 +1,52 @@
 import { useQuery } from '@tanstack/react-query';
 import { RefObject, useRef, useState } from 'react';
 
-import { getSupportWeeklyReportSummary } from '../api/support-weekly-reports-api';
+import { getManagementWeeklyReportSummary } from '../api/management-weekly-reports-api';
 import {
-  SupportProjectStatusCode,
-  SupportWeeklyCategoryHoursItem,
-  SupportWeeklyCategoryTableItem,
-  SupportWeeklyOtherTaskTableItem,
-  SupportWeeklyProjectTableItem,
-  SupportWeeklyReportSummary,
-} from '../model/support-weekly-report';
+  ManagementProjectStatusCode,
+  ManagementWeeklyCategoryHoursItem,
+  ManagementWeeklyCategoryTableItem,
+  ManagementWeeklyOtherTaskTableItem,
+  ManagementWeeklyProjectTableItem,
+  ManagementWeeklyReportSummary,
+} from '../model/management-weekly-report';
 import { DateRangeValue } from '../../../shared/lib/date-range';
 import { Button } from '../../../shared/ui/button/button';
 import { ErrorBlock } from '../../../shared/ui/error-block/error-block';
 import { exportHtmlElementToPdf } from '../lib/report-pdf-export';
 
-const supportReportPalette = ['#0f766e', '#2563eb', '#d97706', '#be185d', '#7c3aed', '#0891b2'];
+const managementReportPalette = ['#0f766e', '#2563eb', '#d97706', '#be185d', '#7c3aed', '#0891b2'];
 
-type SupportWeeklyReportPanelProps = {
+type ManagementWeeklyReportPanelProps = {
   dateRange: DateRangeValue;
-  reportData?: SupportWeeklyReportSummary;
+  reportData?: ManagementWeeklyReportSummary;
   showExportAction?: boolean;
 };
 
-export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
+export function ManagementWeeklyReportPanel(props: ManagementWeeklyReportPanelProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const exportContainerRef = useRef<HTMLDivElement | null>(null);
-  const supportReportQuery = useQuery({
-    queryKey: ['support-weekly-report-summary', props.dateRange],
-    queryFn: () => getSupportWeeklyReportSummary(props.dateRange),
+  const managementReportQuery = useQuery({
+    queryKey: ['management-weekly-report-summary', props.dateRange],
+    queryFn: () => getManagementWeeklyReportSummary(props.dateRange),
     enabled: props.reportData === undefined,
   });
 
-  const report = props.reportData ?? supportReportQuery.data;
+  const report = props.reportData ?? managementReportQuery.data;
   const showExportAction = props.showExportAction ?? true;
 
-  if (!report && supportReportQuery.isLoading) {
-    return <div className="muted-text">Loading Technical Support reports...</div>;
+  if (!report && managementReportQuery.isLoading) {
+    return <div className="muted-text">Loading Management reports...</div>;
   }
 
-  if (!report && (supportReportQuery.isError || !supportReportQuery.data)) {
+  if (!report && (managementReportQuery.isError || !managementReportQuery.data)) {
     return (
       <ErrorBlock
-        title="Failed to load Technical Support report"
-        message="Support weekly analytics are unavailable right now."
+        title="Failed to load Management report"
+        message="Management weekly analytics are unavailable right now."
         onRetry={() => {
-          void supportReportQuery.refetch();
+          void managementReportQuery.refetch();
         }}
       />
     );
@@ -62,9 +62,9 @@ export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
     <div className="page-grid">
       <div className="reports-toolbar">
         <div className="reports-toolbar-copy">
-          <h2 className="collapsible-title">Technical Support отчет</h2>
+          <h2 className="collapsible-title">Management отчет</h2>
           <p className="collapsible-subtitle">
-            Недельная сводка по проектной работе, прочим задачам и категориям поддержки.
+            Недельная сводка по проектной работе, прочим задачам и управленческим категориям.
           </p>
         </div>
         {showExportAction ? (
@@ -73,7 +73,7 @@ export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
               type="button"
               variant="secondary"
               disabled={isExporting}
-              onClick={() => void exportSupportReportToPdf(exportContainerRef, props.dateRange, setIsExporting)}
+              onClick={() => void exportManagementReportToPdf(exportContainerRef, props.dateRange, setIsExporting)}
             >
               {exportLabel}
             </Button>
@@ -84,7 +84,7 @@ export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
       <div className="report-export-sheet" ref={exportContainerRef}>
         <section className="content-card report-export-header">
           <div className="section-heading">
-            <h2>Technical Support отчет</h2>
+            <h2>Management отчет</h2>
           </div>
           <div className="report-export-meta">
             <div className="pill">Период: {formatDateRange(props.dateRange.dateFrom, props.dateRange.dateTo)}</div>
@@ -102,7 +102,7 @@ export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
               <SummaryInlineStat label="Всего проектов" value={`${report.totals.totalProjects}`} />
             </div>
           </div>
-          <SupportProjectTable items={report.projectItems} />
+          <ManagementProjectTable items={report.projectItems} />
         </section>
 
         <section className="content-card">
@@ -114,7 +114,7 @@ export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
               <SummaryInlineStat label="Всего задач" value={`${report.totals.totalOtherTasks}`} />
             </div>
           </div>
-          <SupportOtherTasksTable items={report.otherTaskItems} />
+          <ManagementOtherTasksTable items={report.otherTaskItems} />
         </section>
 
         <section className="content-card">
@@ -126,7 +126,7 @@ export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
               <SummaryInlineStat label="Суммарно часов" value={`${report.totals.totalCategoryHours}`} />
             </div>
           </div>
-          <SupportCategoryTable items={report.categoryItems} />
+          <ManagementCategoryTable items={report.categoryItems} />
         </section>
 
         <section className="reports-grid">
@@ -134,7 +134,7 @@ export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
             <div className="section-heading">
               <h2>Распределение часов по категориям</h2>
             </div>
-            <SupportCategoryDonutChart
+            <ManagementCategoryDonutChart
               items={report.categoryHours}
               activeCategory={activeCategory}
               onActiveCategoryChange={setActiveCategory}
@@ -156,7 +156,7 @@ export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
                   <div className="report-type-head">
                     <span
                       className="report-color-chip"
-                      style={{ backgroundColor: supportReportPalette[index % supportReportPalette.length] }}
+                      style={{ backgroundColor: managementReportPalette[index % managementReportPalette.length] }}
                     />
                     <strong>{item.categoryName}</strong>
                   </div>
@@ -173,7 +173,7 @@ export function SupportWeeklyReportPanel(props: SupportWeeklyReportPanelProps) {
   );
 }
 
-async function exportSupportReportToPdf(
+async function exportManagementReportToPdf(
   exportContainerRef: RefObject<HTMLDivElement | null>,
   dateRange: DateRangeValue,
   setIsExporting: (value: boolean) => void,
@@ -186,13 +186,13 @@ async function exportSupportReportToPdf(
   setIsExporting(true);
 
   try {
-    await exportHtmlElementToPdf(exportNode, `technical-support-report-${dateRange.dateFrom}_to_${dateRange.dateTo}.pdf`);
+    await exportHtmlElementToPdf(exportNode, `management-report-${dateRange.dateFrom}_to_${dateRange.dateTo}.pdf`);
   } finally {
     setIsExporting(false);
   }
 }
 
-function SupportProjectTable(props: { items: SupportWeeklyProjectTableItem[] }) {
+function ManagementProjectTable(props: { items: ManagementWeeklyProjectTableItem[] }) {
   if (props.items.length === 0) {
     return <div className="muted-text">Нет проектной работы за период.</div>;
   }
@@ -225,7 +225,7 @@ function SupportProjectTable(props: { items: SupportWeeklyProjectTableItem[] }) 
               <td>{item.description ?? '—'}</td>
               <td>
                 <span className={`support-status-pill support-status-${item.statusCode}`}>
-                  {formatSupportProjectStatus(item.statusCode)}
+                  {formatManagementProjectStatus(item.statusCode)}
                 </span>
               </td>
             </tr>
@@ -236,7 +236,7 @@ function SupportProjectTable(props: { items: SupportWeeklyProjectTableItem[] }) 
   );
 }
 
-function SupportOtherTasksTable(props: { items: SupportWeeklyOtherTaskTableItem[] }) {
+function ManagementOtherTasksTable(props: { items: ManagementWeeklyOtherTaskTableItem[] }) {
   if (props.items.length === 0) {
     return <div className="muted-text">Нет прочих задач за период.</div>;
   }
@@ -272,7 +272,7 @@ function SupportOtherTasksTable(props: { items: SupportWeeklyOtherTaskTableItem[
   );
 }
 
-function SupportCategoryTable(props: { items: SupportWeeklyCategoryTableItem[] }) {
+function ManagementCategoryTable(props: { items: ManagementWeeklyCategoryTableItem[] }) {
   if (props.items.length === 0) {
     return <div className="muted-text">Нет задач по категориям за период.</div>;
   }
@@ -310,8 +310,8 @@ function SupportCategoryTable(props: { items: SupportWeeklyCategoryTableItem[] }
   );
 }
 
-function SupportCategoryDonutChart(props: {
-  items: SupportWeeklyCategoryHoursItem[];
+function ManagementCategoryDonutChart(props: {
+  items: ManagementWeeklyCategoryHoursItem[];
   activeCategory: string | null;
   onActiveCategoryChange: (value: string | null) => void;
 }) {
@@ -327,7 +327,7 @@ function SupportCategoryDonutChart(props: {
 
   return (
     <div className="report-donut-layout">
-      <svg viewBox="0 0 220 220" className="report-donut-chart" aria-label="Support category distribution">
+      <svg viewBox="0 0 220 220" className="report-donut-chart" aria-label="Management category distribution">
         <circle
           cx="110"
           cy="110"
@@ -347,7 +347,7 @@ function SupportCategoryDonutChart(props: {
               cy="110"
               r={radius}
               fill="none"
-              stroke={supportReportPalette[index % supportReportPalette.length]}
+              stroke={managementReportPalette[index % managementReportPalette.length]}
               strokeWidth={strokeWidth}
               strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
               strokeDashoffset={-cumulativeOffset}
@@ -384,7 +384,7 @@ function SummaryInlineStat(props: { label: string; value: string }) {
   );
 }
 
-function formatSupportProjectStatus(statusCode: SupportProjectStatusCode) {
+function formatManagementProjectStatus(statusCode: ManagementProjectStatusCode) {
   switch (statusCode) {
     case 'in_progress':
       return 'В работе';

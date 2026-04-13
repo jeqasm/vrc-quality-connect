@@ -1,14 +1,22 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { hasPermission } from '../../../modules/access/model/access-check';
 import { accessPermissions } from '../../../modules/access/model/access-permissions';
 import { useAuth } from '../../../modules/auth/providers/auth-provider';
+import { getLicenseReport } from '../../../modules/reports/api/license-reports-api';
+import { getManagementWeeklyReportSummary } from '../../../modules/reports/api/management-weekly-reports-api';
+import { getQaWeeklyReportSummary } from '../../../modules/reports/api/qa-weekly-reports-api';
+import { getSupportWeeklyReportSummary } from '../../../modules/reports/api/support-weekly-reports-api';
 import { getReportZone, ReportZoneKey } from '../../../modules/reports/model/report-zone';
 import { QaWeeklyReportPanel } from '../../../modules/reports/ui/qa-weekly-report-panel';
 import { LicenseReportPanel } from '../../../modules/reports/ui/license-report-panel';
+import { ManagementWeeklyReportPanel } from '../../../modules/reports/ui/management-weekly-report-panel';
+import { exportHtmlSectionsToPdf } from '../../../modules/reports/lib/report-pdf-export';
+import { ReportsExportBundle, ReportsWorkspaceExport } from '../../../modules/reports/ui/reports-workspace-export';
 import { SupportWeeklyReportPanel } from '../../../modules/reports/ui/support-weekly-report-panel';
 import { DateRangeValue, getCurrentWeekDateRange } from '../../../shared/lib/date-range';
+import { Button } from '../../../shared/ui/button/button';
 import { DateRangePicker } from '../../../shared/ui/date-range/date-range-picker';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { TopBar } from '../../../shared/ui/top-bar/top-bar';
@@ -48,14 +56,14 @@ export function ReportsPage() {
       : reportTabs[0];
   const zone = getReportZone(zoneKey);
   const [workspaceDateRange, setWorkspaceDateRange] = useState<DateRangeValue>(currentWeekDateRange);
-  const [tabDateRanges, setTabDateRanges] = useState<Record<ReportZoneKey, DateRangeValue>>({
-    qa: currentWeekDateRange,
-    licenses: currentWeekDateRange,
-    support: currentWeekDateRange,
-    management: currentWeekDateRange,
-  });
-
-  const activeTabDateRange = tabDateRanges[zoneKey];
+  const activeTabDateRange = workspaceDateRange;
+  const [isExportingAllReports, setIsExportingAllReports] = useState(false);
+  const [exportBundle, setExportBundle] = useState<ReportsExportBundle | null>(null);
+  const licenseSectionRef = useRef<HTMLDivElement | null>(null);
+  const qaSectionRef = useRef<HTMLDivElement | null>(null);
+  const supportSectionRef = useRef<HTMLDivElement | null>(null);
+  const managementSectionRef = useRef<HTMLDivElement | null>(null);
+  const summarySectionRef = useRef<HTMLDivElement | null>(null);
 
   function handleZoneChange(nextZoneKey: ReportZoneKey) {
     const nextSearchParams = new URLSearchParams(searchParams);
@@ -63,11 +71,44 @@ export function ReportsPage() {
     setSearchParams(nextSearchParams, { replace: true });
   }
 
-  function handleTabDateRangeChange(nextValue: DateRangeValue) {
-    setTabDateRanges((current) => ({
-      ...current,
-      [zoneKey]: nextValue,
-    }));
+  async function handleExportAllReports() {
+    setIsExportingAllReports(true);
+
+    try {
+      const [
+        licenseReport,
+        qaReport,
+        supportReport,
+        managementReport,
+      ] = await Promise.all([
+        getLicenseReport(workspaceDateRange),
+        getQaWeeklyReportSummary(workspaceDateRange),
+        getSupportWeeklyReportSummary(workspaceDateRange),
+        getManagementWeeklyReportSummary(workspaceDateRange),
+      ]);
+
+      setExportBundle({
+        licenseReport,
+        qaReport,
+        supportReport,
+        managementReport,
+      });
+
+      await waitForNextRenderCycle();
+
+      await exportHtmlSectionsToPdf(
+        [
+          licenseSectionRef.current,
+          qaSectionRef.current,
+          supportSectionRef.current,
+          managementSectionRef.current,
+          summarySectionRef.current,
+        ],
+        `reports-workspace-${workspaceDateRange.dateFrom}_to_${workspaceDateRange.dateTo}.pdf`,
+      );
+    } finally {
+      setIsExportingAllReports(false);
+    }
   }
 
   return (
@@ -83,6 +124,16 @@ export function ReportsPage() {
               onChange={setWorkspaceDateRange}
             />
           </div>
+        }
+        action={
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={isExportingAllReports}
+            onClick={() => void handleExportAllReports()}
+          >
+            {isExportingAllReports ? 'Экспорт всех отчетов...' : 'Экспорт всех отчетов'}
+          </Button>
         }
       />
 
@@ -112,7 +163,7 @@ export function ReportsPage() {
           <DateRangePicker
             variant="panel"
             value={activeTabDateRange}
-            onChange={handleTabDateRangeChange}
+            onChange={setWorkspaceDateRange}
           />
         </div>
       </section>
@@ -125,6 +176,8 @@ export function ReportsPage() {
             <QaWeeklyReportPanel dateRange={activeTabDateRange} />
           ) : zoneKey === 'support' ? (
             <SupportWeeklyReportPanel dateRange={activeTabDateRange} />
+          ) : zoneKey === 'management' ? (
+            <ManagementWeeklyReportPanel dateRange={activeTabDateRange} />
           ) : (
             <EmptyState
               title={`${zone.title} report will be added next`}
@@ -133,6 +186,30 @@ export function ReportsPage() {
           )}
         </div>
       </section>
+
+      {exportBundle ? (
+        <ReportsWorkspaceExport
+          dateRange={workspaceDateRange}
+          bundle={exportBundle}
+          sectionRefs={{
+            licenseSectionRef,
+            qaSectionRef,
+            supportSectionRef,
+            managementSectionRef,
+            summarySectionRef,
+          }}
+        />
+      ) : null}
     </div>
   );
+}
+
+async function waitForNextRenderCycle() {
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve();
+      });
+    });
+  });
 }

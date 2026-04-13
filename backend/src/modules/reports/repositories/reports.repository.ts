@@ -470,6 +470,222 @@ export class ReportsRepository {
     }));
   }
 
+  async aggregateManagementWeeklyTotals(dateFrom: string, dateTo: string): Promise<{
+    totalProjects: number;
+    inProgressProjects: number;
+    inReviewProjects: number;
+    completedProjects: number;
+    cancelledProjects: number;
+    totalOtherTasks: number;
+  }> {
+    const rows = await this.prisma.$queryRaw<
+      Array<{
+        totalProjects: bigint | number | null;
+        inProgressProjects: bigint | number | null;
+        inReviewProjects: bigint | number | null;
+        completedProjects: bigint | number | null;
+        cancelledProjects: bigint | number | null;
+        totalOtherTasks: bigint | number | null;
+      }>
+    >(Prisma.sql`
+      WITH scoped_reports AS (
+        SELECT id
+        FROM management_weekly_reports
+        WHERE week_start >= ${dateFrom}::date
+          AND week_start <= ${dateTo}::date
+      ),
+      project_totals AS (
+        SELECT
+          COUNT(*) AS "totalProjects",
+          COUNT(CASE WHEN project.status_code = 'in_progress' THEN 1 END) AS "inProgressProjects",
+          COUNT(CASE WHEN project.status_code = 'in_review' THEN 1 END) AS "inReviewProjects",
+          COUNT(CASE WHEN project.status_code = 'completed' THEN 1 END) AS "completedProjects",
+          COUNT(CASE WHEN project.status_code = 'cancelled' THEN 1 END) AS "cancelledProjects"
+        FROM management_weekly_project_items project
+        INNER JOIN scoped_reports report ON report.id = project.report_id
+      ),
+      other_task_totals AS (
+        SELECT COUNT(*) AS "totalOtherTasks"
+        FROM management_weekly_other_task_items other_task
+        INNER JOIN scoped_reports report ON report.id = other_task.report_id
+      )
+      SELECT
+        COALESCE((SELECT "totalProjects" FROM project_totals), 0) AS "totalProjects",
+        COALESCE((SELECT "inProgressProjects" FROM project_totals), 0) AS "inProgressProjects",
+        COALESCE((SELECT "inReviewProjects" FROM project_totals), 0) AS "inReviewProjects",
+        COALESCE((SELECT "completedProjects" FROM project_totals), 0) AS "completedProjects",
+        COALESCE((SELECT "cancelledProjects" FROM project_totals), 0) AS "cancelledProjects",
+        COALESCE((SELECT "totalOtherTasks" FROM other_task_totals), 0) AS "totalOtherTasks"
+    `);
+
+    const row = rows[0] ?? {
+      totalProjects: 0,
+      inProgressProjects: 0,
+      inReviewProjects: 0,
+      completedProjects: 0,
+      cancelledProjects: 0,
+      totalOtherTasks: 0,
+    };
+
+    return {
+      totalProjects: Number(row.totalProjects ?? 0),
+      inProgressProjects: Number(row.inProgressProjects ?? 0),
+      inReviewProjects: Number(row.inReviewProjects ?? 0),
+      completedProjects: Number(row.completedProjects ?? 0),
+      cancelledProjects: Number(row.cancelledProjects ?? 0),
+      totalOtherTasks: Number(row.totalOtherTasks ?? 0),
+    };
+  }
+
+  async listManagementWeeklyProjectItems(
+    dateFrom: string,
+    dateTo: string,
+  ): Promise<
+    Array<{
+      weekStart: string;
+      userId: string;
+      userFullName: string;
+      projectName: string;
+      customerName: string;
+      description: string | null;
+      statusCode: string;
+    }>
+  > {
+    return this.prisma.$queryRaw<
+      Array<{
+        weekStart: string;
+        userId: string;
+        userFullName: string;
+        projectName: string;
+        customerName: string;
+        description: string | null;
+        statusCode: string;
+      }>
+    >(Prisma.sql`
+      SELECT
+        TO_CHAR(report.week_start, 'YYYY-MM-DD') AS "weekStart",
+        report.user_id AS "userId",
+        user_account.full_name AS "userFullName",
+        project.project_name AS "projectName",
+        project.customer_name AS "customerName",
+        project.description AS "description",
+        project.status_code AS "statusCode"
+      FROM management_weekly_reports report
+      INNER JOIN users user_account ON user_account.id = report.user_id
+      INNER JOIN management_weekly_project_items project ON project.report_id = report.id
+      WHERE report.week_start >= ${dateFrom}::date
+        AND report.week_start <= ${dateTo}::date
+      ORDER BY report.week_start DESC, user_account.full_name ASC, project.sort_order ASC, project.created_at ASC
+    `);
+  }
+
+  async listManagementWeeklyOtherTaskItems(
+    dateFrom: string,
+    dateTo: string,
+  ): Promise<
+    Array<{
+      weekStart: string;
+      userId: string;
+      userFullName: string;
+      taskName: string;
+      description: string | null;
+    }>
+  > {
+    return this.prisma.$queryRaw<
+      Array<{
+        weekStart: string;
+        userId: string;
+        userFullName: string;
+        taskName: string;
+        description: string | null;
+      }>
+    >(Prisma.sql`
+      SELECT
+        TO_CHAR(report.week_start, 'YYYY-MM-DD') AS "weekStart",
+        report.user_id AS "userId",
+        user_account.full_name AS "userFullName",
+        other_task.task_name AS "taskName",
+        other_task.description AS "description"
+      FROM management_weekly_reports report
+      INNER JOIN users user_account ON user_account.id = report.user_id
+      INNER JOIN management_weekly_other_task_items other_task ON other_task.report_id = report.id
+      WHERE report.week_start >= ${dateFrom}::date
+        AND report.week_start <= ${dateTo}::date
+      ORDER BY report.week_start DESC, user_account.full_name ASC, other_task.sort_order ASC, other_task.created_at ASC
+    `);
+  }
+
+  async listManagementWeeklyCategoryItems(
+    dateFrom: string,
+    dateTo: string,
+  ): Promise<
+    Array<{
+      weekStart: string;
+      userId: string;
+      userFullName: string;
+      categoryName: string;
+      comment: string | null;
+      durationMinutes: number;
+    }>
+  > {
+    const rows = await this.prisma.$queryRaw<
+      Array<{
+        weekStart: string;
+        userId: string;
+        userFullName: string;
+        categoryName: string;
+        comment: string | null;
+        durationMinutes: bigint | number;
+      }>
+    >(Prisma.sql`
+      SELECT
+        TO_CHAR(report.week_start, 'YYYY-MM-DD') AS "weekStart",
+        report.user_id AS "userId",
+        user_account.full_name AS "userFullName",
+        category_item.category_name AS "categoryName",
+        category_item.comment AS "comment",
+        category_item.duration_minutes AS "durationMinutes"
+      FROM management_weekly_reports report
+      INNER JOIN users user_account ON user_account.id = report.user_id
+      INNER JOIN management_weekly_category_items category_item ON category_item.report_id = report.id
+      WHERE report.week_start >= ${dateFrom}::date
+        AND report.week_start <= ${dateTo}::date
+      ORDER BY report.week_start DESC, user_account.full_name ASC, category_item.sort_order ASC, category_item.created_at ASC
+    `);
+
+    return rows.map((row) => ({
+      ...row,
+      durationMinutes: Number(row.durationMinutes),
+    }));
+  }
+
+  async groupManagementWeeklyCategoryMinutes(
+    dateFrom: string,
+    dateTo: string,
+  ): Promise<Array<{ categoryName: string; durationMinutes: number }>> {
+    const rows = await this.prisma.$queryRaw<
+      Array<{
+        categoryName: string;
+        durationMinutes: bigint | number;
+      }>
+    >(Prisma.sql`
+      SELECT
+        category_item.category_name AS "categoryName",
+        SUM(category_item.duration_minutes) AS "durationMinutes"
+      FROM management_weekly_reports report
+      INNER JOIN management_weekly_category_items category_item ON category_item.report_id = report.id
+      WHERE report.week_start >= ${dateFrom}::date
+        AND report.week_start <= ${dateTo}::date
+      GROUP BY category_item.category_name
+      ORDER BY SUM(category_item.duration_minutes) DESC, category_item.category_name ASC
+    `);
+
+    return rows.map((row) => ({
+      categoryName: row.categoryName,
+      durationMinutes: Number(row.durationMinutes),
+    }));
+  }
+
   aggregateTotals(): Promise<DurationAggregate> {
     return this.prisma.activityRecord.aggregate({
       _sum: {

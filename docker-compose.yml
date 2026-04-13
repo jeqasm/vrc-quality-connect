@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vrc-quality-connect-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vrc_quality_connect
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "55432:5432"
+    volumes:
+      - vrc_quality_connect_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vrc_quality_connect"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  vrc_quality_connect_postgres_data:

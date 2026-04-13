@@ -15,6 +15,7 @@ import {
   saveQaWeeklyReport,
   submitQaWeeklyReport,
 } from '../../../modules/qa-weekly-reports/api/qa-weekly-reports-api';
+import { ManagementWeeklyReportWorkspace } from '../../../modules/management-weekly-reports/ui/management-weekly-report-workspace';
 import { SupportWeeklyReportWorkspace } from '../../../modules/support-weekly-reports/ui/support-weekly-report-workspace';
 import { getUsers } from '../../../modules/reference-data/api/reference-data-api';
 import { UserOption } from '../../../modules/reference-data/model/reference-data';
@@ -666,7 +667,7 @@ export function ActivityRecordsPage() {
                     onClick={() => void handleSaveQaWeeklyReport()}
                     disabled={!selectedQaUserId || isQaLocked || isQaBusy}
                   >
-                    {qaSaveMutation.isPending ? 'Сохранение...' : 'Сохранить отчет'}
+                    {qaSaveMutation.isPending ? 'Сохранение...' : 'Сохранить черновик'}
                   </Button>
                   <Button
                     type="button"
@@ -876,6 +877,8 @@ export function ActivityRecordsPage() {
             <LicensesRegistryWorkspace />
           ) : zone.key === 'support' ? (
             <SupportWeeklyReportWorkspace dateRange={dateRange} />
+          ) : zone.key === 'management' ? (
+            <ManagementWeeklyReportWorkspace dateRange={dateRange} />
           ) : (
             <EmptyState
               title={`${zone.title} form will be added next`}

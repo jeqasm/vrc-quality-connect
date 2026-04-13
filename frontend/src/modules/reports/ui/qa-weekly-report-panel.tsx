@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { toPng } from 'html-to-image';
-import jsPDF from 'jspdf';
 import { RefObject, useRef, useState } from 'react';
 
 import { DateRangeValue } from '../../../shared/lib/date-range';
 import { Button } from '../../../shared/ui/button/button';
 import { ErrorBlock } from '../../../shared/ui/error-block/error-block';
 import { getQaWeeklyReportSummary } from '../api/qa-weekly-reports-api';
+import { exportHtmlElementToPdf } from '../lib/report-pdf-export';
 import {
   QaWeeklyBugTableItem,
   QaWeeklyOtherTaskTableItem,
+  QaWeeklyReportSummary,
 } from '../model/qa-weekly-report';
 
 const qaSeverityPalette: Record<string, string> = {
@@ -22,6 +22,8 @@ const qaSeverityPalette: Record<string, string> = {
 
 type QaWeeklyReportPanelProps = {
   dateRange: DateRangeValue;
+  reportData?: QaWeeklyReportSummary;
+  showExportAction?: boolean;
 };
 
 export function QaWeeklyReportPanel(props: QaWeeklyReportPanelProps) {
@@ -30,13 +32,17 @@ export function QaWeeklyReportPanel(props: QaWeeklyReportPanelProps) {
   const qaReportQuery = useQuery({
     queryKey: ['qa-weekly-report-summary', props.dateRange],
     queryFn: () => getQaWeeklyReportSummary(props.dateRange),
+    enabled: props.reportData === undefined,
   });
 
-  if (qaReportQuery.isLoading) {
+  const report = props.reportData ?? qaReportQuery.data;
+  const showExportAction = props.showExportAction ?? true;
+
+  if (!report && qaReportQuery.isLoading) {
     return <div className="muted-text">Loading QA reports...</div>;
   }
 
-  if (qaReportQuery.isError || !qaReportQuery.data) {
+  if (!report && (qaReportQuery.isError || !qaReportQuery.data)) {
     return (
       <ErrorBlock
         title="Failed to load QA report"
@@ -48,7 +54,10 @@ export function QaWeeklyReportPanel(props: QaWeeklyReportPanelProps) {
     );
   }
 
-  const report = qaReportQuery.data;
+  if (!report) {
+    return null;
+  }
+
   const exportLabel = isExporting ? 'Экспорт...' : 'Экспорт';
   const severityDistribution = buildSeverityDistribution(report.newBugs);
   return (
@@ -60,16 +69,18 @@ export function QaWeeklyReportPanel(props: QaWeeklyReportPanelProps) {
             Сводка по QA-активностям за выбранный период с возможностью выгрузки в PDF.
           </p>
         </div>
-        <div className="reports-toolbar-actions">
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={isExporting}
-            onClick={() => void exportQaReportToPdf(exportContainerRef, props.dateRange, setIsExporting)}
-          >
-            {exportLabel}
-          </Button>
-        </div>
+        {showExportAction ? (
+          <div className="reports-toolbar-actions">
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={isExporting}
+              onClick={() => void exportQaReportToPdf(exportContainerRef, props.dateRange, setIsExporting)}
+            >
+              {exportLabel}
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       <div className="report-export-sheet" ref={exportContainerRef}>
@@ -262,38 +273,7 @@ async function exportQaReportToPdf(
   setIsExporting(true);
 
   try {
-    const imageDataUrl = await toPng(exportNode, {
-      cacheBust: true,
-      backgroundColor: '#edf4fb',
-      pixelRatio: 2,
-    });
-
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
-    });
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const imageProps = pdf.getImageProperties(imageDataUrl);
-    const imageWidth = pageWidth;
-    const imageHeight = (imageProps.height * imageWidth) / imageProps.width;
-
-    let renderedHeight = imageHeight;
-    let offsetY = 0;
-
-    pdf.addImage(imageDataUrl, 'PNG', 0, offsetY, imageWidth, imageHeight);
-    renderedHeight -= pageHeight;
-
-    while (renderedHeight > 0) {
-      offsetY = renderedHeight - imageHeight;
-      pdf.addPage();
-      pdf.addImage(imageDataUrl, 'PNG', 0, offsetY, imageWidth, imageHeight);
-      renderedHeight -= pageHeight;
-    }
-
-    pdf.save(`qa-report-${dateRange.dateFrom}_to_${dateRange.dateTo}.pdf`);
+    await exportHtmlElementToPdf(exportNode, `qa-report-${dateRange.dateFrom}_to_${dateRange.dateTo}.pdf`);
   } finally {
     setIsExporting(false);
   }
