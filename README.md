@@ -61,6 +61,25 @@
 2. Установить зависимости: `npm install`
 3. Запустить dev server: `npm run dev`
 
+## Docker release pipeline (GitHub Actions)
+
+На тегах формата `v*` автоматически публикуются образы в GHCR:
+
+- `ghcr.io/jeqasm/vrc-quality-connect-backend:<tag>`
+- `ghcr.io/jeqasm/vrc-quality-connect-frontend:<tag>`
+- `latest` тоже обновляется для обоих образов
+
+Как выпустить релиз:
+
+1. Убедиться, что изменения в `main`
+2. Создать тег: `git tag v0.2.0`
+3. Отправить тег: `git push origin v0.2.0`
+4. Дождаться workflow `Release Docker Images` в GitHub Actions
+
+Опционально для frontend можно задать repository variable `VITE_API_URL` в GitHub:
+
+- `Settings -> Secrets and variables -> Actions -> Variables`
+
 ## Документация
 
 - `docs/architecture/overview.md`
