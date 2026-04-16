@@ -9,6 +9,7 @@ import {
   updateLicenseRegistryRecord,
 } from '../api/licenses-api';
 import { LicenseRegistryRecord, LicenseRegistrySortBy, SortDirection } from '../model/license-registry';
+import { exportLicenseRegistryToExcel } from '../lib/license-registry-excel-export';
 import { LicenseRegistryRecordModal } from './license-registry-record-modal';
 import { LicenseRegistryTable } from './license-registry-table';
 import { Button } from '../../../shared/ui/button/button';
@@ -47,7 +48,9 @@ export function LicensesRegistryWorkspace() {
   const [createErrorMessage, setCreateErrorMessage] = useState<string | null>(null);
   const [editErrorMessage, setEditErrorMessage] = useState<string | null>(null);
   const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(null);
+  const [exportErrorMessage, setExportErrorMessage] = useState<string | null>(null);
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
+  const [isExportingExcel, setIsExportingExcel] = useState(false);
 
   const licenseRegistryQuery = useQuery({
     queryKey: ['licenses', 'registry', dateRange, visibleCount, search, licenseTypeId, sortBy, sortDirection],
@@ -213,6 +216,57 @@ export function LicensesRegistryWorkspace() {
     setSortDirection('desc');
   }
 
+  async function handleExportExcel() {
+    setExportErrorMessage(null);
+    setIsExportingExcel(true);
+
+    try {
+      const exportBatchSize = 100;
+      const initialSnapshot = await getLicenseRegistrySnapshot({
+        ...dateRange,
+        search,
+        licenseTypeId,
+        sortBy,
+        sortDirection,
+        limit: exportBatchSize,
+        offset: 0,
+      });
+      const exportRows = [...initialSnapshot.rows];
+      const totalRecords = initialSnapshot.totalRecords;
+
+      for (let offset = exportRows.length; offset < totalRecords; offset += exportBatchSize) {
+        const nextSnapshot = await getLicenseRegistrySnapshot({
+          ...dateRange,
+          search,
+          licenseTypeId,
+          sortBy,
+          sortDirection,
+          limit: exportBatchSize,
+          offset,
+        });
+
+        if (nextSnapshot.rows.length === 0) {
+          break;
+        }
+
+        exportRows.push(...nextSnapshot.rows);
+      }
+
+      const rangeFrom = dateRange.dateFrom || 'all';
+      const rangeTo = dateRange.dateTo || 'all';
+      const fileName = `license-registry-${rangeFrom}_to_${rangeTo}.xls`;
+
+      exportLicenseRegistryToExcel({
+        rows: exportRows,
+        fileName,
+      });
+    } catch (error) {
+      setExportErrorMessage(error instanceof Error ? error.message : 'Не удалось выгрузить реестр в Excel');
+    } finally {
+      setIsExportingExcel(false);
+    }
+  }
+
   return (
     <>
       <div className="content-card">
@@ -248,11 +302,16 @@ export function LicensesRegistryWorkspace() {
           </label>
 
           <div className="licenses-toolbar-actions">
+            <Button type="button" variant="secondary" onClick={() => void handleExportExcel()} disabled={isExportingExcel}>
+              {isExportingExcel ? 'Экспорт...' : 'Экспорт в Excel'}
+            </Button>
             <Button type="button" variant="ghost" onClick={handleResetFilters}>
               Сбросить
             </Button>
           </div>
         </div>
+
+        {exportErrorMessage ? <div className="form-inline-notice">{exportErrorMessage}</div> : null}
 
         {licenseRegistryQuery.isError ? (
           <ErrorBlock

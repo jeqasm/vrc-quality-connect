@@ -26,10 +26,10 @@ const currentWeekDateRange = getCurrentWeekDateRange();
 export function ReportsPage() {
   const auth = useAuth();
   const reportTabs: ReportZoneKey[] = [
-    hasPermission(auth.account?.permissions ?? [], accessPermissions.reportsQaView) ? 'qa' : null,
     hasPermission(auth.account?.permissions ?? [], accessPermissions.reportsLicensesView)
       ? 'licenses'
       : null,
+    hasPermission(auth.account?.permissions ?? [], accessPermissions.reportsQaView) ? 'qa' : null,
     hasPermission(auth.account?.permissions ?? [], accessPermissions.reportsSupportView)
       ? 'support'
       : null,
@@ -119,23 +119,24 @@ export function ReportsPage() {
         title="Reports workspace"
         subtitle={zone.subtitle}
         dateRange={
-          <div className="reports-workspace-range-shell">
-            <div className="reports-workspace-range-label">Общий период отчетов</div>
-            <DateRangePicker
-              value={workspaceDateRange}
-              onChange={setWorkspaceDateRange}
-            />
+          <div className="reports-global-controls">
+            <div className="reports-workspace-range-shell">
+              <div className="reports-workspace-range-label">Общий период отчетов</div>
+              <DateRangePicker
+                value={workspaceDateRange}
+                onChange={setWorkspaceDateRange}
+              />
+            </div>
+            <Button
+              type="button"
+              variant="secondary"
+              className="reports-export-all-button"
+              disabled={isExportingAllReports}
+              onClick={() => void handleExportAllReports()}
+            >
+              {isExportingAllReports ? 'Экспорт всех отчетов...' : 'Экспорт всех отчетов'}
+            </Button>
           </div>
-        }
-        action={
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={isExportingAllReports}
-            onClick={() => void handleExportAllReports()}
-          >
-            {isExportingAllReports ? 'Экспорт всех отчетов...' : 'Экспорт всех отчетов'}
-          </Button>
         }
       />
 

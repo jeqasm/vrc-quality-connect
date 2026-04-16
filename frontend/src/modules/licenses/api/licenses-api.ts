@@ -3,6 +3,7 @@ import {
   LicenseRegistryRecord,
   LicenseRegistrySnapshot,
   LicenseRegistrySortBy,
+  LicenseTypeOption,
   LicensesMeta,
   SortDirection,
 } from '../model/license-registry';
@@ -95,4 +96,21 @@ export function deleteLicenseRegistryRecord(recordId: string): Promise<void> {
 
 export function getLicensesMeta(): Promise<LicensesMeta> {
   return apiClient<LicensesMeta>('/licenses/meta');
+}
+
+export function getLicenseTypes(): Promise<LicenseTypeOption[]> {
+  return apiClient<LicenseTypeOption[]>('/license-types');
+}
+
+export function createLicenseType(payload: { name: string }): Promise<LicenseTypeOption> {
+  return apiClient<LicenseTypeOption>('/license-types', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteLicenseType(id: string): Promise<void> {
+  return apiClient<void>(`/license-types/${id}`, {
+    method: 'DELETE',
+  });
 }

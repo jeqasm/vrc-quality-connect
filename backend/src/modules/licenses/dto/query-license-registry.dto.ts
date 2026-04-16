@@ -1,6 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsDateString, IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
+const MAX_LICENSE_REGISTRY_LIMIT = 1000;
+
 export const licenseRegistrySortByValues = [
   'issueDate',
   'licenseType',
@@ -44,7 +46,7 @@ export class QueryLicenseRegistryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(100)
+  @Max(MAX_LICENSE_REGISTRY_LIMIT)
   limit?: number;
 
   @IsOptional()

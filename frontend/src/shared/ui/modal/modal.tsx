@@ -1,4 +1,5 @@
 import { PropsWithChildren } from 'react';
+import { createPortal } from 'react-dom';
 
 type ModalProps = PropsWithChildren<{
   isOpen: boolean;
@@ -12,7 +13,11 @@ export function Modal(props: ModalProps) {
     return null;
   }
 
-  return (
+  if (typeof document === 'undefined') {
+    return null;
+  }
+
+  return createPortal(
     <div className="overlay-root" role="presentation" onClick={props.onClose}>
       <div
         className="overlay-backdrop"
@@ -36,6 +41,7 @@ export function Modal(props: ModalProps) {
         </header>
         <div className="overlay-content">{props.children}</div>
       </section>
-    </div>
+    </div>,
+    document.body,
   );
 }

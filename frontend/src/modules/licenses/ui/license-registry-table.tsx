@@ -1,4 +1,5 @@
 import { Button } from '../../../shared/ui/button/button';
+import { DateInput } from '../../../shared/ui/date-input/date-input';
 import { LicenseRegistryRecord, LicenseRegistrySortBy, LicenseTypeOption, SortDirection } from '../model/license-registry';
 
 type LicenseRegistryTableProps = {
@@ -78,11 +79,12 @@ export function LicenseRegistryTable(props: LicenseRegistryTableProps) {
                 <div className="license-registry-create-row-shell">
                   <div className="license-registry-create-row-title">Новая запись</div>
                   <div className="license-registry-create-grid">
-                    <input
-                      className="field-input license-registry-inline-input"
-                      type="date"
+                    <DateInput
+                      className="license-registry-inline-input"
                       value={props.createDraft.issueDate}
-                      onChange={(event) => props.onChangeCreateDraft('issueDate', event.target.value)}
+                      onChange={(nextValue) => props.onChangeCreateDraft('issueDate', nextValue)}
+                      pickerAriaLabel="Открыть выбор даты новой записи"
+                      clearAriaLabel="Очистить дату новой записи"
                     />
                     <select
                       className="field-select license-registry-inline-select"
@@ -128,11 +130,26 @@ export function LicenseRegistryTable(props: LicenseRegistryTableProps) {
                       placeholder="Комментарий"
                     />
                     <div className="license-registry-inline-actions">
-                      <Button type="button" disabled={props.isCreateSubmitting} onClick={props.onSubmitCreateRow}>
-                        {props.isCreateSubmitting ? '...' : 'Сохранить'}
+                      <Button
+                        type="button"
+                        className="license-registry-inline-action-button"
+                        disabled={props.isCreateSubmitting}
+                        onClick={props.onSubmitCreateRow}
+                        aria-label="Сохранить запись"
+                        title="Сохранить"
+                      >
+                        {props.isCreateSubmitting ? '…' : '✓'}
                       </Button>
-                      <Button type="button" variant="ghost" disabled={props.isCreateSubmitting} onClick={props.onCloseCreateRow}>
-                        Отмена
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="license-registry-inline-action-button"
+                        disabled={props.isCreateSubmitting}
+                        onClick={props.onCloseCreateRow}
+                        aria-label="Отменить добавление"
+                        title="Отмена"
+                      >
+                        ✕
                       </Button>
                     </div>
                   </div>

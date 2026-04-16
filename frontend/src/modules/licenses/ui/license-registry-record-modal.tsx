@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 
 import { Button } from '../../../shared/ui/button/button';
+import { DateInput } from '../../../shared/ui/date-input/date-input';
 import { FormField } from '../../../shared/ui/form-field/form-field';
 import { Input } from '../../../shared/ui/input/input';
 import { Modal } from '../../../shared/ui/modal/modal';
@@ -76,11 +77,14 @@ export function LicenseRegistryRecordModal(props: LicenseRegistryRecordModalProp
       <form className="form-grid" onSubmit={handleSubmit}>
         <div className="settings-account-fields-row">
           <FormField htmlFor="license-record-date" label="Дата">
-            <Input
+            <DateInput
               id="license-record-date"
-              type="date"
               value={formState.issueDate}
-              onChange={(event) => setFormState((current) => ({ ...current, issueDate: event.target.value }))}
+              onChange={(nextValue) =>
+                setFormState((current) => ({ ...current, issueDate: nextValue }))
+              }
+              pickerAriaLabel="Открыть выбор даты лицензии"
+              clearAriaLabel="Очистить дату лицензии"
               required
             />
           </FormField>

@@ -6,11 +6,13 @@ import { hasPermission } from '../../../modules/access/model/access-check';
 import { updateCurrentAccount } from '../../../modules/auth/api/auth-api';
 import { useAuth } from '../../../modules/auth/providers/auth-provider';
 import { GroupsAdminPanel } from '../../../modules/groups/ui/groups-admin-panel';
+import { LicenseTypesSettingsPanel } from '../../../modules/licenses/ui/license-types-settings-panel';
 import { UsersAdminPanel } from '../../../modules/users/ui/users-admin-panel';
 import { Button } from '../../../shared/ui/button/button';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { FormField } from '../../../shared/ui/form-field/form-field';
 import { Input } from '../../../shared/ui/input/input';
+import { Modal } from '../../../shared/ui/modal/modal';
 import { PageHeader } from '../../../shared/ui/page-header/page-header';
 
 function splitFullName(fullName: string | undefined): { firstName: string; lastName: string } {
@@ -52,6 +54,10 @@ export function SettingsPage() {
     auth.account?.permissions ?? [],
     accessPermissions.accessControlManage,
   );
+  const canManageLicensing = hasPermission(
+    auth.account?.permissions ?? [],
+    accessPermissions.licensesView,
+  );
   const [isAdministrationOpen, setIsAdministrationOpen] = useState(true);
   const sections = useMemo(
     () =>
@@ -61,8 +67,13 @@ export function SettingsPage() {
           label: 'Аккаунт',
           isVisible: true,
         },
+        {
+          key: 'licenses',
+          label: 'Лицензии',
+          isVisible: canManageLicensing,
+        },
       ].filter((section) => section.isVisible),
-    [],
+    [canManageLicensing],
   );
   const sectionKeys = [
     ...sections.map((section) => section.key),
@@ -75,12 +86,12 @@ export function SettingsPage() {
       ? sectionFromSearch
       : (sections[0]?.key ?? 'overview');
 
-  const activeSection = sections.find((section) => section.key === activeSectionKey) ?? sections[0];
   const fullNameParts = splitFullName(auth.account?.user.fullName);
   const [firstName, setFirstName] = useState(fullNameParts.firstName);
   const [lastName, setLastName] = useState(fullNameParts.lastName);
   const [accountErrorMessage, setAccountErrorMessage] = useState<string | null>(null);
   const [isAccountSaving, setIsAccountSaving] = useState(false);
+  const [isLicenseTypesModalOpen, setIsLicenseTypesModalOpen] = useState(false);
 
   function handleSectionChange(sectionKey: string) {
     const nextSearchParams = new URLSearchParams(searchParams);
@@ -254,7 +265,37 @@ export function SettingsPage() {
                   </div>
                 </div>
               </div>
+
             </div>
+          ) : null}
+
+          {activeSectionKey === 'licenses' ? (
+            canManageLicensing ? (
+              <div className="content-card settings-license-dictionary-card">
+                <div className="settings-section-header">
+                  <h2>Лицензии</h2>
+                </div>
+
+                <div className="settings-license-dictionary-copy">
+                  <h3>Справочник "Тип лицензии"</h3>
+                  <p>Используется для выбора значения "Тип лицензии" в реестре лицензий.</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setIsLicenseTypesModalOpen(true)}
+                >
+                  Настроить
+                </Button>
+              </div>
+            ) : (
+              <div className="content-card">
+                <EmptyState
+                  title="Licensing settings are unavailable"
+                  message="У текущего аккаунта нет прав на управление лицензированием."
+                />
+              </div>
+            )
           ) : null}
 
           {activeSectionKey === 'group-access' ? (
@@ -282,8 +323,18 @@ export function SettingsPage() {
               </div>
             )
           ) : null}
+
         </section>
       </div>
+
+      <Modal
+        isOpen={isLicenseTypesModalOpen}
+        title='Настройка справочника "Тип лицензии"'
+        description='Добавляйте и удаляйте значения справочника, используемого в реестре лицензий.'
+        onClose={() => setIsLicenseTypesModalOpen(false)}
+      >
+        <LicenseTypesSettingsPanel />
+      </Modal>
     </div>
   );
 }

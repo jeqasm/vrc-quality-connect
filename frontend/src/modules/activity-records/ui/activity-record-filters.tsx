@@ -1,4 +1,5 @@
 import { Button } from '../../../shared/ui/button/button';
+import { DateInput } from '../../../shared/ui/date-input/date-input';
 import { FormEvent } from 'react';
 
 import { ReferenceDataBundle } from '../../reference-data/model/reference-data';
@@ -86,21 +87,21 @@ export function ActivityRecordFilters(props: ActivityRecordFiltersProps) {
 
       <label className="field-grid">
         <span>Date from</span>
-        <input
-          className="field-input"
-          type="date"
+        <DateInput
           value={props.values.dateFrom}
-          onChange={(event) => props.onChange('dateFrom', event.target.value)}
+          onChange={(nextValue) => props.onChange('dateFrom', nextValue)}
+          pickerAriaLabel="Открыть выбор начальной даты фильтра"
+          clearAriaLabel="Очистить начальную дату фильтра"
         />
       </label>
 
       <label className="field-grid">
         <span>Date to</span>
-        <input
-          className="field-input"
-          type="date"
+        <DateInput
           value={props.values.dateTo}
-          onChange={(event) => props.onChange('dateTo', event.target.value)}
+          onChange={(nextValue) => props.onChange('dateTo', nextValue)}
+          pickerAriaLabel="Открыть выбор конечной даты фильтра"
+          clearAriaLabel="Очистить конечную дату фильтра"
         />
       </label>
 

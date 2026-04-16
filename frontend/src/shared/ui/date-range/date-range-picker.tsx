@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { DateInput } from '../date-input/date-input';
 
 type DateRangeValue = {
   dateFrom: string;
@@ -13,8 +13,6 @@ type DateRangePickerProps = {
 };
 
 export function DateRangePicker(props: DateRangePickerProps) {
-  const dateFromInputRef = useRef<HTMLInputElement | null>(null);
-  const dateToInputRef = useRef<HTMLInputElement | null>(null);
   const containerClassName =
     props.variant === 'panel' ? 'panel-date-range' : 'toolbar-date-range';
 
@@ -22,90 +20,32 @@ export function DateRangePicker(props: DateRangePickerProps) {
     <div className={containerClassName}>
       <label className="toolbar-date-field">
         <span>Period</span>
-        <span className="date-field-control">
-          <input
-            ref={dateFromInputRef}
-            className="field-input date-field-input"
-            type="date"
-            value={props.value.dateFrom}
-            onChange={(event) =>
-              props.onChange({
-                ...props.value,
-                dateFrom: event.target.value,
-              })
-            }
-          />
-          <button
-            type="button"
-            className="date-picker-icon-button"
-            onClick={() => {
-              dateFromInputRef.current?.showPicker?.();
-              dateFromInputRef.current?.focus();
-            }}
-            aria-label="Открыть выбор начальной даты"
-          >
-            <span className="date-picker-icon" aria-hidden="true" />
-          </button>
-          {props.allowEmpty ? (
-            <button
-              type="button"
-              className="date-clear-icon-button"
-              onClick={() =>
-                props.onChange({
-                  ...props.value,
-                  dateFrom: '',
-                })
-              }
-              aria-label="Очистить начальную дату"
-            >
-              <span className="date-clear-icon" aria-hidden="true" />
-            </button>
-          ) : null}
-        </span>
+        <DateInput
+          value={props.value.dateFrom}
+          onChange={(dateFrom) =>
+            props.onChange({
+              ...props.value,
+              dateFrom,
+            })
+          }
+          clearAriaLabel="Очистить начальную дату"
+          pickerAriaLabel="Открыть выбор начальной даты"
+        />
       </label>
 
       <label className="toolbar-date-field">
         <span>To</span>
-        <span className="date-field-control">
-          <input
-            ref={dateToInputRef}
-            className="field-input date-field-input"
-            type="date"
-            value={props.value.dateTo}
-            onChange={(event) =>
-              props.onChange({
-                ...props.value,
-                dateTo: event.target.value,
-              })
-            }
-          />
-          <button
-            type="button"
-            className="date-picker-icon-button"
-            onClick={() => {
-              dateToInputRef.current?.showPicker?.();
-              dateToInputRef.current?.focus();
-            }}
-            aria-label="Открыть выбор конечной даты"
-          >
-            <span className="date-picker-icon" aria-hidden="true" />
-          </button>
-          {props.allowEmpty ? (
-            <button
-              type="button"
-              className="date-clear-icon-button"
-              onClick={() =>
-                props.onChange({
-                  ...props.value,
-                  dateTo: '',
-                })
-              }
-              aria-label="Очистить конечную дату"
-            >
-              <span className="date-clear-icon" aria-hidden="true" />
-            </button>
-          ) : null}
-        </span>
+        <DateInput
+          value={props.value.dateTo}
+          onChange={(dateTo) =>
+            props.onChange({
+              ...props.value,
+              dateTo,
+            })
+          }
+          clearAriaLabel="Очистить конечную дату"
+          pickerAriaLabel="Открыть выбор конечной даты"
+        />
       </label>
     </div>
   );

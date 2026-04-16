@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 
 import { Button } from '../../../shared/ui/button/button';
+import { DateInput } from '../../../shared/ui/date-input/date-input';
 import { Input } from '../../../shared/ui/input/input';
 import { Textarea } from '../../../shared/ui/textarea/textarea';
 import { ReferenceDataBundle } from '../../reference-data/model/reference-data';
@@ -196,11 +197,12 @@ export function ActivityRecordCreateForm(props: ActivityRecordCreateFormProps) {
 
       <label className="field-grid">
         <span>Work date</span>
-        <Input
+        <DateInput
           className={errors.workDate ? 'field-error' : undefined}
-          type="date"
           value={formState.workDate}
-          onChange={(event) => updateField('workDate', event.target.value)}
+          onChange={(nextValue) => updateField('workDate', nextValue)}
+          pickerAriaLabel="Открыть выбор даты работы"
+          clearAriaLabel="Очистить дату работы"
         />
         {errors.workDate ? <div className="error-text">{errors.workDate}</div> : null}
       </label>

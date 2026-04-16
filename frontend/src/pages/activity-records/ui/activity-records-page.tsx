@@ -39,7 +39,7 @@ const initialDateRangeState: DateRangeState = {
   dateTo: currentWeekDateRange.dateTo,
 };
 
-const activityZoneTabs: ActivityRecordZoneKey[] = ['qa', 'licenses', 'support', 'management'];
+const activityZoneTabs: ActivityRecordZoneKey[] = ['licenses', 'qa', 'support', 'management'];
 const activityRecordsPageStateStorageKey = 'activity-records-page-state';
 
 function isActivityRecordZoneKey(value: string | null): value is ActivityRecordZoneKey {
@@ -259,7 +259,7 @@ export function ActivityRecordsPage() {
   const zoneFromSearch = searchParams.get('tab');
   const zoneKey: ActivityRecordZoneKey = isActivityRecordZoneKey(zoneFromSearch)
     ? zoneFromSearch
-    : 'qa';
+    : activityZoneTabs[0];
   const usersQuery = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
