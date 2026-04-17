@@ -20,6 +20,7 @@ import { AuthRegistrationRepository } from '../repositories/auth-registration.re
 import { AuthSessionsRepository } from '../repositories/auth-sessions.repository';
 import { RegistrationInviteWithRelations, RegistrationInvitesRepository } from '../repositories/registration-invites.repository';
 import { AuthAccountMapper } from './auth-account.mapper';
+import { LoginAttemptLimiterService } from './login-attempt-limiter.service';
 import { AuthTokensService } from './auth-tokens.service';
 import { PasswordHashService } from './password-hash.service';
 
@@ -34,6 +35,7 @@ export class AuthService {
     private readonly registrationInvitesRepository: RegistrationInvitesRepository,
     private readonly passwordHashService: PasswordHashService,
     private readonly authTokensService: AuthTokensService,
+    private readonly loginAttemptLimiterService: LoginAttemptLimiterService,
     private readonly accessControlService: AccessControlService,
     private readonly usersRepository: UsersRepository,
   ) {}
@@ -127,20 +129,32 @@ export class AuthService {
     };
   }
 
-  async login(dto: LoginDto): Promise<AuthSessionResponseDto> {
-    const authAccount = await this.authAccountsRepository.findByEmail(dto.email.toLowerCase());
+  async login(dto: LoginDto, clientIpAddress: string): Promise<AuthSessionResponseDto> {
+    const normalizedEmail = dto.email.trim().toLowerCase();
+    this.loginAttemptLimiterService.ensureAllowed(clientIpAddress, normalizedEmail);
 
-    if (!authAccount || !this.passwordHashService.verify(dto.password, authAccount.passwordHash)) {
-      throw new AuthenticationFailedError('Invalid email or password');
+    try {
+      const authAccount = await this.authAccountsRepository.findByEmail(normalizedEmail);
+
+      if (!authAccount || !this.passwordHashService.verify(dto.password, authAccount.passwordHash)) {
+        throw new AuthenticationFailedError('Invalid email or password');
+      }
+
+      if (authAccount.status !== 'active') {
+        throw new AuthenticationFailedError('Account is not active');
+      }
+
+      this.loginAttemptLimiterService.clearFailures(clientIpAddress, normalizedEmail);
+      await this.authAccountsRepository.updateLastLoginAt(authAccount.id, new Date());
+
+      return this.createSessionResponse(authAccount.id);
+    } catch (error) {
+      if (error instanceof AuthenticationFailedError) {
+        this.loginAttemptLimiterService.registerFailure(clientIpAddress, normalizedEmail);
+      }
+
+      throw error;
     }
-
-    if (authAccount.status !== 'active') {
-      throw new AuthenticationFailedError('Account is not active');
-    }
-
-    await this.authAccountsRepository.updateLastLoginAt(authAccount.id, new Date());
-
-    return this.createSessionResponse(authAccount.id);
   }
 
   async getCurrentAccountByToken(accessToken: string): Promise<AuthenticatedAccountEntity> {

@@ -1,4 +1,5 @@
 import { Body, Controller, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 
 import { AuthenticatedRequest } from '../../../common/auth/authenticated-request';
 import { accessPermissionCodes } from '../../access-control/constants/access-permission-codes';
@@ -30,8 +31,8 @@ export class AuthController {
 
   @HttpCode(200)
   @Post('login')
-  login(@Body() dto: LoginDto): Promise<AuthSessionResponseDto> {
-    return this.authService.login(dto);
+  login(@Req() request: Request, @Body() dto: LoginDto): Promise<AuthSessionResponseDto> {
+    return this.authService.login(dto, this.extractClientIp(request));
   }
 
   @Get('registration-invites/:inviteToken')
@@ -78,5 +79,19 @@ export class AuthController {
     const authorizationHeader = request.headers.authorization!;
     const accessToken = authorizationHeader.slice('Bearer '.length).trim();
     await this.authService.logout(accessToken);
+  }
+
+  private extractClientIp(request: Request): string {
+    const forwardedForHeader = request.headers['x-forwarded-for'];
+
+    if (typeof forwardedForHeader === 'string' && forwardedForHeader.length > 0) {
+      return forwardedForHeader.split(',')[0].trim();
+    }
+
+    if (Array.isArray(forwardedForHeader) && forwardedForHeader.length > 0) {
+      return forwardedForHeader[0].trim();
+    }
+
+    return request.ip || request.socket.remoteAddress || 'unknown';
   }
 }
