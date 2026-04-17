@@ -14,3 +14,4 @@ frontend/dist/
 frontend/.vite/
 backend/generated/
 backups/
+*.log
