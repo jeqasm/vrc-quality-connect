@@ -79,6 +79,7 @@
 Опционально для frontend можно задать repository variable `VITE_API_URL` в GitHub:
 
 - `Settings -> Secrets and variables -> Actions -> Variables`
+- если переменная не задана, используется fallback `/api`
 
 ## Документация
 
@@ -89,6 +90,7 @@
 - `docs/architecture/modules.md`
 - `docs/architecture/license-registry-import.md`
 - `docs/product/*`
+- `DEPLOY.md`
 
 ## Базовые сущности каркаса
 

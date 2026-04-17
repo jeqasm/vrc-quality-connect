@@ -2,6 +2,9 @@ node_modules/
 dist/
 .env
 .env.local
+.env.production
+backend/.env.production
+frontend/.env.production
 .DS_Store
 coverage/
 backend/node_modules/
