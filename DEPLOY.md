@@ -90,3 +90,35 @@ docker compose --env-file .env.production -f docker-compose.prod.yml logs -f bac
 docker compose --env-file .env.production -f docker-compose.prod.yml logs -f frontend
 docker compose --env-file .env.production -f docker-compose.prod.yml logs -f postgres
 ```
+
+## 10. Database backups
+
+Run manual backup:
+
+```bash
+./scripts/backup-db.sh
+```
+
+Optional retention cleanup on each run (example: 14 days):
+
+```bash
+RETENTION_DAYS=14 ./scripts/backup-db.sh
+```
+
+Restore from backup (destructive):
+
+```bash
+./scripts/restore-db.sh ./backups/vrc_quality_connect_YYYYMMDD_HHMMSS.dump
+```
+
+Non-interactive restore:
+
+```bash
+./scripts/restore-db.sh ./backups/vrc_quality_connect_YYYYMMDD_HHMMSS.dump --yes
+```
+
+Example cron (daily at 03:00, keep 14 days):
+
+```cron
+0 3 * * * cd /opt/vrc-quality-connect && RETENTION_DAYS=14 ./scripts/backup-db.sh >> /var/log/vrc-quality-connect-backup.log 2>&1
+```
