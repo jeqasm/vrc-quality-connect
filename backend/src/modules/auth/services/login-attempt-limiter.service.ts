@@ -1,4 +1,4 @@
-import { Injectable, TooManyRequestsException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 type AttemptRecord = {
@@ -56,12 +56,15 @@ export class LoginAttemptLimiterService {
       return;
     }
 
-    throw new TooManyRequestsException({
-      statusCode: 429,
-      message: 'Too many login attempts. Try again later.',
-      retryAfterSeconds: Math.max(1, Math.ceil((currentRecord.blockedUntil - now) / 1000)),
-      scope,
-    });
+    throw new HttpException(
+      {
+        statusCode: HttpStatus.TOO_MANY_REQUESTS,
+        message: 'Too many login attempts. Try again later.',
+        retryAfterSeconds: Math.max(1, Math.ceil((currentRecord.blockedUntil - now) / 1000)),
+        scope,
+      },
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
   }
 
   private registerScopeFailure(
