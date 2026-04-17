@@ -7,6 +7,9 @@ async function main(): Promise<void> {
     ['dashboard.view', 'View dashboard', 'dashboard'],
     ['activity-records.view', 'View activity records', 'activity-records'],
     ['activity-records.create', 'Create activity records', 'activity-records'],
+    ['activity-records.qa.view', 'View QA activity tab', 'activity-records'],
+    ['activity-records.support.view', 'View support activity tab', 'activity-records'],
+    ['activity-records.management.view', 'View management activity tab', 'activity-records'],
     ['reports.view', 'View reports workspace', 'reports'],
     ['reports.qa.view', 'View QA reports tab', 'reports'],
     ['reports.licenses.view', 'View license reports tab', 'reports'],
@@ -31,22 +34,16 @@ async function main(): Promise<void> {
       'activity-records.view',
       'activity-records.create',
       'reports.view',
-      'reports.qa.view',
-      'reports.licenses.view',
-      'reports.support.view',
       'licenses.view',
       'support-requests.view',
       'settings.view',
       'groups.manage',
     ],
     employee: [
-      'dashboard.view',
       'activity-records.view',
       'activity-records.create',
       'reports.view',
-      'reports.qa.view',
       'licenses.view',
-      'support-requests.view',
     ],
   };
 
@@ -93,17 +90,29 @@ async function main(): Promise<void> {
   }
 
   for (const [roleCode, permissionCodes] of Object.entries(rolePermissionMap)) {
+    const roleId = roleIdsByCode.get(roleCode)!;
+    const desiredPermissionIds = permissionCodes.map((permissionCode) => permissionIdsByCode.get(permissionCode)!);
+
+    await prisma.accessRolePermission.deleteMany({
+      where: {
+        roleId,
+        permissionId: {
+          notIn: desiredPermissionIds,
+        },
+      },
+    });
+
     for (const permissionCode of permissionCodes) {
       await prisma.accessRolePermission.upsert({
         where: {
           roleId_permissionId: {
-            roleId: roleIdsByCode.get(roleCode)!,
+            roleId,
             permissionId: permissionIdsByCode.get(permissionCode)!,
           },
         },
         update: {},
         create: {
-          roleId: roleIdsByCode.get(roleCode)!,
+          roleId,
           permissionId: permissionIdsByCode.get(permissionCode)!,
         },
       });
@@ -185,7 +194,7 @@ async function main(): Promise<void> {
       type: 'department',
       departmentCode: 'qa-testing',
       memberEmails: ['anna.ivanova@vrc.local'],
-      permissionCodes: ['reports.qa.view'],
+      permissionCodes: ['activity-records.qa.view', 'reports.qa.view'],
     },
     {
       code: 'department-technical-support',
@@ -194,7 +203,7 @@ async function main(): Promise<void> {
       type: 'department',
       departmentCode: 'technical-support',
       memberEmails: ['oleg.petrenko@vrc.local'],
-      permissionCodes: ['reports.support.view'],
+      permissionCodes: ['activity-records.support.view', 'reports.support.view'],
     },
     {
       code: 'department-quality-management',
@@ -203,7 +212,7 @@ async function main(): Promise<void> {
       type: 'department',
       departmentCode: 'quality-management',
       memberEmails: ['iryna.koval@vrc.local'],
-      permissionCodes: ['reports.management.view', 'groups.manage'],
+      permissionCodes: ['activity-records.management.view', 'reports.management.view', 'groups.manage'],
     },
   ] as const) {
     const group = await prisma.group.upsert({

@@ -39,11 +39,11 @@ const initialDateRangeState: DateRangeState = {
   dateTo: currentWeekDateRange.dateTo,
 };
 
-const activityZoneTabs: ActivityRecordZoneKey[] = ['licenses', 'qa', 'support', 'management'];
+const allActivityZoneTabs: ActivityRecordZoneKey[] = ['licenses', 'qa', 'support', 'management'];
 const activityRecordsPageStateStorageKey = 'activity-records-page-state';
 
 function isActivityRecordZoneKey(value: string | null): value is ActivityRecordZoneKey {
-  return value !== null && activityZoneTabs.includes(value as ActivityRecordZoneKey);
+  return value !== null && allActivityZoneTabs.includes(value as ActivityRecordZoneKey);
 }
 
 type QaBugFormState = {
@@ -255,14 +255,42 @@ const bugStatusOptions = [
 
 export function ActivityRecordsPage() {
   const auth = useAuth();
+  const accountPermissions = auth.account?.permissions ?? [];
+  const activityZoneTabs: ActivityRecordZoneKey[] = [
+    hasPermission(accountPermissions, accessPermissions.licensesView) ? 'licenses' : null,
+    hasPermission(accountPermissions, accessPermissions.activityRecordsQaView) ? 'qa' : null,
+    hasPermission(accountPermissions, accessPermissions.activityRecordsSupportView) ? 'support' : null,
+    hasPermission(accountPermissions, accessPermissions.activityRecordsManagementView)
+      ? 'management'
+      : null,
+  ].filter(Boolean) as ActivityRecordZoneKey[];
   const [searchParams, setSearchParams] = useSearchParams();
   const zoneFromSearch = searchParams.get('tab');
-  const zoneKey: ActivityRecordZoneKey = isActivityRecordZoneKey(zoneFromSearch)
-    ? zoneFromSearch
-    : activityZoneTabs[0];
+  if (activityZoneTabs.length === 0) {
+    return (
+      <div className="page-grid">
+        <EmptyState
+          title="No activity zones available"
+          message="Для текущего аккаунта пока не назначены права на рабочие зоны."
+        />
+      </div>
+    );
+  }
+
+  const zoneKey: ActivityRecordZoneKey =
+    zoneFromSearch !== null &&
+    isActivityRecordZoneKey(zoneFromSearch) &&
+    activityZoneTabs.includes(zoneFromSearch)
+      ? zoneFromSearch
+      : activityZoneTabs[0];
+  const canManageQaReports = hasPermission(
+    accountPermissions,
+    accessPermissions.usersManage,
+  );
   const usersQuery = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
+    enabled: zoneKey === 'qa' && canManageQaReports,
   });
   const [restoredPageState] = useState<ActivityRecordsPageState>(() =>
     readStoredActivityRecordsPageState(),
@@ -306,13 +334,22 @@ export function ActivityRecordsPage() {
   const [isQaSaveSuccessMessage, setIsQaSaveSuccessMessage] = useState(false);
   const [isQaSubmitConfirmOpen, setIsQaSubmitConfirmOpen] = useState(false);
   const currentUser = auth.account?.user;
-  const canManageQaReports = hasPermission(
-    auth.account?.permissions ?? [],
-    accessPermissions.usersManage,
-  );
-  const allUsers = usersQuery.data ?? [];
+  const allUsers = canManageQaReports ? usersQuery.data ?? [] : [];
   const currentAccountUser = currentUser
-    ? allUsers.find((user) => user.id === currentUser.id) ?? null
+    ? {
+        id: currentUser.id,
+        email: currentUser.email,
+        fullName: currentUser.fullName,
+        accessRole: {
+          code: currentUser.accessRole.code,
+          name: currentUser.accessRole.name,
+        },
+        department: {
+          id: currentUser.department.id,
+          code: currentUser.department.code,
+          name: currentUser.department.name,
+        },
+      }
     : null;
   const qaUsers = canManageQaReports
     ? allUsers
@@ -757,7 +794,7 @@ export function ActivityRecordsPage() {
                 </div>
               </div>
 
-              {usersQuery.isError ? (
+              {canManageQaReports && usersQuery.isError ? (
                 <div className="form-inline-notice">
                   Не удалось загрузить список QA-сотрудников: {usersQuery.error.message}
                 </div>

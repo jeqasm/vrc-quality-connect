@@ -16,19 +16,233 @@ import { FormField } from '../../../shared/ui/form-field/form-field';
 import { Input } from '../../../shared/ui/input/input';
 import { Modal } from '../../../shared/ui/modal/modal';
 import { Textarea } from '../../../shared/ui/textarea/textarea';
+import { ApiError } from '../../../shared/api/api-client';
 
-function groupPermissionsByCategory(
-  permissions: AccessPermissionCatalogItem[],
-): Array<[string, AccessPermissionCatalogItem[]]> {
-  const map = new Map<string, AccessPermissionCatalogItem[]>();
-
-  for (const permission of permissions) {
-    const currentCategory = map.get(permission.category) ?? [];
-    currentCategory.push(permission);
-    map.set(permission.category, currentCategory);
+function getErrorMessage(error: unknown, fallbackMessage: string): string {
+  if (error instanceof ApiError) {
+    return `${fallbackMessage} (HTTP ${error.status}): ${error.message}`;
   }
 
-  return [...map.entries()].sort(([left], [right]) => left.localeCompare(right));
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallbackMessage;
+}
+
+type PermissionUiMeta = {
+  section: 'navigation' | 'operations' | 'activityTabs' | 'reportTabs' | 'administration';
+  sectionTitle: string;
+  sectionOrder: number;
+  title: string;
+  description: string;
+  order: number;
+};
+
+const permissionUiMetaByCode: Record<string, PermissionUiMeta> = {
+  'dashboard.view': {
+    section: 'navigation',
+    sectionTitle: 'Навигация',
+    sectionOrder: 1,
+    title: 'Главная',
+    description: 'Показывает страницу Dashboard и пункт меню.',
+    order: 10,
+  },
+  'activity-records.view': {
+    section: 'navigation',
+    sectionTitle: 'Навигация',
+    sectionOrder: 1,
+    title: 'Учет активности',
+    description: 'Показывает страницу Activity records и пункт меню.',
+    order: 20,
+  },
+  'reports.view': {
+    section: 'navigation',
+    sectionTitle: 'Навигация',
+    sectionOrder: 1,
+    title: 'Отчеты',
+    description: 'Показывает страницу Reports и пункт меню.',
+    order: 30,
+  },
+  'support-requests.view': {
+    section: 'navigation',
+    sectionTitle: 'Навигация',
+    sectionOrder: 1,
+    title: 'Поддержка',
+    description: 'Показывает страницу Support requests и пункт меню.',
+    order: 40,
+  },
+  'settings.view': {
+    section: 'navigation',
+    sectionTitle: 'Навигация',
+    sectionOrder: 1,
+    title: 'Настройки',
+    description: 'Показывает страницу Settings и пункт меню.',
+    order: 50,
+  },
+  'activity-records.create': {
+    section: 'operations',
+    sectionTitle: 'Операции',
+    sectionOrder: 2,
+    title: 'Создание записей активности',
+    description: 'Разрешает создавать activity records через API/UI.',
+    order: 10,
+  },
+  'licenses.view': {
+    section: 'activityTabs',
+    sectionTitle: 'Вкладки учета активности',
+    sectionOrder: 3,
+    title: 'Лицензии',
+    description: 'Показывает вкладку «Лицензии» в учете активности и дает доступ к license workspace.',
+    order: 10,
+  },
+  'activity-records.qa.view': {
+    section: 'activityTabs',
+    sectionTitle: 'Вкладки учета активности',
+    sectionOrder: 3,
+    title: 'QA / Testing',
+    description: 'Показывает QA-вкладку в «Учете активности».',
+    order: 20,
+  },
+  'activity-records.support.view': {
+    section: 'activityTabs',
+    sectionTitle: 'Вкладки учета активности',
+    sectionOrder: 3,
+    title: 'Technical Support',
+    description: 'Показывает Technical Support-вкладку в «Учете активности».',
+    order: 30,
+  },
+  'activity-records.management.view': {
+    section: 'activityTabs',
+    sectionTitle: 'Вкладки учета активности',
+    sectionOrder: 3,
+    title: 'Management',
+    description: 'Показывает Management-вкладку в «Учете активности».',
+    order: 40,
+  },
+  'reports.qa.view': {
+    section: 'reportTabs',
+    sectionTitle: 'Вкладки отчетов',
+    sectionOrder: 4,
+    title: 'QA / Testing',
+    description: 'Показывает QA-вкладку в разделе «Отчеты».',
+    order: 10,
+  },
+  'reports.licenses.view': {
+    section: 'reportTabs',
+    sectionTitle: 'Вкладки отчетов',
+    sectionOrder: 4,
+    title: 'Лицензии',
+    description: 'Показывает вкладку «Лицензии» в разделе «Отчеты».',
+    order: 20,
+  },
+  'reports.support.view': {
+    section: 'reportTabs',
+    sectionTitle: 'Вкладки отчетов',
+    sectionOrder: 4,
+    title: 'Technical Support',
+    description: 'Показывает Technical Support-вкладку в разделе «Отчеты».',
+    order: 30,
+  },
+  'reports.management.view': {
+    section: 'reportTabs',
+    sectionTitle: 'Вкладки отчетов',
+    sectionOrder: 4,
+    title: 'Management',
+    description: 'Показывает Management-вкладку в разделе «Отчеты».',
+    order: 40,
+  },
+  'users.manage': {
+    section: 'administration',
+    sectionTitle: 'Администрирование',
+    sectionOrder: 5,
+    title: 'Управление пользователями',
+    description: 'Доступ к разделу Users в Settings.',
+    order: 10,
+  },
+  'groups.manage': {
+    section: 'administration',
+    sectionTitle: 'Администрирование',
+    sectionOrder: 5,
+    title: 'Управление группами',
+    description: 'Доступ к разделу Groups в Settings.',
+    order: 20,
+  },
+};
+
+const permissionDependenciesByCode: Record<string, string[]> = {
+  'activity-records.qa.view': ['activity-records.view'],
+  'activity-records.support.view': ['activity-records.view'],
+  'activity-records.management.view': ['activity-records.view'],
+  'reports.qa.view': ['reports.view'],
+  'reports.licenses.view': ['reports.view'],
+  'reports.support.view': ['reports.view'],
+  'reports.management.view': ['reports.view'],
+  'users.manage': ['settings.view'],
+  'groups.manage': ['settings.view'],
+  'licenses.view': ['activity-records.view'],
+};
+
+type PermissionViewItem = AccessPermissionCatalogItem & {
+  uiTitle: string;
+  uiDescription: string;
+  sectionTitle: string;
+  sectionOrder: number;
+  order: number;
+};
+
+function withRequiredPermissions(permissionCodes: string[]): string[] {
+  const expanded = new Set(permissionCodes);
+  let updated = true;
+
+  while (updated) {
+    updated = false;
+
+    for (const code of Array.from(expanded)) {
+      for (const requiredCode of permissionDependenciesByCode[code] ?? []) {
+        if (!expanded.has(requiredCode)) {
+          expanded.add(requiredCode);
+          updated = true;
+        }
+      }
+    }
+  }
+
+  return Array.from(expanded);
+}
+
+function buildPermissionSections(
+  permissions: AccessPermissionCatalogItem[],
+): Array<[string, PermissionViewItem[]]> {
+  const map = new Map<string, PermissionViewItem[]>();
+
+  for (const permission of permissions) {
+    const uiMeta = permissionUiMetaByCode[permission.code];
+
+    if (!uiMeta) {
+      continue;
+    }
+
+    const entry: PermissionViewItem = {
+      ...permission,
+      uiTitle: uiMeta.title,
+      uiDescription: uiMeta.description,
+      sectionTitle: uiMeta.sectionTitle,
+      sectionOrder: uiMeta.sectionOrder,
+      order: uiMeta.order,
+    };
+
+    const current = map.get(uiMeta.sectionTitle) ?? [];
+    current.push(entry);
+    map.set(uiMeta.sectionTitle, current);
+  }
+
+  return [...map.entries()]
+    .map(([section, sectionPermissions]) => [
+      section,
+      sectionPermissions.sort((left, right) => left.order - right.order),
+    ] as [string, PermissionViewItem[]])
+    .sort((left, right) => left[1][0].sectionOrder - right[1][0].sectionOrder);
 }
 
 export function GroupsAdminPanel() {
@@ -62,10 +276,18 @@ export function GroupsAdminPanel() {
   });
 
   const groupedPermissions = useMemo(
-    () => groupPermissionsByCategory(permissionsQuery.data ?? []),
+    () => buildPermissionSections(permissionsQuery.data ?? []),
     [permissionsQuery.data],
   );
   const selectedGroup = (groupsQuery.data ?? []).find((group) => group.id === selectedGroupId) ?? null;
+  const selectableUsers = useMemo(() => {
+    if (!selectedGroup) {
+      return usersQuery.data ?? [];
+    }
+
+    const memberIds = new Set(selectedGroup.members.map((member) => member.userId));
+    return (usersQuery.data ?? []).filter((user) => !memberIds.has(user.id));
+  }, [selectedGroup, usersQuery.data]);
 
   const createGroupMutation = useMutation({
     mutationFn: createGroup,
@@ -89,13 +311,20 @@ export function GroupsAdminPanel() {
   const assignMemberMutation = useMutation({
     mutationFn: ({ groupId, userId }: { groupId: string; userId: string }) =>
       assignGroupMember(groupId, userId),
-    onSuccess: async () => {
+    onSuccess: async (updatedGroup) => {
       setSelectedUserId('');
       setMemberErrorMessage(null);
+      queryClient.setQueryData<GroupItem[]>(['groups'], (currentGroups) => {
+        if (!currentGroups) {
+          return currentGroups;
+        }
+
+        return currentGroups.map((group) => (group.id === updatedGroup.id ? updatedGroup : group));
+      });
       await queryClient.invalidateQueries({ queryKey: ['groups'] });
     },
     onError: (error) => {
-      setMemberErrorMessage(error instanceof Error ? error.message : 'Failed to assign member');
+      setMemberErrorMessage(getErrorMessage(error, 'Failed to assign member'));
     },
   });
 
@@ -129,6 +358,11 @@ export function GroupsAdminPanel() {
       return;
     }
 
+    if (selectedGroup?.members.some((member) => member.userId === selectedUserId)) {
+      setMemberErrorMessage('Selected user is already a member of this group.');
+      return;
+    }
+
     assignMemberMutation.mutate({
       groupId: selectedGroupId,
       userId: selectedUserId,
@@ -141,28 +375,37 @@ export function GroupsAdminPanel() {
       return;
     }
 
+    const permissionCodes = withRequiredPermissions(selectedPermissionCodes);
+    setSelectedPermissionCodes(permissionCodes);
+
     assignPermissionsMutation.mutate({
       groupId: selectedGroupId,
-      permissionCodes: selectedPermissionCodes,
+      permissionCodes,
     });
   }
 
   function handleGroupSelection(groupId: string) {
     setSelectedGroupId(groupId);
     const nextGroup = (groupsQuery.data ?? []).find((group) => group.id === groupId);
-    setSelectedPermissionCodes(nextGroup?.permissions.map((permission) => permission.code) ?? []);
+    setSelectedPermissionCodes(
+      withRequiredPermissions(nextGroup?.permissions.map((permission) => permission.code) ?? []),
+    );
     setMemberErrorMessage(null);
     setPermissionsErrorMessage(null);
     setSelectedUserId('');
+    void queryClient.invalidateQueries({ queryKey: ['users'] });
+    void queryClient.invalidateQueries({ queryKey: ['groups'] });
     setIsManageGroupModalOpen(true);
   }
 
   function togglePermission(permissionCode: string) {
-    setSelectedPermissionCodes((current) =>
-      current.includes(permissionCode)
-        ? current.filter((item) => item !== permissionCode)
-        : [...current, permissionCode],
-    );
+    setSelectedPermissionCodes((current) => {
+      if (current.includes(permissionCode)) {
+        return current.filter((item) => item !== permissionCode);
+      }
+
+      return withRequiredPermissions([...current, permissionCode]);
+    });
   }
 
   return (
@@ -295,7 +538,7 @@ export function GroupsAdminPanel() {
             <section className="content-card">
               <div className="section-heading">
                 <div>
-                  <h2>Members</h2>
+                  <h2>Участники</h2>
                   <p className="card-subtitle">{selectedGroup.name}</p>
                 </div>
               </div>
@@ -305,16 +548,17 @@ export function GroupsAdminPanel() {
                   className="field-select"
                   value={selectedUserId}
                   onChange={(event) => setSelectedUserId(event.target.value)}
+                  required
                 >
-                  <option value="">Select user</option>
-                  {(usersQuery.data ?? []).map((user: UserOption) => (
+                  <option value="">Выбери пользователя</option>
+                  {selectableUsers.map((user: UserOption) => (
                     <option key={user.id} value={user.id}>
                       {user.fullName} | {user.department.name}
                     </option>
                   ))}
                 </select>
-                <Button type="submit" disabled={assignMemberMutation.isPending}>
-                  {assignMemberMutation.isPending ? 'Adding...' : 'Add member'}
+                <Button type="submit" disabled={assignMemberMutation.isPending || !selectedUserId}>
+                  {assignMemberMutation.isPending ? 'Добавление...' : 'Добавить в группу'}
                 </Button>
               </form>
 
@@ -333,15 +577,18 @@ export function GroupsAdminPanel() {
             <section className="content-card">
               <div className="section-heading">
                 <div>
-                  <h2>Permissions</h2>
-                  <p className="card-subtitle">Назначение прав происходит на всю группу.</p>
+                  <h2>Права</h2>
+                  <p className="card-subtitle">
+                    Права ниже соответствуют реальным разделам интерфейса. Часть базовых прав
+                    добавляется автоматически.
+                  </p>
                 </div>
                 <Button
                   type="button"
                   onClick={handleSavePermissions}
                   disabled={assignPermissionsMutation.isPending}
                 >
-                  {assignPermissionsMutation.isPending ? 'Saving...' : 'Save permissions'}
+                  {assignPermissionsMutation.isPending ? 'Сохранение...' : 'Сохранить права'}
                 </Button>
               </div>
 
@@ -362,8 +609,9 @@ export function GroupsAdminPanel() {
                             onChange={() => togglePermission(permission.code)}
                           />
                           <span>
-                            <strong>{permission.name}</strong>
+                            <strong>{permission.uiTitle}</strong>
                             <span className="muted-text"> {permission.code}</span>
+                            <div className="muted-text">{permission.uiDescription}</div>
                           </span>
                         </label>
                       ))}
