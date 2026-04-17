@@ -69,6 +69,7 @@
 - `docs/architecture/access-control.md`
 - `docs/architecture/modules.md`
 - `docs/architecture/license-registry-import.md`
+- `docs/operations/production-access-control-sync.md`
 - `docs/product/*`
 
 ## Базовые сущности каркаса
