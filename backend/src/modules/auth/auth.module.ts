@@ -10,6 +10,7 @@ import { AuthRegistrationRepository } from './repositories/auth-registration.rep
 import { AuthSessionsRepository } from './repositories/auth-sessions.repository';
 import { RegistrationInvitesRepository } from './repositories/registration-invites.repository';
 import { AuthService } from './services/auth.service';
+import { LoginAttemptLimiterService } from './services/login-attempt-limiter.service';
 import { AuthTokensService } from './services/auth-tokens.service';
 import { PasswordHashService } from './services/password-hash.service';
 
@@ -23,6 +24,7 @@ import { PasswordHashService } from './services/password-hash.service';
     RegistrationInvitesRepository,
     PasswordHashService,
     AuthTokensService,
+    LoginAttemptLimiterService,
     AuthService,
     AuthSessionGuard,
     PermissionsGuard,
