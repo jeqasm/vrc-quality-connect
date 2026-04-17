@@ -5,13 +5,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-COPY tsconfig*.json ./
-COPY vite.config.* ./
-COPY index.html ./
-COPY public ./public
-COPY src ./src
+# Copy project files after dependency install so missing optional folders
+# like "public/" do not break image build.
+COPY . .
 
-ARG VITE_API_URL=http://localhost:3000/api
+ARG VITE_API_URL=/api
 ENV VITE_API_URL=$VITE_API_URL
 
 RUN npm run build
