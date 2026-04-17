@@ -48,7 +48,7 @@ export function AppShell() {
             <div>{currentAccount.user.accessRole.name}</div>
             <div>{currentAccount.user.department.name}</div>
             <button type="button" className="ghost-button sidebar-logout" onClick={() => void auth.logout()}>
-              Sign out
+              Выйти из аккаунта
             </button>
           </div>
         ) : null}
