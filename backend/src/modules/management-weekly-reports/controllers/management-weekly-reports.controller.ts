@@ -15,19 +15,19 @@ export class ManagementWeeklyReportsController {
   constructor(private readonly managementWeeklyReportsService: ManagementWeeklyReportsService) {}
 
   @Get()
-  @RequirePermissions(accessPermissionCodes.reportsManagementView)
+  @RequirePermissions(accessPermissionCodes.activityRecordsManagementView)
   findOne(@Query() dto: QueryManagementWeeklyReportsDto): Promise<ManagementWeeklyReportResponseDto | null> {
     return this.managementWeeklyReportsService.findOne(dto);
   }
 
   @Put()
-  @RequirePermissions(accessPermissionCodes.reportsManagementView)
+  @RequirePermissions(accessPermissionCodes.activityRecordsManagementView)
   upsert(@Body() dto: UpsertManagementWeeklyReportDto): Promise<ManagementWeeklyReportResponseDto> {
     return this.managementWeeklyReportsService.upsert(dto);
   }
 
   @Post(':id/submit')
-  @RequirePermissions(accessPermissionCodes.reportsManagementView)
+  @RequirePermissions(accessPermissionCodes.activityRecordsManagementView)
   submit(@Param('id') id: string): Promise<ManagementWeeklyReportResponseDto> {
     return this.managementWeeklyReportsService.submit(id);
   }

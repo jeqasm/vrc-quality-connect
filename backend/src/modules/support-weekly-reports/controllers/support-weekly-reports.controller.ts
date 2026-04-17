@@ -15,19 +15,19 @@ export class SupportWeeklyReportsController {
   constructor(private readonly supportWeeklyReportsService: SupportWeeklyReportsService) {}
 
   @Get()
-  @RequirePermissions(accessPermissionCodes.reportsSupportView)
+  @RequirePermissions(accessPermissionCodes.activityRecordsSupportView)
   findOne(@Query() dto: QuerySupportWeeklyReportsDto): Promise<SupportWeeklyReportResponseDto | null> {
     return this.supportWeeklyReportsService.findOne(dto);
   }
 
   @Put()
-  @RequirePermissions(accessPermissionCodes.reportsSupportView)
+  @RequirePermissions(accessPermissionCodes.activityRecordsSupportView)
   upsert(@Body() dto: UpsertSupportWeeklyReportDto): Promise<SupportWeeklyReportResponseDto> {
     return this.supportWeeklyReportsService.upsert(dto);
   }
 
   @Post(':id/submit')
-  @RequirePermissions(accessPermissionCodes.reportsSupportView)
+  @RequirePermissions(accessPermissionCodes.activityRecordsSupportView)
   submit(@Param('id') id: string): Promise<SupportWeeklyReportResponseDto> {
     return this.supportWeeklyReportsService.submit(id);
   }
