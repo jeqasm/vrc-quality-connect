@@ -142,28 +142,42 @@ export function ManagementWeeklyReportWorkspace(props: {
   const [selectedUserId, setSelectedUserId] = useState('');
 
   const currentUser = auth.account?.user;
+  const currentAccountUser: UserOption | null = currentUser
+    ? {
+        id: currentUser.id,
+        email: currentUser.email,
+        fullName: currentUser.fullName,
+        accessRole: currentUser.accessRole,
+        department: currentUser.department,
+      }
+    : null;
   const canManageManagementReports = hasPermission(
     auth.account?.permissions ?? [],
     accessPermissions.reportsManagementView,
   );
+  const canLoadUsers = hasPermission(
+    auth.account?.permissions ?? [],
+    accessPermissions.usersManage,
+  );
   const usersQuery = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
-    enabled: canManageManagementReports,
+    enabled: canManageManagementReports && canLoadUsers,
   });
   const allUsers = usersQuery.data ?? [];
   const managementUsers = getManagementUsers(allUsers);
-  const currentAccountUser = currentUser
-    ? allUsers.find((user) => user.id === currentUser.id) ?? null
-    : null;
   const availableUsers =
-    managementUsers.length > 0
-      ? currentAccountUser && !managementUsers.some((user) => user.id === currentAccountUser.id)
-        ? [currentAccountUser, ...managementUsers]
-        : managementUsers
+    canLoadUsers
+      ? managementUsers.length > 0
+        ? currentAccountUser && !managementUsers.some((user) => user.id === currentAccountUser.id)
+          ? [currentAccountUser, ...managementUsers]
+          : managementUsers
+        : currentAccountUser
+          ? [currentAccountUser]
+          : allUsers
       : currentAccountUser
         ? [currentAccountUser]
-        : allUsers;
+        : [];
   const selectedUser = availableUsers.find((user) => user.id === selectedUserId) ?? null;
 
   const managementWeeklyReportQuery = useQuery({
@@ -272,11 +286,11 @@ export function ManagementWeeklyReportWorkspace(props: {
     );
   }
 
-  if (usersQuery.isLoading) {
+  if (canLoadUsers && usersQuery.isLoading) {
     return <div className="muted-text">Loading users...</div>;
   }
 
-  if (usersQuery.isError) {
+  if (canLoadUsers && usersQuery.isError) {
     return (
       <EmptyState
         title="Не удалось загрузить пользователей"

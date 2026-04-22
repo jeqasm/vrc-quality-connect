@@ -142,28 +142,42 @@ export function SupportWeeklyReportWorkspace(props: {
   const [selectedUserId, setSelectedUserId] = useState('');
 
   const currentUser = auth.account?.user;
+  const currentAccountUser: UserOption | null = currentUser
+    ? {
+        id: currentUser.id,
+        email: currentUser.email,
+        fullName: currentUser.fullName,
+        accessRole: currentUser.accessRole,
+        department: currentUser.department,
+      }
+    : null;
   const canManageSupportReports = hasPermission(
     auth.account?.permissions ?? [],
     accessPermissions.reportsSupportView,
   );
+  const canLoadUsers = hasPermission(
+    auth.account?.permissions ?? [],
+    accessPermissions.usersManage,
+  );
   const usersQuery = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
-    enabled: canManageSupportReports,
+    enabled: canManageSupportReports && canLoadUsers,
   });
   const allUsers = usersQuery.data ?? [];
   const supportUsers = getSupportUsers(allUsers);
-  const currentAccountUser = currentUser
-    ? allUsers.find((user) => user.id === currentUser.id) ?? null
-    : null;
   const availableUsers =
-    supportUsers.length > 0
-      ? currentAccountUser && !supportUsers.some((user) => user.id === currentAccountUser.id)
-        ? [currentAccountUser, ...supportUsers]
-        : supportUsers
+    canLoadUsers
+      ? supportUsers.length > 0
+        ? currentAccountUser && !supportUsers.some((user) => user.id === currentAccountUser.id)
+          ? [currentAccountUser, ...supportUsers]
+          : supportUsers
+        : currentAccountUser
+          ? [currentAccountUser]
+          : allUsers
       : currentAccountUser
         ? [currentAccountUser]
-        : allUsers;
+        : [];
   const selectedUser = availableUsers.find((user) => user.id === selectedUserId) ?? null;
 
   const supportWeeklyReportQuery = useQuery({
@@ -272,11 +286,11 @@ export function SupportWeeklyReportWorkspace(props: {
     );
   }
 
-  if (usersQuery.isLoading) {
+  if (canLoadUsers && usersQuery.isLoading) {
     return <div className="muted-text">Loading users...</div>;
   }
 
-  if (usersQuery.isError) {
+  if (canLoadUsers && usersQuery.isError) {
     return (
       <EmptyState
         title="Не удалось загрузить пользователей"
