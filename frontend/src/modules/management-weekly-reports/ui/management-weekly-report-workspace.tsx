@@ -49,6 +49,21 @@ const managementProjectStatusOptions: Array<{ value: ManagementProjectStatusCode
   { value: 'cancelled', label: 'Отменен' },
 ];
 
+const managementCategoryMaxDurationMinutes = 2400;
+const managementCategoryMaxHours = managementCategoryMaxDurationMinutes / 60;
+
+type BuildManagementPayloadResult =
+  | { payload: SaveManagementWeeklyReportPayload }
+  | { errorMessage: string };
+
+function toUiErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message.trim() !== '') {
+    return error.message;
+  }
+
+  return 'Неизвестная ошибка';
+}
+
 function createManagementProjectRow(): ManagementProjectRowState {
   return {
     id: Math.random().toString(36).slice(2, 10),
@@ -183,6 +198,10 @@ export function ManagementWeeklyReportWorkspace(props: {
       setIsSaveSuccessMessage(true);
       void managementWeeklyReportQuery.refetch();
     },
+    onError: (error) => {
+      setSaveMessage(`Не удалось сохранить недельный Management-отчет: ${toUiErrorMessage(error)}`);
+      setIsSaveSuccessMessage(false);
+    },
   });
 
   const submitMutation = useMutation({
@@ -191,6 +210,10 @@ export function ManagementWeeklyReportWorkspace(props: {
       setSaveMessage('Недельный Management-отчет отправлен.');
       setIsSaveSuccessMessage(false);
       void managementWeeklyReportQuery.refetch();
+    },
+    onError: (error) => {
+      setSaveMessage(`Не удалось отправить недельный Management-отчет: ${toUiErrorMessage(error)}`);
+      setIsSaveSuccessMessage(false);
     },
   });
 
@@ -332,40 +355,108 @@ export function ManagementWeeklyReportWorkspace(props: {
     );
   }
 
-  function buildPayload(): SaveManagementWeeklyReportPayload {
+  function buildPayload(): BuildManagementPayloadResult {
+    const projectItems: SaveManagementWeeklyReportPayload['projectItems'] = [];
+    for (const row of projectRows) {
+      const projectName = row.projectName.trim();
+      const customerName = row.customerName.trim();
+      const description = row.description.trim();
+
+      if (!projectName && !customerName && !description) {
+        continue;
+      }
+
+      if (projectName.length < 2) {
+        return { errorMessage: 'В блоке "Работа над проектами" укажите название проекта (минимум 2 символа).' };
+      }
+
+      if (customerName.length < 2) {
+        return { errorMessage: 'В блоке "Работа над проектами" укажите заказчика (минимум 2 символа).' };
+      }
+
+      projectItems.push({
+        projectName,
+        customerName,
+        description: description || undefined,
+        statusCode: row.statusCode,
+      });
+    }
+
+    const otherTaskItems: SaveManagementWeeklyReportPayload['otherTaskItems'] = [];
+    for (const row of otherTaskRows) {
+      const taskName = row.taskName.trim();
+      const description = row.description.trim();
+
+      if (!taskName && !description) {
+        continue;
+      }
+
+      if (taskName.length < 2) {
+        return { errorMessage: 'В блоке "Прочие задачи" укажите название задачи (минимум 2 символа).' };
+      }
+
+      otherTaskItems.push({
+        taskName,
+        description: description || undefined,
+      });
+    }
+
+    const categoryItems: SaveManagementWeeklyReportPayload['categoryItems'] = [];
+    for (const row of categoryRows) {
+      const categoryName = row.categoryName.trim();
+      const comment = row.comment.trim();
+      const hours = row.hours.trim();
+
+      if (!categoryName && !comment && !hours) {
+        continue;
+      }
+
+      if (categoryName.length < 2) {
+        return { errorMessage: 'В блоке "Задачи по категориям" укажите категорию (минимум 2 символа).' };
+      }
+
+      const durationMinutes = toDurationMinutes(row.hours);
+      if (durationMinutes > managementCategoryMaxDurationMinutes) {
+        return {
+          errorMessage: `Для категории "${categoryName}" допустимо не более ${managementCategoryMaxHours} часов.`,
+        };
+      }
+
+      categoryItems.push({
+        categoryName,
+        comment: comment || undefined,
+        durationMinutes,
+      });
+    }
+
     return {
-      userId: activeSelectedUser.id,
-      departmentId: activeSelectedUser.department.id,
-      weekStart: props.dateRange.dateFrom,
-      weekEnd: props.dateRange.dateTo,
-      projectItems: projectRows
-        .filter((row) => row.projectName.trim() || row.customerName.trim() || row.description.trim())
-        .map((row) => ({
-          projectName: row.projectName.trim(),
-          customerName: row.customerName.trim(),
-          description: row.description.trim() || undefined,
-          statusCode: row.statusCode,
-        })),
-      otherTaskItems: otherTaskRows
-        .filter((row) => row.taskName.trim() || row.description.trim())
-        .map((row) => ({
-          taskName: row.taskName.trim(),
-          description: row.description.trim() || undefined,
-        })),
-      categoryItems: categoryRows
-        .filter((row) => row.categoryName.trim() || row.comment.trim() || row.hours.trim())
-        .map((row) => ({
-          categoryName: row.categoryName.trim(),
-          comment: row.comment.trim() || undefined,
-          durationMinutes: toDurationMinutes(row.hours),
-        })),
+      payload: {
+        userId: activeSelectedUser.id,
+        departmentId: activeSelectedUser.department.id,
+        weekStart: props.dateRange.dateFrom,
+        weekEnd: props.dateRange.dateTo,
+        projectItems,
+        otherTaskItems,
+        categoryItems,
+      },
     };
   }
 
-  function handleSave() {
+  async function handleSave() {
     setSaveMessage(null);
     setIsSaveSuccessMessage(false);
-    saveMutation.mutate(buildPayload());
+
+    const payloadResult = buildPayload();
+    if ('errorMessage' in payloadResult) {
+      setSaveMessage(payloadResult.errorMessage);
+      return;
+    }
+
+    try {
+      await saveMutation.mutateAsync(payloadResult.payload);
+    } catch {
+      return;
+    }
   }
 
   function handleSubmitClick() {
@@ -380,11 +471,27 @@ export function ManagementWeeklyReportWorkspace(props: {
     let reportId = managementWeeklyReportQuery.data?.id;
 
     if (!reportId) {
-      const savedReport = await saveMutation.mutateAsync(buildPayload());
+      const payloadResult = buildPayload();
+      if ('errorMessage' in payloadResult) {
+        setSaveMessage(payloadResult.errorMessage);
+        setIsSaveSuccessMessage(false);
+        return;
+      }
+
+      let savedReport;
+      try {
+        savedReport = await saveMutation.mutateAsync(payloadResult.payload);
+      } catch {
+        return;
+      }
       reportId = savedReport.id;
     }
 
-    await submitMutation.mutateAsync(reportId);
+    try {
+      await submitMutation.mutateAsync(reportId);
+    } catch {
+      return;
+    }
   }
 
   return (
@@ -410,7 +517,7 @@ export function ManagementWeeklyReportWorkspace(props: {
               }))}
             />
           </div>
-          <Button type="button" variant="secondary" onClick={handleSave} disabled={isBusy || isSubmitted}>
+          <Button type="button" variant="secondary" onClick={() => void handleSave()} disabled={isBusy || isSubmitted}>
             Сохранить черновик
           </Button>
           <Button

@@ -543,8 +543,51 @@ function QaSeverityDonutChart(props: {
           {props.items.reduce((sum, item) => sum + item.count, 0)}
         </text>
       </svg>
+
+      <div className="report-donut-export" aria-hidden="true">
+        <div
+          className="report-donut-export-chart"
+          style={{
+            backgroundImage: buildDonutGradient(
+              props.items.map((item) => ({
+                percentage: item.percentage,
+                color: item.color,
+              })),
+            ),
+          }}
+        >
+          <div className="report-donut-export-hole">
+            <div className="report-donut-export-label">New Bugs</div>
+            <div className="report-donut-export-value">
+              {props.items.reduce((sum, item) => sum + item.count, 0)}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
+}
+
+function buildDonutGradient(segments: Array<{ percentage: number; color: string }>): string {
+  let current = 0;
+  const stops: string[] = [];
+
+  for (const segment of segments) {
+    const safePercentage = Math.max(0, Math.min(100, segment.percentage));
+    if (safePercentage <= 0) {
+      continue;
+    }
+
+    const next = Math.min(100, current + safePercentage);
+    stops.push(`${segment.color} ${current}% ${next}%`);
+    current = next;
+  }
+
+  if (current < 100) {
+    stops.push(`rgba(143, 165, 189, 0.18) ${current}% 100%`);
+  }
+
+  return `conic-gradient(${stops.join(', ')})`;
 }
 
 function buildSeverityDistribution(items: QaWeeklyBugTableItem[]) {
