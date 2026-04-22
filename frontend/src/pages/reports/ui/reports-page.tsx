@@ -119,7 +119,7 @@ export function ReportsPage() {
         title="Reports workspace"
         subtitle={zone.subtitle}
         dateRange={
-          <div className="reports-global-controls">
+          <div className="reports-toolbar-shell">
             <div className="reports-workspace-range-shell">
               <div className="reports-workspace-range-label">Общий период отчетов</div>
               <DateRangePicker
@@ -134,7 +134,8 @@ export function ReportsPage() {
               disabled={isExportingAllReports}
               onClick={() => void handleExportAllReports()}
             >
-              {isExportingAllReports ? 'Экспорт всех отчетов...' : 'Экспорт всех отчетов'}
+              <span className="reports-export-all-icon" aria-hidden="true">↓</span>
+              <span>{isExportingAllReports ? 'Экспорт всех отчетов...' : 'Экспорт всех отчетов'}</span>
             </Button>
           </div>
         }

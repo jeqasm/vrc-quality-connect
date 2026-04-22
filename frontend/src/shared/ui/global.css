@@ -193,7 +193,7 @@ button:disabled {
 }
 
 .sidebar-footnote {
-  margin-top: auto;
+  margin-top: 0;
   padding: 16px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.06);
@@ -1367,12 +1367,11 @@ button:disabled {
   display: grid;
   grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr);
   gap: 12px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .settings-account-profile-card,
 .settings-account-form-card {
-  height: 100%;
   display: flex;
   flex-direction: column;
   background:
@@ -1386,22 +1385,27 @@ button:disabled {
 }
 
 .settings-profile-card-body {
-  flex: 1 1 auto;
   display: grid;
-  align-content: start;
+  gap: 12px;
+}
+
+.settings-profile-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
   gap: 14px;
 }
 
 .settings-profile-avatar {
-  width: 68px;
-  height: 68px;
-  border-radius: 20px;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, rgba(15, 118, 110, 0.16), rgba(101, 188, 255, 0.18));
   color: var(--text);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
@@ -1422,22 +1426,41 @@ button:disabled {
   font-size: 14px;
 }
 
+.settings-profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  color: #5f748d;
+  font-size: 12px;
+}
+
 .settings-profile-badges {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  padding-top: 4px;
+  padding-top: 2px;
 }
 
 .settings-profile-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
+  min-height: 26px;
   padding: 0 10px;
   border-radius: 999px;
   background: rgba(97, 115, 139, 0.08);
   color: var(--text);
-  font-size: 13px;
+  font-size: 12px;
+}
+
+.settings-profile-badge-role {
+  background: rgba(88, 104, 125, 0.14);
+  color: #314155;
+  font-weight: 600;
+}
+
+.settings-profile-badge-group {
+  background: rgba(15, 118, 110, 0.12);
+  color: #0f5a53;
 }
 
 .settings-account-form-card .form-grid {
@@ -1465,6 +1488,14 @@ button:disabled {
 .settings-account-fields-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.settings-password-block {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(132, 153, 177, 0.28);
+  display: grid;
   gap: 10px;
 }
 
@@ -1734,6 +1765,26 @@ button:disabled {
   background: rgba(180, 35, 24, 0.14);
 }
 
+.invite-delete-button {
+  min-height: 30px;
+  min-width: 30px;
+  padding: 0;
+  border-radius: 10px;
+  border-color: rgba(180, 35, 24, 0.2);
+  background: rgba(180, 35, 24, 0.08);
+  color: var(--danger);
+}
+
+.invite-delete-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.invite-delete-button:hover {
+  border-color: rgba(180, 35, 24, 0.34);
+  background: rgba(180, 35, 24, 0.14);
+}
+
 .invite-summary-row {
   display: flex;
   justify-content: space-between;
@@ -1762,6 +1813,12 @@ button:disabled {
 }
 
 .user-summary-side {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.invite-summary-side {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -2083,6 +2140,12 @@ button:disabled {
   border-color: rgba(209, 126, 16, 0.35);
   background: rgba(245, 158, 11, 0.12);
   color: #8a4b06;
+}
+
+.success-inline-notice {
+  border-color: rgba(15, 118, 110, 0.32);
+  background: rgba(15, 118, 110, 0.1);
+  color: #0f5a53;
 }
 
 .kpi-banner {
@@ -2510,9 +2573,8 @@ button:disabled {
 .reports-workspace-range-shell {
   display: grid;
   gap: 8px;
-  width: fit-content;
-  min-width: 0;
-  justify-items: start;
+  min-width: min(100%, 420px);
+  flex: 1;
 }
 
 .reports-workspace-range-label {
@@ -2522,32 +2584,39 @@ button:disabled {
   letter-spacing: 0.02em;
 }
 
-.reports-global-controls {
+.reports-toolbar-shell {
   display: flex;
   align-items: flex-end;
   gap: 14px;
   flex-wrap: wrap;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(137, 161, 188, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(241, 247, 253, 0.84));
+  box-shadow:
+    0 8px 20px rgba(31, 53, 79, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
 .reports-page .toolbar-date-range {
   display: grid;
-  grid-template-columns: repeat(2, minmax(150px, 180px));
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 18px;
-  border: 1px solid rgba(137, 161, 188, 0.34);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(244, 249, 255, 0.78));
-  box-shadow:
-    0 8px 22px rgba(31, 53, 79, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 8px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(137, 161, 188, 0.24);
+  background: rgba(247, 251, 255, 0.84);
+  box-shadow: none;
 }
 
 .reports-page .toolbar-date-range .field-input {
-  min-height: 40px;
-  padding: 9px 11px;
-  border-radius: 13px;
+  min-height: 42px;
+  padding: 9px 12px;
+  border-radius: 12px;
   font-size: 15px;
+  background: rgba(255, 255, 255, 0.94);
 }
 
 .reports-page .toolbar-date-range .toolbar-date-field span {
@@ -2557,15 +2626,30 @@ button:disabled {
 }
 
 .reports-export-all-button {
-  min-height: 44px;
-  padding: 10px 18px;
+  min-height: 42px;
+  padding: 9px 14px;
   border-radius: 14px;
-  border-color: rgba(127, 152, 179, 0.42);
+  border-color: rgba(127, 152, 179, 0.36);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(241, 247, 253, 0.86));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 250, 255, 0.88));
   color: #1f3550;
   font-weight: 600;
-  box-shadow: 0 8px 20px rgba(31, 53, 79, 0.08);
+  box-shadow: 0 6px 16px rgba(31, 53, 79, 0.08);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reports-export-all-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  background: rgba(31, 53, 80, 0.1);
+  color: #1f3550;
 }
 
 .reports-page .section-heading {
@@ -3362,12 +3446,16 @@ button:disabled {
     justify-content: flex-start;
   }
 
-  .reports-global-controls {
+  .reports-toolbar-shell {
     width: 100%;
     align-items: stretch;
   }
 
-  .reports-workspace-range-shell,
+  .reports-workspace-range-shell {
+    width: 100%;
+    min-width: 0;
+  }
+
   .reports-page .toolbar-date-range {
     width: 100%;
   }
@@ -3419,6 +3507,11 @@ button:disabled {
 
   .settings-account-grid {
     grid-template-columns: 1fr;
+  }
+
+  .settings-profile-head {
+    grid-template-columns: 1fr;
+    justify-items: start;
   }
 
   .settings-license-types-form {

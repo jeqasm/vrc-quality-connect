@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 
 import { AuthenticatedRequest } from '../../../common/auth/authenticated-request';
@@ -15,6 +15,7 @@ import {
   RegistrationInviteResponseDto,
 } from '../dto/registration-invite-response.dto';
 import { UpdateCurrentAccountDto } from '../dto/update-current-account.dto';
+import { UpdateCurrentAccountPasswordDto } from '../dto/update-current-account-password.dto';
 import { AuthenticatedAccountEntity } from '../entities/authenticated-account.entity';
 import { AuthSessionGuard } from '../guards/auth-session.guard';
 import { PermissionsGuard } from '../guards/permissions.guard';
@@ -57,6 +58,14 @@ export class AuthController {
     return this.authService.createRegistrationInvite(account.accountId, dto);
   }
 
+  @UseGuards(AuthSessionGuard, PermissionsGuard)
+  @RequirePermissions(accessPermissionCodes.usersManage)
+  @HttpCode(204)
+  @Delete('registration-invites/:inviteId')
+  deleteRegistrationInvite(@Param('inviteId') inviteId: string): Promise<void> {
+    return this.authService.deleteRegistrationInvite(inviteId);
+  }
+
   @UseGuards(AuthSessionGuard)
   @Get('me')
   me(@CurrentAccount() account: AuthenticatedAccountEntity): Promise<CurrentAccountResponseDto> {
@@ -70,6 +79,16 @@ export class AuthController {
     @Body() dto: UpdateCurrentAccountDto,
   ): Promise<CurrentAccountResponseDto> {
     return this.authService.updateCurrentAccount(account.accountId, dto);
+  }
+
+  @UseGuards(AuthSessionGuard)
+  @HttpCode(204)
+  @Patch('me/password')
+  updateMePassword(
+    @CurrentAccount() account: AuthenticatedAccountEntity,
+    @Body() dto: UpdateCurrentAccountPasswordDto,
+  ): Promise<void> {
+    return this.authService.updateCurrentAccountPassword(account.accountId, dto);
   }
 
   @UseGuards(AuthSessionGuard)

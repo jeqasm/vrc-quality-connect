@@ -64,7 +64,7 @@ export class AuthRegistrationRepository {
         throw new AuthenticationFailedError('Invite is no longer available');
       }
 
-      await transactionClient.authAccount.create({
+      const createdAccount = await transactionClient.authAccount.create({
         data: {
           email: input.email.toLowerCase(),
           passwordHash: input.passwordHash,
@@ -79,7 +79,42 @@ export class AuthRegistrationRepository {
             },
           },
         },
+        select: {
+          id: true,
+          user: {
+            select: {
+              id: true,
+            },
+          },
+        },
       });
+
+      const departmentGroups = await transactionClient.group.findMany({
+        where: {
+          type: 'department',
+          departmentId: invite.departmentId,
+          isActive: true,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      for (const departmentGroup of departmentGroups) {
+        await transactionClient.groupMembership.upsert({
+          where: {
+            groupId_userId: {
+              groupId: departmentGroup.id,
+              userId: createdAccount.user.id,
+            },
+          },
+          update: {},
+          create: {
+            groupId: departmentGroup.id,
+            userId: createdAccount.user.id,
+          },
+        });
+      }
 
       return transactionClient.authAccount.findUniqueOrThrow({
         where: {

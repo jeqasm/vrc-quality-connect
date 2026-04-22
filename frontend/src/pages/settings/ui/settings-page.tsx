@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { accessPermissions } from '../../../modules/access/model/access-permissions';
-import { hasPermission } from '../../../modules/access/model/access-check';
-import { updateCurrentAccount } from '../../../modules/auth/api/auth-api';
+import {
+  updateCurrentAccount,
+  updateCurrentAccountPassword,
+} from '../../../modules/auth/api/auth-api';
 import { useAuth } from '../../../modules/auth/providers/auth-provider';
 import { GroupsAdminPanel } from '../../../modules/groups/ui/groups-admin-panel';
 import { LicenseTypesSettingsPanel } from '../../../modules/licenses/ui/license-types-settings-panel';
@@ -48,16 +49,10 @@ function getInitials(firstName: string, lastName: string): string {
 export function SettingsPage() {
   const auth = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const canManageUsers = hasPermission(auth.account?.permissions ?? [], accessPermissions.usersManage);
-  const canManageGroups = hasPermission(auth.account?.permissions ?? [], accessPermissions.groupsManage);
-  const canManageAccess = hasPermission(
-    auth.account?.permissions ?? [],
-    accessPermissions.accessControlManage,
-  );
-  const canManageLicensing = hasPermission(
-    auth.account?.permissions ?? [],
-    accessPermissions.licensesView,
-  );
+  const isAdministrator = auth.account?.user.accessRole.code === 'administrator';
+  const canManageUsers = isAdministrator;
+  const canManageGroups = isAdministrator;
+  const canManageLicensing = isAdministrator;
   const [isAdministrationOpen, setIsAdministrationOpen] = useState(true);
   const sections = useMemo(
     () =>
@@ -70,15 +65,14 @@ export function SettingsPage() {
         {
           key: 'licenses',
           label: 'Лицензии',
-          isVisible: canManageLicensing,
+          isVisible: isAdministrator,
         },
       ].filter((section) => section.isVisible),
-    [canManageLicensing],
+    [isAdministrator],
   );
   const sectionKeys = [
     ...sections.map((section) => section.key),
-    ...(canManageUsers ? ['users'] : []),
-    ...(canManageGroups ? ['group-access'] : []),
+    ...(isAdministrator ? ['users', 'group-access'] : []),
   ];
   const sectionFromSearch = searchParams.get('section');
   const activeSectionKey =
@@ -91,7 +85,13 @@ export function SettingsPage() {
   const [lastName, setLastName] = useState(fullNameParts.lastName);
   const [accountErrorMessage, setAccountErrorMessage] = useState<string | null>(null);
   const [isAccountSaving, setIsAccountSaving] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState<string | null>(null);
+  const [passwordSuccessMessage, setPasswordSuccessMessage] = useState<string | null>(null);
+  const [isPasswordSaving, setIsPasswordSaving] = useState(false);
   const [isLicenseTypesModalOpen, setIsLicenseTypesModalOpen] = useState(false);
+  const accountGroups = auth.account?.user.groups ?? [];
 
   function handleSectionChange(sectionKey: string) {
     const nextSearchParams = new URLSearchParams(searchParams);
@@ -121,6 +121,37 @@ export function SettingsPage() {
     }
   }
 
+  async function handlePasswordSave() {
+    setPasswordErrorMessage(null);
+    setPasswordSuccessMessage(null);
+
+    if (newPassword.length < 8) {
+      setPasswordErrorMessage('Новый пароль должен содержать минимум 8 символов');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordErrorMessage('Подтверждение пароля не совпадает');
+      return;
+    }
+
+    setIsPasswordSaving(true);
+
+    try {
+      await updateCurrentAccountPassword({
+        newPassword,
+        confirmPassword,
+      });
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordSuccessMessage('Пароль успешно изменен');
+    } catch (error) {
+      setPasswordErrorMessage(error instanceof Error ? error.message : 'Не удалось изменить пароль');
+    } finally {
+      setIsPasswordSaving(false);
+    }
+  }
+
   return (
     <div className="page-grid">
       <PageHeader
@@ -143,7 +174,7 @@ export function SettingsPage() {
             ))}
           </nav>
 
-          {canManageUsers || canManageGroups || canManageAccess ? (
+          {isAdministrator ? (
             <div className="settings-admin-block">
               <button
                 type="button"
@@ -201,24 +232,35 @@ export function SettingsPage() {
                   </div>
 
                   <div className="settings-profile-card-body">
-                    <div className="settings-profile-avatar">
-                      {getInitials(firstName, lastName)}
+                    <div className="settings-profile-head">
+                      <div className="settings-profile-avatar">
+                        {getInitials(firstName, lastName)}
+                      </div>
+
+                      <div className="settings-profile-copy">
+                        <div className="settings-profile-name">
+                          {[firstName, lastName].filter(Boolean).join(' ').trim() || 'Аккаунт'}
+                        </div>
+                        <div className="settings-profile-email">{auth.account?.email ?? ''}</div>
+                      </div>
                     </div>
 
-                    <div className="settings-profile-copy">
-                      <div className="settings-profile-name">
-                        {[firstName, lastName].filter(Boolean).join(' ').trim() || 'Аккаунт'}
-                      </div>
-                      <div className="settings-profile-email">{auth.account?.email ?? ''}</div>
-
-                      <div className="settings-profile-badges">
-                        <span className="settings-profile-badge">
-                          {auth.account?.user.accessRole.name ?? 'Unknown'}
-                        </span>
-                        <span className="settings-profile-badge">
-                          {auth.account?.user.groups.map((group) => group.name).join(', ') || 'Нет группы'}
-                        </span>
-                      </div>
+                    <div className="settings-profile-badges">
+                      <span className="settings-profile-badge settings-profile-badge-role">
+                        {auth.account?.user.accessRole.name ?? 'Unknown'}
+                      </span>
+                      {accountGroups.length > 0 ? (
+                        accountGroups.map((group) => (
+                          <span
+                            key={group.id}
+                            className="settings-profile-badge settings-profile-badge-group"
+                          >
+                            {group.name}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="settings-profile-badge settings-profile-badge-group">Нет группы</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -253,14 +295,55 @@ export function SettingsPage() {
                       <Input id="account-email" value={auth.account?.email ?? ''} disabled />
                     </FormField>
 
-                    {accountErrorMessage ? (
-                      <div className="form-inline-notice">{accountErrorMessage}</div>
-                    ) : null}
-
                     <div className="settings-account-form-actions">
                       <Button type="button" onClick={() => void handleAccountSave()} disabled={isAccountSaving}>
                         {isAccountSaving ? 'Сохранение...' : 'Сохранить'}
                       </Button>
+                    </div>
+
+                    {accountErrorMessage ? (
+                      <div className="form-inline-notice">{accountErrorMessage}</div>
+                    ) : null}
+
+                    <div className="settings-password-block">
+                      <div className="section-heading">
+                        <div>
+                          <h2>Смена пароля</h2>
+                        </div>
+                      </div>
+
+                      <div className="settings-account-fields-row">
+                        <FormField htmlFor="account-new-password" label="Новый пароль">
+                          <Input
+                            id="account-new-password"
+                            type="password"
+                            value={newPassword}
+                            onChange={(event) => setNewPassword(event.target.value)}
+                          />
+                        </FormField>
+
+                        <FormField htmlFor="account-confirm-password" label="Подтверждение пароля">
+                          <Input
+                            id="account-confirm-password"
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(event) => setConfirmPassword(event.target.value)}
+                          />
+                        </FormField>
+                      </div>
+
+                      {passwordErrorMessage ? (
+                        <div className="form-inline-notice">{passwordErrorMessage}</div>
+                      ) : null}
+                      {passwordSuccessMessage ? (
+                        <div className="form-inline-notice success-inline-notice">{passwordSuccessMessage}</div>
+                      ) : null}
+
+                      <div className="settings-account-form-actions">
+                        <Button type="button" onClick={() => void handlePasswordSave()} disabled={isPasswordSaving}>
+                          {isPasswordSaving ? 'Сохранение...' : 'Сохранить пароль'}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -270,7 +353,7 @@ export function SettingsPage() {
           ) : null}
 
           {activeSectionKey === 'licenses' ? (
-            canManageLicensing ? (
+            isAdministrator ? (
               <div className="content-card settings-license-dictionary-card">
                 <div className="settings-section-header">
                   <h2>Лицензии</h2>
@@ -299,7 +382,7 @@ export function SettingsPage() {
           ) : null}
 
           {activeSectionKey === 'group-access' ? (
-            canManageGroups ? (
+            isAdministrator ? (
               <GroupsAdminPanel />
             ) : (
               <div className="content-card">
@@ -312,7 +395,7 @@ export function SettingsPage() {
           ) : null}
 
           {activeSectionKey === 'users' ? (
-            canManageUsers ? (
+            isAdministrator ? (
               <UsersAdminPanel />
             ) : (
               <div className="content-card">

@@ -12,6 +12,8 @@ class RegistrationInviteRoleDto {
 export class RegistrationInviteResponseDto {
   id!: string;
   email!: string | null;
+  firstName!: string | null;
+  lastName!: string | null;
   expiresAt!: string;
   usedAt!: string | null;
   createdAt!: string;
@@ -25,6 +27,8 @@ export class CreatedRegistrationInviteResponseDto extends RegistrationInviteResp
 
 export class RegistrationInvitePublicInfoDto {
   email!: string | null;
+  firstName!: string | null;
+  lastName!: string | null;
   expiresAt!: string;
   department!: RegistrationInviteDepartmentDto;
   accessRole!: RegistrationInviteRoleDto;

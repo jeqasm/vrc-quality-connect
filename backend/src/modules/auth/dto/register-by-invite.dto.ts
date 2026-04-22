@@ -8,8 +8,12 @@ export class RegisterByInviteDto {
   email!: string;
 
   @IsString()
-  @MinLength(2)
-  fullName!: string;
+  @MinLength(1)
+  firstName!: string;
+
+  @IsString()
+  @MinLength(1)
+  lastName!: string;
 
   @IsString()
   @MinLength(8)

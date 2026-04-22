@@ -72,14 +72,6 @@ const permissionUiMetaByCode: Record<string, PermissionUiMeta> = {
     description: 'Показывает страницу Support requests и пункт меню.',
     order: 40,
   },
-  'settings.view': {
-    section: 'navigation',
-    sectionTitle: 'Навигация',
-    sectionOrder: 1,
-    title: 'Настройки',
-    description: 'Показывает страницу Settings и пункт меню.',
-    order: 50,
-  },
   'activity-records.create': {
     section: 'operations',
     sectionTitle: 'Операции',
@@ -178,8 +170,6 @@ const permissionDependenciesByCode: Record<string, string[]> = {
   'reports.licenses.view': ['reports.view'],
   'reports.support.view': ['reports.view'],
   'reports.management.view': ['reports.view'],
-  'users.manage': ['settings.view'],
-  'groups.manage': ['settings.view'],
   'licenses.view': ['activity-records.view'],
 };
 

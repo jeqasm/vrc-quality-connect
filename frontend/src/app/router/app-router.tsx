@@ -35,9 +35,7 @@ export function AppRouter() {
           <Route element={<PermissionRoute permission={accessPermissions.supportRequestsView} />}>
             <Route path="/support-requests" element={<SupportRequestsPage />} />
           </Route>
-          <Route element={<PermissionRoute permission={accessPermissions.settingsView} />}>
-            <Route path="/settings" element={<SettingsPage />} />
-          </Route>
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
 

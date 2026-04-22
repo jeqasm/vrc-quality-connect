@@ -12,7 +12,6 @@ export const accessPermissionCodes = {
   reportsManagementView: 'reports.management.view',
   licensesView: 'licenses.view',
   supportRequestsView: 'support-requests.view',
-  settingsView: 'settings.view',
   usersManage: 'users.manage',
   groupsManage: 'groups.manage',
   accessControlManage: 'access-control.manage',

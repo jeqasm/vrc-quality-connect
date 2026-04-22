@@ -1,27 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom';
 
-import { hasPermission } from '../../modules/access/model/access-check';
-import { accessPermissions } from '../../modules/access/model/access-permissions';
+import { getVisibleNavigationItems } from '../../modules/access/model/access-navigation';
 import { useAuth } from '../../modules/auth/providers/auth-provider';
 
 export function AppShell() {
   const auth = useAuth();
   const currentAccount = auth.account;
-  const navigationItems = [
-    { to: '/', label: 'Главная', permission: accessPermissions.dashboardView },
-    {
-      to: '/activity-records',
-      label: 'Учет активности',
-      permission: accessPermissions.activityRecordsView,
-    },
-    { to: '/reports', label: 'Отчеты', permission: accessPermissions.reportsView },
-    {
-      to: '/support-requests',
-      label: 'Поддержка',
-      permission: accessPermissions.supportRequestsView,
-    },
-    { to: '/settings', label: 'Настройки', permission: accessPermissions.settingsView },
-  ].filter((item) => currentAccount && hasPermission(currentAccount.permissions, item.permission));
+  const navigationItems = currentAccount ? getVisibleNavigationItems(currentAccount.permissions) : [];
 
   return (
     <div className="app-shell">

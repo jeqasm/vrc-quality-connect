@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { AuthenticationFailedError } from '../../../common/errors/authentication-failed.error';
 import { ApplicationNotFoundError } from '../../../common/errors/application-not-found.error';
@@ -14,6 +14,7 @@ import {
   RegistrationInviteResponseDto,
 } from '../dto/registration-invite-response.dto';
 import { UpdateCurrentAccountDto } from '../dto/update-current-account.dto';
+import { UpdateCurrentAccountPasswordDto } from '../dto/update-current-account-password.dto';
 import { AuthenticatedAccountEntity } from '../entities/authenticated-account.entity';
 import { AuthAccountsRepository } from '../repositories/auth-accounts.repository';
 import { AuthRegistrationRepository } from '../repositories/auth-registration.repository';
@@ -42,7 +43,17 @@ export class AuthService {
 
   async registerByInvite(dto: RegisterByInviteDto): Promise<AuthSessionResponseDto> {
     const normalizedEmail = dto.email.trim().toLowerCase();
-    const normalizedFullName = dto.fullName.trim().replace(/\s+/g, ' ');
+    const normalizedFirstName = dto.firstName.trim();
+    const normalizedLastName = dto.lastName.trim();
+
+    if (!normalizedFirstName || !normalizedLastName) {
+      throw new BadRequestException({
+        statusCode: 400,
+        message: 'First name and last name are required',
+      });
+    }
+
+    const normalizedFullName = `${normalizedFirstName} ${normalizedLastName}`.replace(/\s+/g, ' ').trim();
     const inviteTokenHash = this.authTokensService.hashToken(dto.inviteToken);
     const invite = await this.registrationInvitesRepository.findByTokenHash(inviteTokenHash);
 
@@ -69,6 +80,8 @@ export class AuthService {
 
     return {
       email: invite.email,
+      firstName: invite.firstName,
+      lastName: invite.lastName,
       expiresAt: invite.expiresAt.toISOString(),
       department: {
         id: invite.department.id,
@@ -104,6 +117,15 @@ export class AuthService {
     }
 
     const normalizedEmail = dto.email?.trim().toLowerCase() || undefined;
+    const normalizedFirstName = dto.firstName.trim();
+    const normalizedLastName = dto.lastName.trim();
+
+    if (!normalizedFirstName || !normalizedLastName) {
+      throw new BadRequestException({
+        statusCode: 400,
+        message: 'First name and last name are required',
+      });
+    }
 
     if (normalizedEmail) {
       const existingAccount = await this.authAccountsRepository.findByEmail(normalizedEmail);
@@ -117,6 +139,8 @@ export class AuthService {
     const invite = await this.registrationInvitesRepository.create({
       tokenHash: this.authTokensService.hashToken(inviteToken),
       email: normalizedEmail,
+      firstName: normalizedFirstName,
+      lastName: normalizedLastName,
       departmentId: department.id,
       accessRoleId: accessRole.id,
       createdByAccountId,
@@ -127,6 +151,14 @@ export class AuthService {
       ...this.mapRegistrationInvite(invite),
       inviteToken,
     };
+  }
+
+  async deleteRegistrationInvite(inviteId: string): Promise<void> {
+    const deletedInvite = await this.registrationInvitesRepository.deleteActiveById(inviteId);
+
+    if (!deletedInvite) {
+      throw new ApplicationNotFoundError('Active registration invite', `id=${inviteId}`);
+    }
   }
 
   async login(dto: LoginDto, clientIpAddress: string): Promise<AuthSessionResponseDto> {
@@ -193,6 +225,29 @@ export class AuthService {
 
     const account = await this.buildAuthenticatedAccountEntity(accountId);
     return AuthAccountMapper.toCurrentAccountResponse(account);
+  }
+
+  async updateCurrentAccountPassword(
+    accountId: string,
+    dto: UpdateCurrentAccountPasswordDto,
+  ): Promise<void> {
+    const authAccount = await this.authAccountsRepository.findById(accountId);
+
+    if (!authAccount) {
+      throw new AuthenticationFailedError('Account was not found');
+    }
+
+    if (dto.newPassword !== dto.confirmPassword) {
+      throw new BadRequestException({
+        statusCode: 400,
+        message: 'Password confirmation does not match',
+      });
+    }
+
+    await this.authAccountsRepository.updatePasswordHash(
+      authAccount.id,
+      this.passwordHashService.hash(dto.newPassword),
+    );
   }
 
   private async createSessionResponse(accountId: string): Promise<AuthSessionResponseDto> {
@@ -273,6 +328,8 @@ export class AuthService {
     return {
       id: invite.id,
       email: invite.email,
+      firstName: invite.firstName,
+      lastName: invite.lastName,
       expiresAt: invite.expiresAt.toISOString(),
       usedAt: invite.usedAt?.toISOString() ?? null,
       createdAt: invite.createdAt.toISOString(),

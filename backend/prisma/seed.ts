@@ -17,7 +17,6 @@ async function main(): Promise<void> {
     ['reports.management.view', 'View management reports tab', 'reports'],
     ['licenses.view', 'View licenses page', 'licenses'],
     ['support-requests.view', 'View support requests page', 'support-requests'],
-    ['settings.view', 'View settings page', 'settings'],
     ['users.manage', 'Manage users', 'administration'],
     ['groups.manage', 'Manage groups', 'administration'],
     ['access-control.manage', 'Manage access control', 'administration'],
@@ -36,7 +35,6 @@ async function main(): Promise<void> {
       'reports.view',
       'licenses.view',
       'support-requests.view',
-      'settings.view',
       'groups.manage',
     ],
     employee: [

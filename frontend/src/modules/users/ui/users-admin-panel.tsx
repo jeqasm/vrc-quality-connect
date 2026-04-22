@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import {
   createRegistrationInvite,
   CreatedRegistrationInvite,
+  deleteRegistrationInvite,
   getRegistrationInvites,
 } from '../../auth/api/auth-api';
 import { deleteUser, getDepartments, getUsers } from '../../reference-data/api/reference-data-api';
@@ -42,6 +43,7 @@ export function UsersAdminPanel() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isInvitesOpen, setIsInvitesOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [inviteDeleteErrorMessage, setInviteDeleteErrorMessage] = useState<string | null>(null);
   const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(null);
   const [generatedInvite, setGeneratedInvite] = useState<CreatedRegistrationInvite | null>(null);
   const [userToDelete, setUserToDelete] = useState<UserOption | null>(null);
@@ -88,6 +90,19 @@ export function UsersAdminPanel() {
     },
   });
 
+  const deleteInviteMutation = useMutation({
+    mutationFn: deleteRegistrationInvite,
+    onSuccess: async () => {
+      setInviteDeleteErrorMessage(null);
+      await queryClient.invalidateQueries({ queryKey: ['auth', 'registration-invites'] });
+    },
+    onError: (error) => {
+      setInviteDeleteErrorMessage(
+        error instanceof Error ? error.message : 'Не удалось удалить приглашение',
+      );
+    },
+  });
+
   const deleteUserMutation = useMutation({
     mutationFn: deleteUser,
     onSuccess: async () => {
@@ -110,9 +125,20 @@ export function UsersAdminPanel() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const normalizedFirstName = formState.firstName.trim();
+    const normalizedLastName = formState.lastName.trim();
+
+    if (!normalizedFirstName || !normalizedLastName) {
+      setErrorMessage('Укажи имя и фамилию для приглашения');
+      return;
+    }
+
+    setErrorMessage(null);
 
     createInviteMutation.mutate({
       email: formState.email.trim() || undefined,
+      firstName: normalizedFirstName,
+      lastName: normalizedLastName,
       departmentId: formState.departmentId,
       accessRoleCode: formState.accessRoleCode,
       expiresInDays: formState.expiresInDays,
@@ -146,6 +172,9 @@ export function UsersAdminPanel() {
         {isInvitesOpen ? (
           invitesQuery.data && invitesQuery.data.length > 0 ? (
             <div className="stack-md">
+              {inviteDeleteErrorMessage ? (
+                <div className="form-inline-notice">{inviteDeleteErrorMessage}</div>
+              ) : null}
               {invitesQuery.data.map((invite) => (
                 <article key={invite.id} className="invite-summary-row">
                   <div className="invite-summary-main">
@@ -154,9 +183,55 @@ export function UsersAdminPanel() {
                       {invite.accessRole.name} · {invite.department.name}
                     </div>
                   </div>
-                  <div className="invite-summary-meta">
-                    <span>{invite.usedAt ? 'Использована' : 'Активна'}</span>
-                    <span>До {formatDate(invite.expiresAt)}</span>
+                  <div className="invite-summary-side">
+                    <div className="invite-summary-meta">
+                      <span>{invite.usedAt ? 'Использована' : 'Активна'}</span>
+                      <span>До {formatDate(invite.expiresAt)}</span>
+                    </div>
+                    {!invite.usedAt ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="invite-delete-button"
+                        disabled={deleteInviteMutation.isPending}
+                        onClick={() => {
+                          setInviteDeleteErrorMessage(null);
+                          deleteInviteMutation.mutate(invite.id);
+                        }}
+                        aria-label={`Удалить приглашение ${invite.email ?? invite.id}`}
+                        title="Удалить приглашение"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M4 7H20"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                          />
+                          <path
+                            d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M7 7L8 19C8.1 19.6 8.5 20 9.1 20H14.9C15.5 20 15.9 19.6 16 19L17 7"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path d="M10 11V16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                          <path d="M14 11V16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                        </svg>
+                      </Button>
+                    ) : null}
                   </div>
                 </article>
               ))}
@@ -306,6 +381,7 @@ export function UsersAdminPanel() {
                   setFormState((current) => ({ ...current, firstName: event.target.value }))
                 }
                 placeholder="Иван"
+                required
               />
             </FormField>
 
@@ -317,6 +393,7 @@ export function UsersAdminPanel() {
                   setFormState((current) => ({ ...current, lastName: event.target.value }))
                 }
                 placeholder="Иванов"
+                required
               />
             </FormField>
           </div>

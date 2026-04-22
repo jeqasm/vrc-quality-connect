@@ -55,6 +55,8 @@ model RegistrationInvite {
   id                   String     @id @default(uuid()) @db.Uuid
   tokenHash            String     @unique @map("token_hash")
   email                String?
+  firstName            String?    @map("first_name")
+  lastName             String?    @map("last_name")
   departmentId         String     @map("department_id") @db.Uuid
   accessRoleId         String     @map("access_role_id") @db.Uuid
   createdByAccountId   String     @map("created_by_account_id") @db.Uuid

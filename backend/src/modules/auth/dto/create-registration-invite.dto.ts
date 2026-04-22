@@ -1,10 +1,18 @@
 import { Type } from 'class-transformer';
-import { IsEmail, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEmail, IsInt, IsOptional, IsString, Max, Min, MinLength } from 'class-validator';
 
 export class CreateRegistrationInviteDto {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @IsString()
+  @MinLength(1)
+  firstName!: string;
+
+  @IsString()
+  @MinLength(1)
+  lastName!: string;
 
   @IsString()
   departmentId!: string;

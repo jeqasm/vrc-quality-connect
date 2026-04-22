@@ -9,13 +9,16 @@ export type LoginRequest = {
 export type RegisterRequest = {
   inviteToken: string;
   email: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   password: string;
 };
 
 export type RegistrationInvite = {
   id: string;
   email: string | null;
+  firstName: string | null;
+  lastName: string | null;
   expiresAt: string;
   usedAt: string | null;
   createdAt: string;
@@ -36,6 +39,8 @@ export type CreatedRegistrationInvite = RegistrationInvite & {
 
 export type RegistrationInvitePublicInfo = {
   email: string | null;
+  firstName: string | null;
+  lastName: string | null;
   expiresAt: string;
   department: {
     id: string;
@@ -50,6 +55,8 @@ export type RegistrationInvitePublicInfo = {
 
 export type CreateRegistrationInviteRequest = {
   email?: string;
+  firstName: string;
+  lastName: string;
   departmentId: string;
   accessRoleCode: string;
   expiresInDays: number;
@@ -58,6 +65,11 @@ export type CreateRegistrationInviteRequest = {
 export type UpdateCurrentAccountRequest = {
   firstName: string;
   lastName: string;
+};
+
+export type UpdateCurrentAccountPasswordRequest = {
+  newPassword: string;
+  confirmPassword: string;
 };
 
 export function login(request: LoginRequest): Promise<AuthSession> {
@@ -91,6 +103,12 @@ export function createRegistrationInvite(
   });
 }
 
+export function deleteRegistrationInvite(inviteId: string): Promise<void> {
+  return apiClient<void>(`/auth/registration-invites/${inviteId}`, {
+    method: 'DELETE',
+  });
+}
+
 export function fetchCurrentAccount(accessToken: string): Promise<CurrentAccount> {
   return apiClient<CurrentAccount>('/auth/me', {
     headers: {
@@ -110,6 +128,15 @@ export function logout(accessToken: string): Promise<void> {
 
 export function updateCurrentAccount(request: UpdateCurrentAccountRequest): Promise<CurrentAccount> {
   return apiClient<CurrentAccount>('/auth/me', {
+    method: 'PATCH',
+    body: JSON.stringify(request),
+  });
+}
+
+export function updateCurrentAccountPassword(
+  request: UpdateCurrentAccountPasswordRequest,
+): Promise<void> {
+  return apiClient<void>('/auth/me/password', {
     method: 'PATCH',
     body: JSON.stringify(request),
   });

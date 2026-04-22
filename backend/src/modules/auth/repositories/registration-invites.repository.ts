@@ -17,6 +17,8 @@ export class RegistrationInvitesRepository {
   create(input: {
     tokenHash: string;
     email?: string;
+    firstName: string;
+    lastName: string;
     departmentId: string;
     accessRoleId: string;
     createdByAccountId: string;
@@ -26,6 +28,8 @@ export class RegistrationInvitesRepository {
       data: {
         tokenHash: input.tokenHash,
         email: input.email,
+        firstName: input.firstName,
+        lastName: input.lastName,
         departmentId: input.departmentId,
         accessRoleId: input.accessRoleId,
         createdByAccountId: input.createdByAccountId,
@@ -59,5 +63,14 @@ export class RegistrationInvitesRepository {
       },
       take: 20,
     });
+  }
+
+  deleteActiveById(id: string): Promise<{ id: string } | null> {
+    return this.prisma.registrationInvite.deleteMany({
+      where: {
+        id,
+        usedAt: null,
+      },
+    }).then((result) => (result.count > 0 ? { id } : null));
   }
 }

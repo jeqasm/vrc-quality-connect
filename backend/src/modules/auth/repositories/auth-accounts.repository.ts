@@ -106,4 +106,12 @@ export class AuthAccountsRepository {
       select: { id: true },
     });
   }
+
+  updatePasswordHash(id: string, passwordHash: string): Promise<{ id: string }> {
+    return this.prisma.authAccount.update({
+      where: { id },
+      data: { passwordHash },
+      select: { id: true },
+    });
+  }
 }

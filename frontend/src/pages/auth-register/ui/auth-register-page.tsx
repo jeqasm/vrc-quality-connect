@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { getRegistrationInvite, register } from '../../../modules/auth/api/auth-api';
@@ -14,7 +14,8 @@ export function AuthRegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const inviteToken = searchParams.get('invite') ?? '';
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,6 +26,15 @@ export function AuthRegisterPage() {
     queryFn: () => getRegistrationInvite(inviteToken),
     enabled: inviteToken.length > 0,
   });
+
+  useEffect(() => {
+    if (!inviteQuery.data) {
+      return;
+    }
+
+    setFirstName(inviteQuery.data.firstName ?? '');
+    setLastName(inviteQuery.data.lastName ?? '');
+  }, [inviteQuery.data]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,7 +48,8 @@ export function AuthRegisterPage() {
     try {
       const session = await register({
         inviteToken,
-        fullName,
+        firstName,
+        lastName,
         email: inviteQuery.data?.email ?? email,
         password,
       });
@@ -83,14 +94,25 @@ export function AuthRegisterPage() {
               </p>
             </div>
 
-            <FormField htmlFor="register-name" label="ФИО">
-              <Input
-                id="register-name"
-                value={fullName}
-                onChange={(event) => setFullName(event.target.value)}
-                required
-              />
-            </FormField>
+            <div className="two-column-grid">
+              <FormField htmlFor="register-first-name" label="Имя">
+                <Input
+                  id="register-first-name"
+                  value={firstName}
+                  onChange={(event) => setFirstName(event.target.value)}
+                  required
+                />
+              </FormField>
+
+              <FormField htmlFor="register-last-name" label="Фамилия">
+                <Input
+                  id="register-last-name"
+                  value={lastName}
+                  onChange={(event) => setLastName(event.target.value)}
+                  required
+                />
+              </FormField>
+            </div>
 
             <FormField htmlFor="register-email" label="Email">
               <Input
