@@ -232,8 +232,107 @@ function LicenseDonutChart({
           {items.reduce((sum, item) => sum + item.quantity, 0)}
         </text>
       </svg>
+
+      <div className="report-donut-export" aria-hidden="true">
+        <ExportDonutChart
+          totalLabel="Total"
+          totalValue={`${items.reduce((sum, item) => sum + item.quantity, 0)}`}
+          segments={items.map((item, index) => ({
+            value: item.percentage,
+            color: reportPalette[index % reportPalette.length],
+          }))}
+        />
+      </div>
     </div>
   );
+}
+
+function ExportDonutChart(props: {
+  totalLabel: string;
+  totalValue: string;
+  segments: Array<{ value: number; color: string }>;
+}) {
+  const outerRadius = 92;
+  const innerRadius = 58;
+  const center = 110;
+  let currentAngle = -90;
+
+  return (
+    <div className="report-donut-export-chart">
+      <svg viewBox="0 0 220 220" className="report-donut-export-chart-svg" aria-hidden="true">
+        <circle
+          cx={center}
+          cy={center}
+          r={(outerRadius + innerRadius) / 2}
+          fill="none"
+          stroke="rgba(143, 165, 189, 0.18)"
+          strokeWidth={outerRadius - innerRadius}
+        />
+        {props.segments.map((segment, index) => {
+          const safeValue = Math.max(0, Math.min(100, segment.value));
+          if (safeValue <= 0) {
+            return null;
+          }
+
+          const startAngle = currentAngle;
+          const endAngle = currentAngle + (safeValue / 100) * 360;
+          currentAngle = endAngle;
+
+          return (
+            <path
+              key={`export-donut-segment-${index}`}
+              d={buildDonutSegmentPath(center, center, outerRadius, innerRadius, startAngle, endAngle)}
+              fill={segment.color}
+            />
+          );
+        })}
+        <circle cx={center} cy={center} r={innerRadius} fill="#f5f9fc" />
+        <text x={center} y={center - 8} textAnchor="middle" className="report-donut-export-label">
+          {props.totalLabel}
+        </text>
+        <text x={center} y={center + 14} textAnchor="middle" className="report-donut-export-value">
+          {props.totalValue}
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+function buildDonutSegmentPath(
+  cx: number,
+  cy: number,
+  outerRadius: number,
+  innerRadius: number,
+  startAngle: number,
+  endAngle: number,
+): string {
+  const normalizedStart = startAngle;
+  let normalizedEnd = endAngle;
+  if (normalizedEnd - normalizedStart >= 360) {
+    normalizedEnd = normalizedStart + 359.999;
+  }
+
+  const outerStart = polarToCartesian(cx, cy, outerRadius, normalizedStart);
+  const outerEnd = polarToCartesian(cx, cy, outerRadius, normalizedEnd);
+  const innerEnd = polarToCartesian(cx, cy, innerRadius, normalizedEnd);
+  const innerStart = polarToCartesian(cx, cy, innerRadius, normalizedStart);
+  const largeArcFlag = normalizedEnd - normalizedStart > 180 ? 1 : 0;
+
+  return [
+    `M ${outerStart.x} ${outerStart.y}`,
+    `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${outerEnd.x} ${outerEnd.y}`,
+    `L ${innerEnd.x} ${innerEnd.y}`,
+    `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}`,
+    'Z',
+  ].join(' ');
+}
+
+function polarToCartesian(cx: number, cy: number, radius: number, angleInDegrees: number) {
+  const radians = (angleInDegrees * Math.PI) / 180;
+  return {
+    x: cx + radius * Math.cos(radians),
+    y: cy + radius * Math.sin(radians),
+  };
 }
 
 function LicenseTrendChart({ points }: { points: LicenseTrendPoint[] }) {

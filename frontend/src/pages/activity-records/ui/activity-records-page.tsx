@@ -15,6 +15,7 @@ import {
   saveQaWeeklyReport,
   submitQaWeeklyReport,
 } from '../../../modules/qa-weekly-reports/api/qa-weekly-reports-api';
+import { SaveQaWeeklyReportPayload } from '../../../modules/qa-weekly-reports/model/qa-weekly-report';
 import { ManagementWeeklyReportWorkspace } from '../../../modules/management-weekly-reports/ui/management-weekly-report-workspace';
 import { SupportWeeklyReportWorkspace } from '../../../modules/support-weekly-reports/ui/support-weekly-report-workspace';
 import { getUsers } from '../../../modules/reference-data/api/reference-data-api';
@@ -253,6 +254,122 @@ const bugStatusOptions = [
   { value: 'blocked', label: 'Заблокирован' },
 ];
 
+const qaOtherTaskMaxDurationMinutes = 2400;
+const qaOtherTaskMaxHours = qaOtherTaskMaxDurationMinutes / 60;
+
+type BuildQaSavePayloadResult =
+  | { payload: SaveQaWeeklyReportPayload }
+  | { errorMessage: string };
+
+function toUiErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message.trim() !== '') {
+    return error.message;
+  }
+
+  return 'Неизвестная ошибка';
+}
+
+function normalizeOptionalUrl(value: string): string | undefined | null {
+  const trimmedValue = value.trim();
+  if (trimmedValue === '') {
+    return undefined;
+  }
+
+  const hasScheme = /^[a-z][a-z\d+\-.]*:/i.test(trimmedValue);
+  const normalizedValue = hasScheme ? trimmedValue : `https://${trimmedValue}`;
+
+  try {
+    // Validate URL format before sending payload to API.
+    const parsedUrl = new URL(normalizedValue);
+    if (!parsedUrl.protocol || !parsedUrl.hostname) {
+      return null;
+    }
+    return normalizedValue;
+  } catch {
+    return null;
+  }
+}
+
+function buildQaSavePayload(params: {
+  userId: string;
+  departmentId: string;
+  weekStart: string;
+  weekEnd: string;
+  qaRetestRows: QaBugFormState[];
+  qaNewBugRows: QaBugFormState[];
+  qaTestedTaskRows: QaBugFormState[];
+  qaNewTaskRows: QaBugFormState[];
+  qaOtherTaskRows: QaOtherTaskRowState[];
+}): BuildQaSavePayloadResult {
+  const bugItems: SaveQaWeeklyReportPayload['bugItems'] = [];
+  const rowsByBucket = [
+    { bucketCode: 'retest', rows: params.qaRetestRows, includeSeverity: true },
+    { bucketCode: 'new_bug', rows: params.qaNewBugRows, includeSeverity: true },
+    { bucketCode: 'tested_task', rows: params.qaTestedTaskRows, includeSeverity: false },
+    { bucketCode: 'new_task', rows: params.qaNewTaskRows, includeSeverity: false },
+  ] as const;
+
+  for (const bucket of rowsByBucket) {
+    for (const row of bucket.rows) {
+      const projectName = row.projectName.trim();
+      const title = row.bugTitle.trim();
+
+      if (!projectName || !title) {
+        continue;
+      }
+
+      const externalUrl = normalizeOptionalUrl(row.bugUrl);
+      if (externalUrl === null) {
+        return {
+          errorMessage:
+            'Проверьте ссылки в QA-отчете: указывайте корректный URL (например https://tracker.example.com/task).',
+        };
+      }
+
+      bugItems.push({
+        bucketCode: bucket.bucketCode,
+        projectName,
+        title,
+        externalUrl,
+        severityCode: bucket.includeSeverity ? row.bugType.trim() || undefined : undefined,
+        resultCode: row.bugStatus.trim() || undefined,
+      });
+    }
+  }
+
+  const otherTaskItems: SaveQaWeeklyReportPayload['otherTaskItems'] = [];
+  for (const row of params.qaOtherTaskRows) {
+    const taskName = row.taskName.trim();
+    if (!taskName) {
+      continue;
+    }
+
+    const durationMinutes = toDurationMinutes(row.hours);
+    if (durationMinutes > qaOtherTaskMaxDurationMinutes) {
+      return {
+        errorMessage: `Для строки "${taskName}" в поле "Часы" допустимо не более ${qaOtherTaskMaxHours} часов.`,
+      };
+    }
+
+    otherTaskItems.push({
+      taskName,
+      description: row.shortDescription.trim() || undefined,
+      durationMinutes,
+    });
+  }
+
+  return {
+    payload: {
+      userId: params.userId,
+      departmentId: params.departmentId,
+      weekStart: params.weekStart,
+      weekEnd: params.weekEnd,
+      bugItems,
+      otherTaskItems,
+    },
+  };
+}
+
 export function ActivityRecordsPage() {
   const auth = useAuth();
   const accountPermissions = auth.account?.permissions ?? [];
@@ -390,6 +507,10 @@ export function ActivityRecordsPage() {
       setIsQaSaveSuccessMessage(true);
       void qaWeeklyReportQuery.refetch();
     },
+    onError: (error) => {
+      setQaSaveMessage(`Не удалось сохранить недельный QA-отчет: ${toUiErrorMessage(error)}`);
+      setIsQaSaveSuccessMessage(false);
+    },
   });
 
   const qaSubmitMutation = useMutation({
@@ -398,6 +519,10 @@ export function ActivityRecordsPage() {
       setQaSaveMessage('Недельный QA-отчет отправлен.');
       setIsQaSaveSuccessMessage(false);
       void qaWeeklyReportQuery.refetch();
+    },
+    onError: (error) => {
+      setQaSaveMessage(`Не удалось отправить недельный QA-отчет: ${toUiErrorMessage(error)}`);
+      setIsQaSaveSuccessMessage(false);
     },
   });
 
@@ -576,53 +701,27 @@ export function ActivityRecordsPage() {
     setQaSaveMessage(null);
     setIsQaSaveSuccessMessage(false);
 
-    await qaSaveMutation.mutateAsync({
+    const payloadResult = buildQaSavePayload({
       userId: selectedQaUserId,
       departmentId: selectedUser.department.id,
       weekStart: dateRange.dateFrom,
       weekEnd: dateRange.dateTo,
-      bugItems: [
-        ...qaRetestRows.map((row) => ({
-          bucketCode: 'retest',
-          projectName: row.projectName.trim(),
-          title: row.bugTitle.trim(),
-          externalUrl: row.bugUrl.trim() || undefined,
-          severityCode: row.bugType.trim() || undefined,
-          resultCode: row.bugStatus.trim() || undefined,
-        })),
-        ...qaNewBugRows.map((row) => ({
-          bucketCode: 'new_bug',
-          projectName: row.projectName.trim(),
-          title: row.bugTitle.trim(),
-          externalUrl: row.bugUrl.trim() || undefined,
-          severityCode: row.bugType.trim() || undefined,
-          resultCode: row.bugStatus.trim() || undefined,
-        })),
-        ...qaTestedTaskRows.map((row) => ({
-          bucketCode: 'tested_task',
-          projectName: row.projectName.trim(),
-          title: row.bugTitle.trim(),
-          externalUrl: row.bugUrl.trim() || undefined,
-          severityCode: undefined,
-          resultCode: row.bugStatus.trim() || undefined,
-        })),
-        ...qaNewTaskRows.map((row) => ({
-          bucketCode: 'new_task',
-          projectName: row.projectName.trim(),
-          title: row.bugTitle.trim(),
-          externalUrl: row.bugUrl.trim() || undefined,
-          severityCode: undefined,
-          resultCode: row.bugStatus.trim() || undefined,
-        })),
-      ].filter((item) => item.projectName && item.title),
-      otherTaskItems: qaOtherTaskRows
-        .map((row) => ({
-          taskName: row.taskName.trim(),
-          description: row.shortDescription.trim() || undefined,
-          durationMinutes: toDurationMinutes(row.hours),
-        }))
-        .filter((item) => item.taskName),
+      qaRetestRows,
+      qaNewBugRows,
+      qaTestedTaskRows,
+      qaNewTaskRows,
+      qaOtherTaskRows,
     });
+    if ('errorMessage' in payloadResult) {
+      setQaSaveMessage(payloadResult.errorMessage);
+      return;
+    }
+
+    try {
+      await qaSaveMutation.mutateAsync(payloadResult.payload);
+    } catch {
+      return;
+    }
   }
 
   function handleSubmitQaWeeklyReportClick() {
@@ -651,58 +750,36 @@ export function ActivityRecordsPage() {
     let reportId = qaWeeklyReportQuery.data?.id;
 
     if (!reportId) {
-      const savedReport = await qaSaveMutation.mutateAsync({
+      const payloadResult = buildQaSavePayload({
         userId: selectedQaUserId,
         departmentId: selectedUser.department.id,
         weekStart: dateRange.dateFrom,
         weekEnd: dateRange.dateTo,
-        bugItems: [
-          ...qaRetestRows.map((row) => ({
-            bucketCode: 'retest',
-            projectName: row.projectName.trim(),
-            title: row.bugTitle.trim(),
-            externalUrl: row.bugUrl.trim() || undefined,
-            severityCode: row.bugType.trim() || undefined,
-            resultCode: row.bugStatus.trim() || undefined,
-          })),
-          ...qaNewBugRows.map((row) => ({
-            bucketCode: 'new_bug',
-            projectName: row.projectName.trim(),
-            title: row.bugTitle.trim(),
-            externalUrl: row.bugUrl.trim() || undefined,
-            severityCode: row.bugType.trim() || undefined,
-            resultCode: row.bugStatus.trim() || undefined,
-          })),
-          ...qaTestedTaskRows.map((row) => ({
-            bucketCode: 'tested_task',
-            projectName: row.projectName.trim(),
-            title: row.bugTitle.trim(),
-            externalUrl: row.bugUrl.trim() || undefined,
-            severityCode: undefined,
-            resultCode: row.bugStatus.trim() || undefined,
-          })),
-          ...qaNewTaskRows.map((row) => ({
-            bucketCode: 'new_task',
-            projectName: row.projectName.trim(),
-            title: row.bugTitle.trim(),
-            externalUrl: row.bugUrl.trim() || undefined,
-            severityCode: undefined,
-            resultCode: row.bugStatus.trim() || undefined,
-          })),
-        ].filter((item) => item.projectName && item.title),
-        otherTaskItems: qaOtherTaskRows
-          .map((row) => ({
-            taskName: row.taskName.trim(),
-            description: row.shortDescription.trim() || undefined,
-            durationMinutes: toDurationMinutes(row.hours),
-          }))
-          .filter((item) => item.taskName),
+        qaRetestRows,
+        qaNewBugRows,
+        qaTestedTaskRows,
+        qaNewTaskRows,
+        qaOtherTaskRows,
       });
+      if ('errorMessage' in payloadResult) {
+        setQaSaveMessage(payloadResult.errorMessage);
+        setIsQaSaveSuccessMessage(false);
+        return;
+      }
 
-      reportId = savedReport.id;
+      try {
+        const savedReport = await qaSaveMutation.mutateAsync(payloadResult.payload);
+        reportId = savedReport.id;
+      } catch {
+        return;
+      }
     }
 
-    await qaSubmitMutation.mutateAsync(reportId);
+    try {
+      await qaSubmitMutation.mutateAsync(reportId);
+    } catch {
+      return;
+    }
   }
 
   const isQaLocked = qaWeeklyReportQuery.data?.status === 'submitted';

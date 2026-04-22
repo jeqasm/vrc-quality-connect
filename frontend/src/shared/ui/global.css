@@ -701,6 +701,36 @@ button:disabled {
   transform: rotate(-45deg);
 }
 
+.pdf-export-mode .content-card,
+.pdf-export-mode .stat-card,
+.pdf-export-mode .accent-card {
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.pdf-export-mode .report-type-row,
+.pdf-export-mode .report-donut-segment,
+.pdf-export-mode .report-donut-segment-active {
+  filter: none !important;
+}
+
+.pdf-export-mode .report-donut-layout,
+.pdf-export-mode .report-trend-layout {
+  overflow: visible !important;
+}
+
+.pdf-export-mode .report-donut-chart {
+  display: none !important;
+}
+
+.pdf-export-mode .report-donut-export {
+  display: flex !important;
+}
+
+.pdf-export-mode .report-donut-export-chart {
+  width: min(100%, 340px);
+}
+
 .toolbar-date-field span {
   font-size: 11px;
   color: var(--muted);
@@ -3003,6 +3033,54 @@ button:disabled {
 .report-trend-layout {
   width: 100%;
   overflow-x: auto;
+}
+
+.report-donut-export {
+  display: none;
+  justify-content: center;
+}
+
+.report-donut-export-chart {
+  width: min(100%, 220px);
+  aspect-ratio: 1 / 1;
+  border-radius: 999px;
+  position: relative;
+}
+
+.report-donut-export-hole {
+  position: absolute;
+  inset: 28px;
+  border-radius: 999px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 2px;
+  background: #f5f9fc;
+}
+
+.report-donut-export-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.report-donut-export-value {
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.report-donut-export-chart-svg .report-donut-export-label {
+  fill: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.report-donut-export-chart-svg .report-donut-export-value {
+  fill: var(--text);
+  font-size: 24px;
+  font-weight: 800;
 }
 
 .report-donut-chart {

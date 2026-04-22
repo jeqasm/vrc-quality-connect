@@ -7,9 +7,10 @@ const PDF_PAGE_UNIT = 'mm';
 const PDF_MARGIN_X_MM = 6;
 const PDF_MARGIN_Y_MM = 6;
 const EXPORT_BACKGROUND_COLOR = '#edf4fb';
-const EXPORT_PIXEL_RATIO = 1.25;
+const EXPORT_PIXEL_RATIO = 1;
 const EXPORT_IMAGE_QUALITY = 0.82;
 const MIN_LINK_SIZE_MM = 0.8;
+const EXPORT_MODE_CLASS_NAME = 'pdf-export-mode';
 
 export async function exportHtmlElementToPdf(section: HTMLElement, fileName: string) {
   await exportHtmlSectionsToPdf([section], fileName);
@@ -43,11 +44,7 @@ export async function exportHtmlSectionsToPdf(
 }
 
 async function appendSectionToPdf(pdf: jsPDF, section: HTMLElement, isFirstPage: boolean) {
-  const sourceCanvas = await toCanvas(section, {
-    cacheBust: true,
-    backgroundColor: EXPORT_BACKGROUND_COLOR,
-    pixelRatio: EXPORT_PIXEL_RATIO,
-  });
+  const sourceCanvas = await renderSectionToCanvas(section);
   const sectionLinks = collectSectionLinks(section, sourceCanvas);
 
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -111,6 +108,29 @@ async function appendSectionToPdf(pdf: jsPDF, section: HTMLElement, isFirstPage:
       renderedPageHeight,
       usableWidth,
     );
+  }
+}
+
+async function renderSectionToCanvas(section: HTMLElement): Promise<HTMLCanvasElement> {
+  document.body.classList.add(EXPORT_MODE_CLASS_NAME);
+
+  try {
+    // Prefer html2canvas in production: it is more stable with complex dashboard/report layout.
+    const html2canvasModule = await import('html2canvas');
+    return await html2canvasModule.default(section, {
+      backgroundColor: EXPORT_BACKGROUND_COLOR,
+      scale: EXPORT_PIXEL_RATIO,
+      useCORS: true,
+      logging: false,
+    });
+  } catch {
+    return toCanvas(section, {
+      cacheBust: true,
+      backgroundColor: EXPORT_BACKGROUND_COLOR,
+      pixelRatio: EXPORT_PIXEL_RATIO,
+    });
+  } finally {
+    document.body.classList.remove(EXPORT_MODE_CLASS_NAME);
   }
 }
 
