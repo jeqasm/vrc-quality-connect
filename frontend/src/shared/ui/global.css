@@ -3384,6 +3384,87 @@ button:disabled {
     calc(100% - 42px) 50%;
 }
 
+.integrations-health-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.integrations-health-intro {
+  margin: 0;
+}
+
+.integration-health-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.integration-health-item {
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(143, 165, 189, 0.22);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.integration-health-item-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.integration-health-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.integration-health-code {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.integration-health-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.integration-health-status-planned {
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.integration-health-status-not_connected {
+  color: #b45309;
+  background: rgba(217, 119, 6, 0.14);
+}
+
+.integration-health-status-connected {
+  color: #0f766e;
+  background: rgba(15, 118, 110, 0.12);
+}
+
+.integration-health-status-degraded {
+  color: #b42318;
+  background: rgba(180, 35, 24, 0.12);
+}
+
+.integration-health-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
 @media (max-width: 1180px) {
   .section-grid,
   .dashboard-grid,
@@ -3411,6 +3492,11 @@ button:disabled {
     min-width: 0;
     max-width: none;
     width: 100%;
+  }
+
+  .integration-health-list,
+  .integration-health-meta {
+    grid-template-columns: 1fr;
   }
 }
 
